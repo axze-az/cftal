@@ -54,6 +54,18 @@ namespace cftal {
             };
         };
 
+        template <>
+        struct domain_exp2_px2<f16_t> {
+            constexpr static
+            const func_domain<f16_t> domains[]={
+                std::make_pair(0.0_f16, 5.5_f16)
+            };
+            constexpr static
+            const int shifts[]={
+                0
+            };
+        };
+
         template <typename _T>
         struct check_exp2_px2 {
             template <std::size_t _N>
@@ -72,7 +84,8 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::exp2(a*a);
+                using std::exp2;
+                return exp2(a*a);
             }
             static
             const char* fname() { return "exp2_px2"; }
