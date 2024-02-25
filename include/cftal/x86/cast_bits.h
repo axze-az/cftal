@@ -27,24 +27,6 @@
 namespace cftal {
 
 #if defined (__SSE2__)
-    namespace x86 {
-
-        __m128d _mm_castf64_sd(double s);
-        double _mm_castsd_f64(__m128d v);
-
-        __m128 _mm_castf32_ss(float f);
-        float _mm_castss_f32(__m128 v);
-
-        struct f32_pair {
-            float first;
-            float second;
-        };
-
-        __m128 _mm_castf32x2_ps(f32_pair s);
-        f32_pair _mm_castps_f32x2(__m128 v);
-
-    }
-
     namespace impl {
         // cast to __m128
         template <>
@@ -342,99 +324,6 @@ namespace cftal {
     } // namespace impl
 #endif // __SSE2__
 } // namespace cftal
-
-
-#if defined (__SSE2__)
-inline
-__m128d _mm_castf64_sd(double s)
-{
-#if defined (__x86_64__) && (defined (__GNUC__) || defined (__clang__))
-    __m128d v;
-    __asm__("\n"
-	    ".ifnc %1,%0\n\t"
-	    "vmovaps %1,%0\n"
-	    ".endif\n\t"
-	    : "=x"(v) : "x"(s));
-    return v;
-#else
-    return _mm_setr_pd(s, 0.0);
-#endif
-}
-
-inline
-double
-cftal::x86::_mm_castsd_f64(__m128d v)
-{
-    return _mm_cvtsd_f64(v);
-}
-
-inline
-__m128
-cftal::x86::_mm_castf32_ss(float s)
-{
-#if defined (__x86_64__) && (defined (__GNUC__) || defined (__clang__))
-    __m128 v;
-    __asm__("\n"
-	    ".ifnc %1,%0\n\t"
-	    "vmovaps %1,%0\n"
-	    ".endif\n\t"
-	    : "=x"(v) : "x"(s));
-    return v;
-#else
-    return _mm_setr_ps(s, 0.0f, 0.0f, 0.0f);
-#endif
-}
-
-inline
-float
-cftal::x86::_mm_castss_f32(__m128 v)
-{
-    return _mm_cvtss_f32(v);
-}
-
-inline
-__m128
-cftal::x86::_mm_castf32x2_ps(f32_pair s)
-{
-#if defined (__x86_64__) && (defined (__GNUC__) || defined (__clang__))
-    __m128 v;
-    __asm__("\n"
-	    ".ifnc %1,%0\n\t"
-	    "vmovaps %1,%0\n"
-	    ".endif\n\t"
-	    : "=x"(v) : "x"(s));
-    return v;
-#else
-    return _mm_setr_ps(s.first, s.second, 0.0f, 0.0f);
-#endif
-}
-
-inline
-cftal::x86::f32_pair
-cftal::x86::_mm_castps_f32x2(__m128 v)
-{
-#if defined (__x86_64__) && (defined (__GNUC__) || defined (__clang__))
-    f32_pair r;
-    __asm__("\n"
-	    ".ifnc %1,%0\n\t"
-	    "vmovaps %1,%0\n"
-	    ".endif\n\t"
-	    : "=x"(r) : "x"(v));
-    return r;
-#else
-    union {
-	f32_pair r;
-	__m128 s;
-    } t;
-    t.s=v;
-    return t.r;
-#endif
-}
-
-
-
-
-#endif
 
 // Local variables:
 // mode: c++
