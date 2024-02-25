@@ -86,7 +86,7 @@ namespace cftal {
             vf_type
             rcbrt_k(arg_t<vf_type> x);
 #endif
-#if __CFTAL_CFG_USE_VF32_FOR_VF16_RCBRT__>0
+#if __CFTAL_CFG_USE_VF32_FOR_VF16_ROOT12__>0
             static
             vf_type
             root12_k(arg_t<vf_type> x);
@@ -306,7 +306,7 @@ rcbrt_k(arg_t<vf_type> x)
 }
 #endif
 
-#if __CFTAL_CFG_USE_VF32_FOR_VF16_RCBRT__>0
+#if __CFTAL_CFG_USE_VF32_FOR_VF16_ROOT12__>0
 template <typename _T>
 inline
 typename cftal::math::elem_func_wrapper<cftal::f16_t, _T>::vf_type
