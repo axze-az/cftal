@@ -73,6 +73,10 @@ namespace cftal {
 
     template <size_t _N>
     vec<f16_t, _N>
+    root12(const vec<f16_t, _N>& x);
+
+    template <size_t _N>
+    vec<f16_t, _N>
     hypot(const vec<f16_t, _N>& x, const vec<f16_t, _N>& y);
 
     template <size_t _N>
@@ -257,6 +261,9 @@ namespace cftal {
     rcbrt(arg_t<vec<f16_t, 1> > x);
 
     vec<f16_t, 1>
+    root12(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
     hypot(arg_t<vec<f16_t, 1> > x, arg_t<vec<f16_t, 1> > y);
 
     vec<f16_t, 1>
@@ -398,6 +405,9 @@ namespace cftal {
 
     vec<f16_t, 2>
     rcbrt(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    root12(arg_t<vec<f16_t, 2> > x);
 
     vec<f16_t, 2>
     hypot(arg_t<vec<f16_t, 2> > x, arg_t<vec<f16_t, 2> > y);
@@ -545,6 +555,9 @@ namespace cftal {
     rcbrt(arg_t<vec<f16_t, 4> > x);
 
     vec<f16_t, 4>
+    root12(arg_t<vec<f16_t, 4> > x);
+
+    vec<f16_t, 4>
     hypot(arg_t<vec<f16_t, 4> > x, arg_t<vec<f16_t, 4> > y);
 
     vec<f16_t, 4>
@@ -688,6 +701,9 @@ namespace cftal {
     rcbrt(arg_t<vec<f16_t, 8> > x);
 
     vec<f16_t, 8>
+    root12(arg_t<vec<f16_t, 8> > x);
+
+    vec<f16_t, 8>
     hypot(arg_t<vec<f16_t, 8> > x, arg_t<vec<f16_t, 8> > y);
 
     vec<f16_t, 8>
@@ -829,6 +845,9 @@ namespace cftal {
 
     vec<f16_t, 16>
     rcbrt(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    root12(arg_t<vec<f16_t, 16> > x);
 
     vec<f16_t, 16>
     hypot(arg_t<vec<f16_t, 16> > x, arg_t<vec<f16_t, 16> > y);
@@ -1032,6 +1051,15 @@ cftal::vec<cftal::f16_t, _N>
 cftal::rcbrt(const vec<cftal::f16_t, _N>& v)
 {
     vec<f16_t, _N> r(rcbrt(low_half(v)), rcbrt(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::root12(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(root12(low_half(v)), root12(high_half(v)));
     return r;
 }
 
