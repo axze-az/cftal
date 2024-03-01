@@ -110,20 +110,6 @@ namespace cftal {
             static
             vf_type
             rsqrt_k(arg_t<vf_type> x);
-
-            // calculates x^(1/3)
-            static
-            vf_type
-            cbrt_k(arg_t<vf_type> x);
-
-            // calculates x^-(1/3)
-            static
-            vf_type
-            rcbrt_k(arg_t<vf_type> x);
-
-            static
-            vf_type
-            hypot_k(arg_t<vf_type> xc, arg_t<vf_type> yc);
         };
     }
 }
@@ -408,62 +394,6 @@ rsqrt_k(arg_t<vf_type> x)
     // y=_T::sel(signbit(y), _T::nan(), y);
     // y=_T::sel(iszero(xc), xc, y);
     return y;
-}
-
-template <typename _T>
-typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
-cftal::math::elem_func_core<cftal::f16_t, _T>::
-cbrt_k(arg_t<vf_type> xc)
-{
-    return xc;
-}
-
-template <typename _T>
-typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
-cftal::math::elem_func_core<cftal::f16_t, _T>::
-rcbrt_k(arg_t<vf_type> xc)
-{
-    return xc;
-}
-
-template <typename _T>
-inline
-typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
-cftal::math::elem_func_core<cftal::f16_t, _T>::
-hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
-{
-#if 1
-    return vf_type(0.0_f16);
-#else
-    vf_type xa=abs(x);
-    vf_type ya=abs(y);
-    vf_type ma=max(xa, ya);
-    vf_type mi=min(xa, ya);
-
-    vf_type scale=1.0f;
-    vf_type factor=1.0f;
-    // avoid underflows
-    vmf_type ma_small= ma < 0x1p-60f;
-    scale = _T::sel(ma_small, 0x1p-80f, scale);
-    factor= _T::sel(ma_small, 0x1p80f, factor);
-    // avoid overflows
-    vmf_type ma_large= ma > 0x1p60f;
-    scale = _T::sel(ma_large, 0x1p80f, scale);
-    factor= _T::sel(ma_large, 0x1p-80f, factor);
-    ma *= factor;
-    mi *= factor;
-
-    vf_type smah, smal;
-    d_ops::sqr12(smah, smal, ma);
-    vf_type smih, smil;
-    d_ops::sqr12(smih, smil, mi);
-    vf_type sh, sl;
-    d_ops::add22(sh, sl, smah, smal, smih, smil);
-    vf_type r;
-    d_ops::sqrt21(r, sh, sl);
-    r *= scale;
-    return r;
-#endif
 }
 
 
