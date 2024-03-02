@@ -79,8 +79,8 @@ namespace cftal {
     // same as std::conditional_t
     template <bool _B, typename _TRUE, typename _FALSE>
     using select_t =
-	typename std::conditional<_B, _TRUE, _FALSE>::type;
-    
+        typename std::conditional<_B, _TRUE, _FALSE>::type;
+
     // is the pointer aligned to _A bytes? _A must be
     // a power of 2
     template <size_t _A>
