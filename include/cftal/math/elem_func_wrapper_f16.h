@@ -256,10 +256,12 @@ sqrt(arg_t<vf_type> x)
     vhf_type xf=cvt<vhf_type>(x);
 #if 1
     vhf_type rf=cftal::sqrt(xf);
+    vf_type r=cvt<vf_type>(rf);
 #else
     vhf_type rf=f32_core::rsqrt_k(xf)*xf;
-#endif
     vf_type r=cvt<vf_type>(rf);
+    r = _T::sel(x==_T::pinf()|iszero(x), x, r);
+#endif
     return r;
 }
 #endif
