@@ -870,7 +870,9 @@ sinpicospi(arg_t<vf_type> xc, vf_type* psin, vf_type* pcos)
         vmf_type xc_is_int=xci==xc;
         if (psin!=nullptr) {
             vf_type s=*psin;
-            s=_TRAITS_T::sel(xc_is_int, copysign(vf_type(0.0), xc), s);
+            s=_TRAITS_T::sel(xc_is_int,
+                             copysign(vf_type(_FLOAT_T(0.0)), xc),
+                             s);
             *psin= _TRAITS_T::sel(inf_nan,
                                   copysign(_TRAITS_T::nan(), xc),
                                   s);
@@ -931,7 +933,7 @@ tanpi(arg_t<vf_type> xc)
                        t);
     vf_type xc05=_FLOAT_T(0.5)*xc;
     vmf_type _is_even=rint(xc05)==xc05;
-    vf_type ev=copysign(vf_type(0.0), xc);
+    vf_type ev=copysign(vf_type(_FLOAT_T(0.0)), xc);
     vf_type ov=-ev;
     vmf_type is_int=rint(xc)==xc;
     t = _TRAITS_T::sel(is_int, _TRAITS_T::sel(_is_even, ev, ov), t);

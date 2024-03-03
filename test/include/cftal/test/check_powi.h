@@ -54,7 +54,7 @@ namespace cftal {
             _T
             s(const _T& a, const _I& b) {
                 using std::pow;
-                return pow(a, b);
+                return pow(a, _T(b));
             }
 
             static
