@@ -243,6 +243,12 @@ namespace cftal {
     vec<f16_t, _N>
     exp10_px2(const vec<f16_t, _N>& x);
 
+    // logistic or sigmoid function
+    // sig(x) = 1/(1+exp(-x))
+    template <size_t _N>
+    vec<f16_t, _N>
+    sig(const vec<f16_t, _N>& x);
+
 // #if V1F16_FUNCS > 0
     vec<f16_t, 1>
     ldexp(arg_t<vec<f16_t, 1> > a, arg_t<vec<int16_t, 1> > e);
@@ -392,6 +398,9 @@ namespace cftal {
 
     vec<f16_t, 1>
     exp10_px2(arg_t<vec<f16_t, 1> > d);
+
+    vec<f16_t, 1>
+    sig(arg_t<vec<f16_t, 1> > d);
 
 // #endif
 #if V2F16_FUNCS>0
@@ -546,6 +555,9 @@ namespace cftal {
     vec<f16_t, 2>
     exp10_px2(arg_t<vec<f16_t, 2> > d);
 
+    vec<f16_t, 2>
+    sig(arg_t<vec<f16_t, 2> > d);
+
 #endif
 
 #if V4F16_FUNCS>0
@@ -699,6 +711,9 @@ namespace cftal {
     vec<f16_t, 4>
     exp10_px2(arg_t<vec<f16_t, 4> > d);
 
+    vec<f16_t, 4>
+    sig(arg_t<vec<f16_t, 4> > d);
+
 #endif
 #if V8F16_FUNCS>0
 
@@ -851,6 +866,9 @@ namespace cftal {
     vec<f16_t, 8>
     exp10_px2(arg_t<vec<f16_t, 8> > d);
 
+    vec<f16_t, 8>
+    sig(arg_t<vec<f16_t, 8> > d);
+
 #endif
 #if V16F16_FUNCS>0
 
@@ -1002,6 +1020,9 @@ namespace cftal {
 
     vec<f16_t, 16>
     exp10_px2(arg_t<vec<f16_t, 16> > d);
+
+    vec<f16_t, 16>
+    sig(arg_t<vec<f16_t, 16> > d);
 
 #endif
 }
@@ -1479,6 +1500,14 @@ cftal::exp10_px2(const vec<f16_t, _N>& x)
 {
     return vec<f16_t, _N>(exp10_px2(low_half(x)),
                           exp10_px2(high_half(x)));
+}
+
+template <cftal::size_t _N>
+cftal::vec<cftal::f16_t, _N>
+cftal::sig(const vec<f16_t, _N>& x)
+{
+    return vec<f16_t, _N>(sig(low_half(x)),
+                          sig(high_half(x)));
 }
 
 // Local variables:
