@@ -68,6 +68,9 @@ namespace cftal {
         vec(const expr<_OP<vec<f16_t, 1> >, _L, _R>& r) : vec(eval(r)) {}
     };
 
+    std::ostream&
+    operator<<(std::ostream& s, const vec<f16_t, 1>& v);
+
     template <size_t _N>
     class vec<f16_t, _N> {
         vec<mf_f16_t, _N> _v;
@@ -957,6 +960,16 @@ namespace cftal {
     vec<f16_t, _N>
     trunc(const vec<f16_t, _N>& x);
 
+}
+
+inline
+std::ostream&
+cftal::
+operator<<(std::ostream& s, const cftal::vec<f16_t, 1>& v)
+{
+    auto t=v();
+    s << as<f16_t>(t);
+    return s;
 }
 
 template <cftal::size_t _N>
