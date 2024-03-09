@@ -376,6 +376,7 @@ test_prog(test-exp2_mx2-f16)
 test_prog(test-exp2_px2-f16)
 test_prog(test-exp10_mx2-f16)
 test_prog(test-exp10_px2-f16)
+test_prog(test-sig-f16)
 
 test_prog(test-root12-f16)
 

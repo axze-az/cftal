@@ -21,6 +21,7 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/math/func_constants.h>
+#include <cftal/math/func_constants_f16.h>
 #include <cftal/math/func_constants_f32.h>
 #include <cftal/math/func_constants_f64.h>
 #include <cftal/test/call_mpfr.h>
@@ -56,9 +57,11 @@ namespace cftal {
                 } else if (a <= -fc::exp_hi_inf()) {
                     return _T(0.0);
                 } else if (a < fc::sig_le_eq_exp()) {
-                    return std::exp(a);
+                    using std::exp;
+                    return exp(a);
                 }
-                return _T(1.0)/(_T(2.0)+std::expm1(-a));
+                using std::expm1;
+                return _T(1.0)/(_T(2.0)+expm1(-a));
             }
 
             static

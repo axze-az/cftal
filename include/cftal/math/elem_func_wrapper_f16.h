@@ -528,7 +528,6 @@ sig_k(arg_t<vf_type> x)
     vhf_type xd=cvt<vhf_type>(x);
     vhf_type yd=f32_core::sig_k(xd);
     vf_type y=cvt<vf_type>(yd);
-    y=_T::sel(isnan(x), x, y);
     return y;
 }
 #endif

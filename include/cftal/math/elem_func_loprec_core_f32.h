@@ -939,6 +939,10 @@ cftal::math::elem_func_loprec_core<float, _T>::
 sig_k(arg_t<vf_type> xc)
 {
     vf_type r=1.0f/(1.0f+exp_k<false>(-xc));
+    const float lgf_hi_one=9.0f;
+        // using fc= func_constants<f16_t>;
+        // static_cast<float>(fc::sig_hi_one());
+    r = _T::sel(xc  < lgf_hi_one, r, 1.0f);
     return r;
 }
 
