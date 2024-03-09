@@ -172,6 +172,10 @@ namespace cftal {
             tanh_k(arg_t<vf_type> xc);
 
             static
+            vf_type
+            sig_k(arg_t<vf_type> xc);
+
+            static
             vi_type
             __reduce_log_arg(vf_type& xr,
                              arg_t<vf_type> x);
@@ -912,19 +916,30 @@ tanh_k(arg_t<vf_type> xc)
     }
     vmf_type x_medium=(xa > tanh_i0_right) & (xa<fc::tanh_one());
     if (__likely(_T::any_of_vmf(x_medium))) {
-        constexpr const float tmax=2.0*fc::tanh_one();
+        constexpr const float tmax=2.0f*fc::tanh_one();
         vf_type xae=min(vf_type(xa+xa), vf_type(tmax));
         vf_type xr, kf;
         __reduce_exp_arg(xr, kf, xae);
         vf_type ex= __exp_k<false>(xr, kf, xae);
 
-        vf_type exm1= ex - 1.0;
-        vf_type exp1= ex + 1.0;
+        vf_type exm1= ex - 1.0f;
+        vf_type exp1= ex + 1.0f;
         vf_type tanh_m=exm1/exp1;
         tanh_x = _T::sel(x_medium, tanh_m, tanh_x);
     }
     tanh_x=copysign(tanh_x, xc);
     return tanh_x;
+}
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
+cftal::math::elem_func_loprec_core<float, _T>::
+sig_k(arg_t<vf_type> xc)
+{
+    vf_type r=1.0f/(1.0f+exp_k<false>(-xc));
+    return r;
 }
 
 template <typename _T>
