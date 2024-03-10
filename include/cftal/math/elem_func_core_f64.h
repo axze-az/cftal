@@ -117,9 +117,10 @@ namespace cftal {
 
             // the exponents are returned in the odd numbered
             // elements of e
+            template <int32_t _X>
             static
             vi2_type
-            ilogbp1_k(arg_t<vf_type> x);
+            __ilogb_plus(arg_t<vf_type> x);
 
             static
             vi_type
@@ -838,10 +839,11 @@ frexp(arg_t<vf_type> x, vi_type* ve)
 }
 
 template <typename _T>
+template <cftal::int32_t _X>
 inline
 typename cftal::math::elem_func_core<double, _T>::vi2_type
 cftal::math::elem_func_core<double, _T>::
-ilogbp1_k(arg_t<vf_type> x)
+__ilogb_plus(arg_t<vf_type> x)
 {
     vf_type xs=x;
     using fc=func_constants<double>;
@@ -854,7 +856,7 @@ ilogbp1_k(arg_t<vf_type> x)
     vi2_type hi_word, lo_word;
     _T::extract_words_vi2(lo_word, hi_word, xs);
     // exponent:
-    vi2_type e=((hi_word >> 20) & _T::e_mask()) + eo - vi2_type(_T::bias()-1);
+    vi2_type e=((hi_word >> 20) & _T::e_mask()) + eo - vi2_type(_T::bias()-_X);
     return e;
 }
 
@@ -864,7 +866,7 @@ typename cftal::math::elem_func_core<double, _T>::vi_type
 cftal::math::elem_func_core<double, _T>::
 ilogbp1(arg_t<vf_type> x)
 {
-    return _T::vi2_odd_to_vi(ilogbp1_k(x));
+    return _T::vi2_odd_to_vi(__ilogb_plus<1>(x));
 }
 
 template <typename _T>
@@ -873,7 +875,7 @@ typename cftal::math::elem_func_core<double, _T>::vi_type
 cftal::math::elem_func_core<double, _T>::
 ilogb(arg_t<vf_type> d)
 {
-    vi2_type e(ilogbp1_k(d) - vi2_type(1));
+    vi2_type e(__ilogb_plus<0>(d));
     vmf_type mf= d == 0.0;
     vmi2_type mi= _T::vmf_to_vmi2(mf);
     e = _T::sel_vi2(mi, vi2_type(FP_ILOGB0), e);

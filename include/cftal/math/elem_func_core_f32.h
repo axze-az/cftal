@@ -106,6 +106,12 @@ namespace cftal {
             vf_type
             ldexp(arg_t<vf_type> vf, arg_t<vi_type> vi);
 
+
+            template <int32_t _X>
+            static
+            vi_type
+            __ilogb_plus(arg_t<vf_type> x);
+
             static
             vi_type
             ilogbp1(arg_t<vf_type> x);
@@ -819,10 +825,11 @@ frexp(arg_t<vf_type> x, vi_type* ve)
 }
 
 template <typename _T>
+template <cftal::int32_t _X>
 inline
 typename cftal::math::elem_func_core<float, _T>::vi_type
 cftal::math::elem_func_core<float, _T>::
-ilogbp1(arg_t<vf_type> x)
+__ilogb_plus(arg_t<vf_type> x)
 {
     vf_type xs=x;
     using fc=func_constants<float>;
@@ -835,8 +842,17 @@ ilogbp1(arg_t<vf_type> x)
     // reinterpret as integer
     vi_type i=_T::as_int(xs);
     // exponent:
-    vi_type e=((i >> 23) & 0xff) + eo - vi_type(_T::bias()-1);
+    vi_type e=((i >> 23) & 0xff) + eo - vi_type(_T::bias()-_X);
     return e;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<float, _T>::vi_type
+cftal::math::elem_func_core<float, _T>::
+ilogbp1(arg_t<vf_type> d)
+{
+    return __ilogb_plus<1>(d);
 }
 
 template <typename _T>
@@ -845,7 +861,7 @@ typename cftal::math::elem_func_core<float, _T>::vi_type
 cftal::math::elem_func_core<float, _T>::
 ilogb(arg_t<vf_type> d)
 {
-    vi_type e(ilogbp1(abs(d)) -1);
+    vi_type e(__ilogb_plus<0>(d));
     vmf_type mf= d == 0.0f;
     vmi_type mi= _T::vmf_to_vmi(mf);
     e = _T::sel_vi(mi, vi_type(FP_ILOGB0), e);
