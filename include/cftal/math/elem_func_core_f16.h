@@ -340,9 +340,9 @@ typename cftal::math::elem_func_core<cftal::f16_t, _T>::vi_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 __ilogb_plus(arg_t<vf_type> x)
 {
-    vf_type xs=x;
+    vf_type xs=abs(x);
     using fc=func_constants<f16_t>;
-    vmf_type is_denom= abs(x) <= fc::max_denormal();
+    vmf_type is_denom= xs <= fc::max_denormal();
     vi_type eo=vi_type(0);
     // denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p12_f16), xs);
@@ -351,7 +351,7 @@ __ilogb_plus(arg_t<vf_type> x)
     // reinterpret as integer
     vi_type i=_T::as_int(xs);
     // exponent:
-    vi_type e=((i >> 10) & 0x1f) + eo - vi_type(_T::bias()-_X);
+    vi_type e=((i >> 10) /*& 0x1f*/) + eo - vi_type(_T::bias()-_X);
     return e;
 }
 

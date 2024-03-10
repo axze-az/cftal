@@ -845,9 +845,9 @@ typename cftal::math::elem_func_core<double, _T>::vi2_type
 cftal::math::elem_func_core<double, _T>::
 __ilogb_plus(arg_t<vf_type> x)
 {
-    vf_type xs=x;
+    vf_type xs=abs(x);
     using fc=func_constants<double>;
-    vmf_type is_denom= abs(x) <= fc::max_denormal();
+    vmf_type is_denom= xs <= fc::max_denormal();
     // denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
     vmi2_type i_is_denom= _T::vmf_to_vmi2(is_denom);
@@ -856,7 +856,8 @@ __ilogb_plus(arg_t<vf_type> x)
     vi2_type hi_word, lo_word;
     _T::extract_words_vi2(lo_word, hi_word, xs);
     // exponent:
-    vi2_type e=((hi_word >> 20) & _T::e_mask()) + eo - vi2_type(_T::bias()-_X);
+    vi2_type e=((hi_word >> 20) /*& _T::e_mask()*/) + eo -
+        vi2_type(_T::bias()-_X);
     return e;
 }
 
