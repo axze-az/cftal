@@ -589,15 +589,6 @@ namespace cftal {
     vec<float, 1>
     y1(arg_t<vec<float, 1> > x);
 
-    // ilogb
-    template <size_t _N>
-    vec<int32_t, _N>
-    ilogbp1(const vec<float, _N>& a);
-
-    // ilogbp1
-    vec<int32_t, 1>
-    ilogbp1(arg_t<vec<float, 1> > v);
-
     // exp_mx2, calculates $ e^{-x^2} $ these functions are exact to +-1 ulp
     template <size_t _N>
     vec<float, _N>
@@ -667,9 +658,6 @@ namespace cftal {
 
     vec<int32_t, 2>
     ilogb(arg_t<vec<float, 2> > a);
-
-    vec<int32_t, 2>
-    ilogbp1(arg_t<vec<float, 2> > v);
 
     vec<float, 2>
     rsqrt(arg_t<vec<float, 2> > v);
@@ -846,9 +834,6 @@ namespace cftal {
 
     vec<int32_t, 4>
     ilogb(arg_t<vec<float, 4> > a);
-
-    vec<int32_t, 4>
-    ilogbp1(arg_t<vec<float, 4> > v);
 
     vec<float, 4>
     rsqrt(arg_t<vec<float, 4> > v);
@@ -1028,9 +1013,6 @@ namespace cftal {
     vec<int32_t, 8>
     ilogb(arg_t<vec<float, 8> > a);
 
-    vec<int32_t, 8>
-    ilogbp1(arg_t<vec<float, 8> > v);
-
     vec<float, 8>
     rsqrt(arg_t<vec<float, 8> > v);
 
@@ -1207,9 +1189,6 @@ namespace cftal {
 
     vec<int32_t, 16>
     ilogb(arg_t<vec<float, 16> > a);
-
-    vec<int32_t, 16>
-    ilogbp1(arg_t<vec<float, 16> > v);
 
     vec<float, 16>
     rsqrt(arg_t<vec<float, 16> > v);
@@ -2026,15 +2005,6 @@ cftal::vec<float, _N>
 cftal::y1(const vec<float, _N>& x)
 {
     vec<float, _N> r(y1(low_half(x)), y1(high_half(x)));
-    return r;
-}
-
-template <cftal::size_t _N>
-inline
-cftal::vec<cftal::int32_t, _N>
-cftal::ilogbp1(const vec<float, _N>& x)
-{
-    vec<int32_t, _N> r(ilogbp1(low_half(x)), ilogbp1(high_half(x)));
     return r;
 }
 

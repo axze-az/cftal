@@ -78,14 +78,6 @@
                                                                         \
     nsr::vec_int                                                        \
     __attribute__((__flatten__))                                        \
-    ns::ilogbp1(arg<vec_float>::type d)                                 \
-    {                                                                   \
-        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
-        return func_t::ilogb(d);                                        \
-    }                                                                   \
-                                                                        \
-    nsr::vec_int                                                        \
-    __attribute__((__flatten__))                                        \
     ns::ilogb(arg<vec_float>::type d)                                   \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
