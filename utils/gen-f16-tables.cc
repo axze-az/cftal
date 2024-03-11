@@ -156,11 +156,17 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
             s << ',';
         s << '\n';
     }
+    int32_t min_offset= -(zero_offset);
+    int32_t max_offset=  (size-zero_offset);
     s << "};\n\n" << std::dec;
 
     h << "        struct " << class_name << " {\n"
       << "            static constexpr const uint32_t zero_offset="
       << zero_offset << ";\n"
+      << "            static constexpr const int16_t min_offset="
+      << min_offset << ";\n"
+      << "            static constexpr const int32_t max_offset="
+      << max_offset << ";\n"
       << "            alignas(64) static const uint16_t _tbl["
       <<  size << "+2];\n\n"
       << "            static const f16_t* tbl() {\n"

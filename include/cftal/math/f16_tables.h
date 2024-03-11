@@ -27,6 +27,8 @@ namespace cftal {
 
         struct f16_sqrt_data {
             static constexpr const uint32_t zero_offset=0;
+            static constexpr const int16_t min_offset=0;
+            static constexpr const int32_t max_offset=32768;
             alignas(64) static const uint16_t _tbl[32768+2];
 
             static const f16_t* tbl() {
@@ -40,6 +42,8 @@ namespace cftal {
 
         struct f16_rsqrt_data {
             static constexpr const uint32_t zero_offset=0;
+            static constexpr const int16_t min_offset=0;
+            static constexpr const int32_t max_offset=32768;
             alignas(64) static const uint16_t _tbl[32768+2];
 
             static const f16_t* tbl() {
@@ -53,6 +57,8 @@ namespace cftal {
 
         struct f16_j0_data {
             static constexpr const uint32_t zero_offset=0;
+            static constexpr const int16_t min_offset=0;
+            static constexpr const int32_t max_offset=32768;
             alignas(64) static const uint16_t _tbl[32768+2];
 
             static const f16_t* tbl() {
@@ -66,6 +72,8 @@ namespace cftal {
 
         struct f16_j1_data {
             static constexpr const uint32_t zero_offset=0;
+            static constexpr const int16_t min_offset=0;
+            static constexpr const int32_t max_offset=32768;
             alignas(64) static const uint16_t _tbl[32768+2];
 
             static const f16_t* tbl() {
@@ -79,6 +87,8 @@ namespace cftal {
 
         struct f16_y0_data {
             static constexpr const uint32_t zero_offset=0;
+            static constexpr const int16_t min_offset=0;
+            static constexpr const int32_t max_offset=32768;
             alignas(64) static const uint16_t _tbl[32768+2];
 
             static const f16_t* tbl() {
@@ -92,6 +102,8 @@ namespace cftal {
 
         struct f16_y1_data {
             static constexpr const uint32_t zero_offset=0;
+            static constexpr const int16_t min_offset=0;
+            static constexpr const int32_t max_offset=32768;
             alignas(64) static const uint16_t _tbl[32768+2];
 
             static const f16_t* tbl() {
@@ -105,6 +117,8 @@ namespace cftal {
 
         struct f16_tgamma_data {
             static constexpr const uint32_t zero_offset=32768;
+            static constexpr const int16_t min_offset=-32768;
+            static constexpr const int32_t max_offset=32768;
             alignas(64) static const uint16_t _tbl[65536+2];
 
             static const f16_t* tbl() {
