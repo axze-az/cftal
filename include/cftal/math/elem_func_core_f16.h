@@ -392,7 +392,7 @@ sqrt(arg_t<vf_type> xc)
     vi_type idx=_T::as_int(xp);
     auto lk=make_variable_lookup_table<f16_t>(idx);
     vf_type y=lk.from(f16_sqrt_data::tbl_zero());
-    y=_T::sel(signbit(y), _T::nan(), y);
+    y=_T::sel(signbit(xc), _T::nan(), y);
     y=_T::sel(iszero(xc), xc, y);
     return y;
 }
