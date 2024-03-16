@@ -139,77 +139,77 @@ namespace cftal {
     vec<f16_t, _N>
     log10p1(const vec<f16_t, _N>& x);
 
-    template <std::size_t _N>
+    template <size_t _N>
     vec<f16_t, _N>
     pow(const vec<f16_t, _N>& x, const vec<f16_t, _N>& y);
 
-    template <std::size_t _N>
+    template <size_t _N>
     vec<f16_t, _N>
     pow(const vec<f16_t, _N>& x, const vec<int16_t, _N>& y);
 
-    template <std::size_t _N>
+    template <size_t _N>
     vec<f16_t, _N>
     rootn(const vec<f16_t, _N>& x, const vec<int16_t, _N>& y);
 
-    template <std::size_t _N>
+    template <size_t _N>
     vec<f16_t, _N>
     sin(const vec<f16_t, _N>& x);
 
-    template <std::size_t _N>
+    template <size_t _N>
     vec<f16_t, _N>
     cos(const vec<f16_t, _N>& x);
 
-    template <std::size_t _N>
+    template <size_t _N>
     void
     sincos(const vec<f16_t, _N>& x,
            vec<f16_t, _N>* s, vec<f16_t, _N>* c);
 
-    template <std::size_t _N>
+    template <size_t _N>
     vec<f16_t, _N>
     tan(const vec<f16_t, _N>& x);
 
-    template <std::size_t _N>
+    template <size_t _N>
     vec<f16_t, _N>
     sinpi(const vec<f16_t, _N>& x);
 
-    template <std::size_t _N>
+    template <size_t _N>
     vec<f16_t, _N>
     cospi(const vec<f16_t, _N>& x);
 
-    template <std::size_t _N>
+    template <size_t _N>
     void
     sinpicospi(const vec<f16_t, _N>& x,
                vec<f16_t, _N>* s, vec<f16_t, _N>* c);
 
-    template <std::size_t _N>
+    template <size_t _N>
     vec<f16_t, _N>
     tanpi(const vec<f16_t, _N>& x);
 
-    template <std::size_t _N>
+    template <size_t _N>
     vec<f16_t, _N>
     atan2(const vec<f16_t, _N>& x, const vec<f16_t, _N>& y);
 
-    template <std::size_t _N>
+    template <size_t _N>
     vec<f16_t, _N>
     asin(const vec<f16_t, _N>& x);
 
-    template <std::size_t _N>
+    template <size_t _N>
     vec<f16_t, _N>
     acos(const vec<f16_t, _N>& x);
 
-    template <std::size_t _N>
+    template <size_t _N>
     vec<f16_t, _N>
     atan(const vec<f16_t, _N>& x);
 
-    template <std::size_t _N>
+    template <size_t _N>
     vec<f16_t, _N>
     asinh(const vec<f16_t, _N>& x);
 
-    template <std::size_t _N>
+    template <size_t _N>
     vec<f16_t, _N>
     acosh(const vec<f16_t, _N>& x);
 
-    template <std::size_t _N>
+    template <size_t _N>
     vec<f16_t, _N>
     atanh(const vec<f16_t, _N>& x);
 
@@ -1103,7 +1103,7 @@ namespace cftal {
 #endif
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::
@@ -1133,7 +1133,7 @@ cftal::frexp(const vec<cftal::f16_t, _N>& a, vec<int16_t, _N>* e)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::
@@ -1144,7 +1144,7 @@ nextafter(const vec<cftal::f16_t, _N>& x, const vec<cftal::f16_t, _N>& y)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::int16_t, _N>
 cftal::ilogb(const vec<cftal::f16_t, _N>& v)
@@ -1153,7 +1153,7 @@ cftal::ilogb(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::sqrt(const vec<cftal::f16_t, _N>& v)
@@ -1162,7 +1162,7 @@ cftal::sqrt(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::rsqrt(const vec<cftal::f16_t, _N>& v)
@@ -1171,7 +1171,7 @@ cftal::rsqrt(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::cbrt(const vec<cftal::f16_t, _N>& v)
@@ -1180,7 +1180,7 @@ cftal::cbrt(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::rcbrt(const vec<cftal::f16_t, _N>& v)
@@ -1189,7 +1189,7 @@ cftal::rcbrt(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::root12(const vec<cftal::f16_t, _N>& v)
@@ -1198,7 +1198,7 @@ cftal::root12(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::
@@ -1209,7 +1209,7 @@ hypot(const vec<cftal::f16_t, _N>& x, const vec<cftal::f16_t, _N>& y)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::exp(const vec<cftal::f16_t, _N>& v)
@@ -1218,7 +1218,7 @@ cftal::exp(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::expm1(const vec<cftal::f16_t, _N>& v)
@@ -1227,7 +1227,7 @@ cftal::expm1(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::exp2(const vec<cftal::f16_t, _N>& v)
@@ -1236,7 +1236,7 @@ cftal::exp2(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::exp2m1(const vec<cftal::f16_t, _N>& v)
@@ -1245,7 +1245,7 @@ cftal::exp2m1(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::exp10(const vec<cftal::f16_t, _N>& v)
@@ -1254,7 +1254,7 @@ cftal::exp10(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::exp10m1(const vec<cftal::f16_t, _N>& v)
@@ -1263,7 +1263,7 @@ cftal::exp10m1(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::sinh(const vec<cftal::f16_t, _N>& v)
@@ -1272,7 +1272,7 @@ cftal::sinh(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::cosh(const vec<cftal::f16_t, _N>& v)
@@ -1281,7 +1281,7 @@ cftal::cosh(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::tanh(const vec<cftal::f16_t, _N>& v)
@@ -1290,7 +1290,7 @@ cftal::tanh(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::log(const vec<cftal::f16_t, _N>& v)
@@ -1299,7 +1299,7 @@ cftal::log(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::log2(const vec<cftal::f16_t, _N>& v)
@@ -1308,7 +1308,7 @@ cftal::log2(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::log10(const vec<cftal::f16_t, _N>& v)
@@ -1317,7 +1317,7 @@ cftal::log10(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::log1p(const vec<cftal::f16_t, _N>& v)
@@ -1326,7 +1326,7 @@ cftal::log1p(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::log2p1(const vec<cftal::f16_t, _N>& v)
@@ -1335,7 +1335,7 @@ cftal::log2p1(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::log10p1(const vec<cftal::f16_t, _N>& v)
@@ -1344,7 +1344,7 @@ cftal::log10p1(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::pow(const vec<cftal::f16_t, _N>& x, const vec<cftal::f16_t, _N>& y)
@@ -1354,7 +1354,7 @@ cftal::pow(const vec<cftal::f16_t, _N>& x, const vec<cftal::f16_t, _N>& y)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::pow(const vec<cftal::f16_t, _N>& x, const vec<cftal::int16_t, _N>& y)
@@ -1364,7 +1364,7 @@ cftal::pow(const vec<cftal::f16_t, _N>& x, const vec<cftal::int16_t, _N>& y)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::rootn(const vec<cftal::f16_t, _N>& x, const vec<cftal::int16_t, _N>& y)
@@ -1374,7 +1374,7 @@ cftal::rootn(const vec<cftal::f16_t, _N>& x, const vec<cftal::int16_t, _N>& y)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::sin(const vec<cftal::f16_t, _N>& v)
@@ -1383,7 +1383,7 @@ cftal::sin(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::cos(const vec<cftal::f16_t, _N>& v)
@@ -1392,7 +1392,7 @@ cftal::cos(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 void
 cftal::sincos(const vec<cftal::f16_t, _N>& v,
@@ -1411,7 +1411,7 @@ cftal::sincos(const vec<cftal::f16_t, _N>& v,
     }
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::tan(const vec<cftal::f16_t, _N>& v)
@@ -1420,7 +1420,7 @@ cftal::tan(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::sinpi(const vec<cftal::f16_t, _N>& v)
@@ -1429,7 +1429,7 @@ cftal::sinpi(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::cospi(const vec<cftal::f16_t, _N>& v)
@@ -1438,7 +1438,7 @@ cftal::cospi(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 void
 cftal::sinpicospi(const vec<cftal::f16_t, _N>& v,
@@ -1457,7 +1457,7 @@ cftal::sinpicospi(const vec<cftal::f16_t, _N>& v,
     }
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::tanpi(const vec<cftal::f16_t, _N>& v)
@@ -1466,7 +1466,7 @@ cftal::tanpi(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::atan2(const vec<cftal::f16_t, _N>& x, const vec<cftal::f16_t, _N>& y)
@@ -1476,7 +1476,7 @@ cftal::atan2(const vec<cftal::f16_t, _N>& x, const vec<cftal::f16_t, _N>& y)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::asin(const vec<cftal::f16_t, _N>& v)
@@ -1485,7 +1485,7 @@ cftal::asin(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::acos(const vec<cftal::f16_t, _N>& v)
@@ -1494,7 +1494,7 @@ cftal::acos(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::atan(const vec<cftal::f16_t, _N>& v)
@@ -1503,7 +1503,7 @@ cftal::atan(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::asinh(const vec<cftal::f16_t, _N>& v)
@@ -1512,7 +1512,7 @@ cftal::asinh(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::acosh(const vec<cftal::f16_t, _N>& v)
@@ -1521,7 +1521,7 @@ cftal::acosh(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 inline
 cftal::vec<cftal::f16_t, _N>
 cftal::atanh(const vec<cftal::f16_t, _N>& v)
