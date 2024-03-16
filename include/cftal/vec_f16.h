@@ -213,6 +213,22 @@ namespace cftal {
     vec<f16_t, _N>
     atanh(const vec<f16_t, _N>& x);
 
+    template <size_t _N>
+    vec<f16_t, _N>
+    j0(const vec<f16_t, _N>& x);
+
+    template <size_t _N>
+    vec<f16_t, _N>
+    j1(const vec<f16_t, _N>& x);
+
+    template <size_t _N>
+    vec<f16_t, _N>
+    y0(const vec<f16_t, _N>& x);
+
+    template <size_t _N>
+    vec<f16_t, _N>
+    y1(const vec<f16_t, _N>& x);
+
     // exp_mx2, calculates $ e^{-x^2} $ these functions are exact to +-1 ulp
     template <size_t _N>
     vec<f16_t, _N>
@@ -382,6 +398,18 @@ namespace cftal {
     atanh(arg_t<vec<f16_t, 1> > x);
 
     vec<f16_t, 1>
+    j0(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    j1(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    y0(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    y1(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
     exp_mx2(arg_t<vec<f16_t, 1> > d);
 
     vec<f16_t, 1>
@@ -536,6 +564,18 @@ namespace cftal {
 
     vec<f16_t, 2>
     atanh(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    j0(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    j1(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    y0(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    y1(arg_t<vec<f16_t, 2> > x);
 
     vec<f16_t, 2>
     exp_mx2(arg_t<vec<f16_t, 2> > d);
@@ -694,6 +734,18 @@ namespace cftal {
     atanh(arg_t<vec<f16_t, 4> > x);
 
     vec<f16_t, 4>
+    j0(arg_t<vec<f16_t, 4> > x);
+
+    vec<f16_t, 4>
+    j1(arg_t<vec<f16_t, 4> > x);
+
+    vec<f16_t, 4>
+    y0(arg_t<vec<f16_t, 4> > x);
+
+    vec<f16_t, 4>
+    y1(arg_t<vec<f16_t, 4> > x);
+
+    vec<f16_t, 4>
     exp_mx2(arg_t<vec<f16_t, 4> > d);
 
     vec<f16_t, 4>
@@ -849,6 +901,18 @@ namespace cftal {
     atanh(arg_t<vec<f16_t, 8> > x);
 
     vec<f16_t, 8>
+    j0(arg_t<vec<f16_t, 8> > x);
+
+    vec<f16_t, 8>
+    j1(arg_t<vec<f16_t, 8> > x);
+
+    vec<f16_t, 8>
+    y0(arg_t<vec<f16_t, 8> > x);
+
+    vec<f16_t, 8>
+    y1(arg_t<vec<f16_t, 8> > x);
+
+    vec<f16_t, 8>
     exp_mx2(arg_t<vec<f16_t, 8> > d);
 
     vec<f16_t, 8>
@@ -1002,6 +1066,18 @@ namespace cftal {
 
     vec<f16_t, 16>
     atanh(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    j0(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    j1(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    y0(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    y1(arg_t<vec<f16_t, 16> > x);
 
     vec<f16_t, 16>
     exp_mx2(arg_t<vec<f16_t, 16> > d);
@@ -1453,6 +1529,39 @@ cftal::atanh(const vec<cftal::f16_t, _N>& v)
     vec<f16_t, _N> r(atanh(low_half(v)), atanh(high_half(v)));
     return r;
 }
+
+template <cftal::size_t _N>
+cftal::vec<cftal::f16_t, _N>
+cftal::j0(const vec<f16_t, _N>& x)
+{
+    return vec<f16_t, _N>(j0(low_half(x)),
+                          j0(high_half(x)));
+}
+
+template <cftal::size_t _N>
+cftal::vec<cftal::f16_t, _N>
+cftal::j1(const vec<f16_t, _N>& x)
+{
+    return vec<f16_t, _N>(j1(low_half(x)),
+                          j1(high_half(x)));
+}
+
+template <cftal::size_t _N>
+cftal::vec<cftal::f16_t, _N>
+cftal::y0(const vec<f16_t, _N>& x)
+{
+    return vec<f16_t, _N>(y0(low_half(x)),
+                          y0(high_half(x)));
+}
+
+template <cftal::size_t _N>
+cftal::vec<cftal::f16_t, _N>
+cftal::y1(const vec<f16_t, _N>& x)
+{
+    return vec<f16_t, _N>(y1(low_half(x)),
+                          y1(high_half(x)));
+}
+
 
 template <cftal::size_t _N>
 cftal::vec<cftal::f16_t, _N>
