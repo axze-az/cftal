@@ -141,7 +141,7 @@ j0_k(arg_t<vf_type> xc)
     vi_type idx=_T::as_int(xp);
     constexpr const int16_t max_idx=
         static_cast<int16_t>(f16_j0_data::max_offset-1);
-    idx = min(idx, max_idx);
+    idx = min(idx, vi_type(max_idx));
     auto lk=make_variable_lookup_table<f16_t>(idx);
     vf_type y=lk.from(f16_j0_data::tbl_zero());
     y=copysign(y, xc);
@@ -159,7 +159,7 @@ j1_k(arg_t<vf_type> xc)
     vi_type idx=_T::as_int(xp);
     constexpr const int16_t max_idx=
         static_cast<int16_t>(f16_j1_data::max_offset-1);
-    idx = min(idx, max_idx);
+    idx = min(idx, vi_type(max_idx));
     auto lk=make_variable_lookup_table<f16_t>(idx);
     vf_type y=lk.from(f16_j1_data::tbl_zero());
     y=copysign(y, xc);
@@ -177,7 +177,7 @@ y0_k(arg_t<vf_type> xc)
     vi_type idx=_T::as_int(xp);
     constexpr const int16_t max_idx=
         static_cast<int16_t>(f16_y0_data::max_offset-1);
-    idx = min(idx, max_idx);
+    idx = min(idx, vi_type(max_idx));
     auto lk=make_variable_lookup_table<f16_t>(idx);
     vf_type y=lk.from(f16_y0_data::tbl_zero());
     // zero and nan and negative xc are handletd in y1
@@ -194,7 +194,7 @@ y1_k(arg_t<vf_type> xc)
     vi_type idx=_T::as_int(xp);
     constexpr const int16_t max_idx=
         static_cast<int16_t>(f16_y1_data::max_offset-1);
-    idx = min(idx, max_idx);
+    idx = min(idx, vi_type(max_idx));
     auto lk=make_variable_lookup_table<f16_t>(idx);
     vf_type y=lk.from(f16_y1_data::tbl_zero());
     y= _T::sel(signbit(xc), _T::nan(), y);
