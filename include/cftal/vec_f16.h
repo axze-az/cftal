@@ -215,6 +215,22 @@ namespace cftal {
 
     template <size_t _N>
     vec<f16_t, _N>
+    erf(const vec<f16_t, _N>& x);
+
+    template <size_t _N>
+    vec<f16_t, _N>
+    erfc(const vec<f16_t, _N>& x);
+
+    template <size_t _N>
+    vec<f16_t, _N>
+    tgamma(const vec<f16_t, _N>& x);
+
+    template <size_t _N>
+    vec<f16_t, _N>
+    lgamma(const vec<f16_t, _N>& x, vec<int16_t, _N>* signp);
+
+    template <size_t _N>
+    vec<f16_t, _N>
     j0(const vec<f16_t, _N>& x);
 
     template <size_t _N>
@@ -398,6 +414,18 @@ namespace cftal {
     atanh(arg_t<vec<f16_t, 1> > x);
 
     vec<f16_t, 1>
+    erf(arg_t<vec<f16_t, 1> > d);
+
+    vec<f16_t, 1>
+    erfc(arg_t<vec<f16_t, 1> > d);
+
+    vec<f16_t, 1>
+    tgamma(arg_t<vec<f16_t, 1> > d);
+
+    vec<f16_t, 1>
+    lgamma(arg_t<vec<f16_t, 1> > d, vec<int16_t, 1>* signp);
+
+    vec<f16_t, 1>
     j0(arg_t<vec<f16_t, 1> > x);
 
     vec<f16_t, 1>
@@ -564,6 +592,18 @@ namespace cftal {
 
     vec<f16_t, 2>
     atanh(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    erf(arg_t<vec<f16_t, 2> > d);
+
+    vec<f16_t, 2>
+    erfc(arg_t<vec<f16_t, 2> > d);
+
+    vec<f16_t, 2>
+    tgamma(arg_t<vec<f16_t, 2> > d);
+
+    vec<f16_t, 2>
+    lgamma(arg_t<vec<f16_t, 2> > d, vec<int16_t, 2>* signp);
 
     vec<f16_t, 2>
     j0(arg_t<vec<f16_t, 2> > x);
@@ -734,6 +774,18 @@ namespace cftal {
     atanh(arg_t<vec<f16_t, 4> > x);
 
     vec<f16_t, 4>
+    erf(arg_t<vec<f16_t, 4> > d);
+
+    vec<f16_t, 4>
+    erfc(arg_t<vec<f16_t, 4> > d);
+
+    vec<f16_t, 4>
+    tgamma(arg_t<vec<f16_t, 4> > d);
+
+    vec<f16_t, 4>
+    lgamma(arg_t<vec<f16_t, 4> > d, vec<int16_t, 4>* signp);
+
+    vec<f16_t, 4>
     j0(arg_t<vec<f16_t, 4> > x);
 
     vec<f16_t, 4>
@@ -901,6 +953,18 @@ namespace cftal {
     atanh(arg_t<vec<f16_t, 8> > x);
 
     vec<f16_t, 8>
+    erf(arg_t<vec<f16_t, 8> > d);
+
+    vec<f16_t, 8>
+    erfc(arg_t<vec<f16_t, 8> > d);
+
+    vec<f16_t, 8>
+    tgamma(arg_t<vec<f16_t, 8> > d);
+
+    vec<f16_t, 8>
+    lgamma(arg_t<vec<f16_t, 8> > d, vec<int16_t, 8>* signp);
+
+    vec<f16_t, 8>
     j0(arg_t<vec<f16_t, 8> > x);
 
     vec<f16_t, 8>
@@ -1066,6 +1130,18 @@ namespace cftal {
 
     vec<f16_t, 16>
     atanh(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    erf(arg_t<vec<f16_t, 16> > d);
+
+    vec<f16_t, 16>
+    erfc(arg_t<vec<f16_t, 16> > d);
+
+    vec<f16_t, 16>
+    tgamma(arg_t<vec<f16_t, 16> > d);
+
+    vec<f16_t, 16>
+    lgamma(arg_t<vec<f16_t, 16> > d, vec<int16_t, 16>* signp);
 
     vec<f16_t, 16>
     j0(arg_t<vec<f16_t, 16> > x);
@@ -1527,6 +1603,46 @@ cftal::vec<cftal::f16_t, _N>
 cftal::atanh(const vec<cftal::f16_t, _N>& v)
 {
     vec<f16_t, _N> r(atanh(low_half(v)), atanh(high_half(v)));
+    return r;
+}
+
+template <cftal::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::erf(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(erf(low_half(v)), erf(high_half(v)));
+    return r;
+}
+
+template <cftal::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::erfc(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(erfc(low_half(v)), erfc(high_half(v)));
+    return r;
+}
+
+template <cftal::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::tgamma(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(tgamma(low_half(v)), tgamma(high_half(v)));
+    return r;
+}
+
+template <cftal::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::lgamma(const vec<cftal::f16_t, _N>& v, vec<int16_t, _N>* signp)
+{
+    vec<int16_t, _N/2> sl, sh;
+    vec<f16_t, _N> r(lgamma(low_half(v), &sl),
+		     lgamma(high_half(v), &sh));
+    if (signp)
+        *signp=vec<int16_t, _N>(sl, sh);
     return r;
 }
 
