@@ -16,6 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
 #include <cftal/config.h>
+#include <cftal/math/func_constants_f16.h>
 #include <cftal/test/call_mpfr.h>
 #include <string>
 #include <iostream>
@@ -163,7 +164,12 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
         if (cur == e)
             break;
         using std::nextafter;
-        cur = nextafter(cur, e);
+        // nextafter(-0.0, infinity) is not +0.0, but min subnormal instead
+        if (cur == -0.0_f16 && idx==-1) {
+            cur = 0.0_f16;
+        } else {
+            cur = nextafter(cur, e);
+        }
     }
     return r;
 }
@@ -174,6 +180,71 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
             const std::string& tblname, std::ostream& h,
             f16_t b, f16_t e)
 {
+    auto m=gen_f16_tbl(f, b, e);
+    size_t size = std::size(m);
+
+    std::string class_name=tblname + "_data";
+    std::string fname=class_name + ".cc";
+    std::ofstream s(fname.c_str(), std::ios::out|std::ios::trunc);
+
+    s << copyright
+      << "#include \"cftal/math/" << header_name << "\"\n\n"
+      << "alignas(64) const cftal::uint16_t\n"
+      << "cftal::math::" << class_name << "::_tbl"
+      << '[' << size << "+2] = {\n";
+    char fc=s.fill();
+    s << std::scientific << std::setprecision(8);
+    uint32_t zero_offset=0;
+    auto mb0=std::cbegin(m);
+    int16_t last_idx=0;
+    for (auto mb=mb0, me=std::cend(m); mb!=me; ++mb) {
+	const int16_t idx=mb->first;
+	const auto& sr=mb->second;
+	f16_t x=sr.first;
+	uint16_t v=sr.second;
+	int16_t xi=as<int16_t>(x);
+	if (xi == 0) {
+	    zero_offset=-std::cbegin(m)->first;
+	}
+	if (mb0 != mb) {
+            if (idx != last_idx+1) {
+                std::cerr << "idx " << idx << " last idx " << last_idx << '\n';
+                // throw std::runtime_error(tblname+" generation failed, oops");
+            }
+        }
+        last_idx=idx;
+        s << "    // " << std::setw(6) << idx
+          << " " << x << " " << std::hex
+	  << " 0x" << std::setw(4) << std::setfill('0') << xi
+	  << std::setfill(fc) << " " << as<f16_t>(v) << '\n'
+          << "    0x" << std::setw(4) << std::setfill('0')
+          << v << std::setfill(fc) << std::dec;
+        if (std::next(mb) != me)
+            s << ',';
+        s << '\n';
+    }
+    s << "};\n\n" << std::dec;
+
+    auto mi=std::cbegin(m);
+    int32_t min_offset= int32_t(mi->first);
+    int32_t max_offset= size + mi->first;
+
+    h << "        struct " << class_name << " {\n"
+      << "            static constexpr const uint32_t zero_offset="
+      << zero_offset << ";\n"
+      << "            static constexpr const int16_t min_offset="
+      << min_offset << ";\n"
+      << "            static constexpr const int32_t max_offset="
+      << max_offset << ";\n"
+      << "            alignas(64) static const uint16_t _tbl["
+      <<  size << "+2];\n\n"
+      << "            static const f16_t* tbl() {\n"
+      << "                return reinterpret_cast<const f16_t*>(_tbl);\n"
+      << "            }\n\n"
+      << "            static const f16_t* tbl_zero() {\n"
+      << "                return tbl() + zero_offset;\n"
+      << "            }\n"
+      << "        };\n\n";
 }
 
 
@@ -266,25 +337,53 @@ gen_f16_tbls()
 
     prepare_header(h);
 
-    gen_f16_tbl_pos(mpfr_sqrt, "f16_sqrt", h);
-    // gen_f16_tbl_pos(mpfr_cbrt, "f16_cbrt", h);
-    gen_f16_tbl_pos(mpfr_rec_sqrt, "f16_rsqrt", h);
-    // gen_f16_tbl_pos(test::mpfr_ext::rcbrt, "f16_rcbrt", h);
+    gen_f16_tbl(mpfr_sqrt, "f16_sqrt", h,
+                0.0_f16,
+                std::numeric_limits<f16_t>::infinity());
 
-    // gen_f16_tbl_pos(mpfr_log, "f16_log", h);
-    // gen_f16_tbl_pos(mpfr_log2, "f16_log2", h);
-    // gen_f16_tbl_pos(mpfr_log10, "f16_log10", h);
+    gen_f16_tbl(mpfr_rec_sqrt, "f16_rsqrt", h,
+                0.0_f16,
+                std::numeric_limits<f16_t>::infinity());
 
-    // gen_f16_tbl_pos(mpfr_sin, "f16_sin", h);
-    // gen_f16_tbl_pos(mpfr_cos, "f16_cos", h);
-    // gen_f16_tbl_pos(mpfr_tan, "f16_tan", h);
+    gen_f16_tbl(mpfr_j0, "f16_j0", h,
+                0.0_f16,
+                std::numeric_limits<f16_t>::infinity());
 
-    gen_f16_tbl_pos(mpfr_j0, "f16_j0", h);
-    gen_f16_tbl_pos(mpfr_j1, "f16_j1", h);
-    gen_f16_tbl_pos(mpfr_y0, "f16_y0", h);
-    gen_f16_tbl_pos(mpfr_y1, "f16_y1", h);
+    gen_f16_tbl(mpfr_j1, "f16_j1", h,
+                0.0_f16,
+                std::numeric_limits<f16_t>::infinity());
 
-    gen_f16_tbl_full(mpfr_gamma, "f16_tgamma", h);
+    gen_f16_tbl(mpfr_y0, "f16_y0", h,
+                0.0_f16,
+                std::numeric_limits<f16_t>::infinity());
+
+    gen_f16_tbl(mpfr_y1, "f16_y1", h,
+                0.0_f16,
+                std::numeric_limits<f16_t>::infinity());
+
+    using std::nextafter;
+    const f16_t tgamma_hi_inf=nextafter(
+        math::func_constants<f16_t>::tgamma_hi_inf(),
+        std::numeric_limits<f16_t>::infinity());
+    gen_f16_tbl(mpfr_gamma, "f16_tgamma", h,
+                -1025.0_f16,
+                tgamma_hi_inf);
+
+    const f16_t erfc_zero0=nextafter(
+        math::func_constants<f16_t>::erfc_gt_zero_fin(),
+        std::numeric_limits<f16_t>::infinity());
+    const f16_t erfc_zero=nextafter(erfc_zero0,
+        std::numeric_limits<f16_t>::infinity());
+    gen_f16_tbl(mpfr_erfc, "f16_erfc", h,
+                -erfc_zero, erfc_zero);
+
+    const f16_t erf_one0=nextafter(
+        math::func_constants<f16_t>::erf_lt_one_fin(),
+        std::numeric_limits<f16_t>::infinity());
+    const f16_t erf_one=nextafter(erf_one0,
+        std::numeric_limits<f16_t>::infinity());
+    gen_f16_tbl(mpfr_erf, "f16_erf", h,
+                0.0_f16, erf_one);
 
     finalize_header(h);
 }

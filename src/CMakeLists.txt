@@ -68,6 +68,8 @@ set (CSRCS
     # f16 data
     f16_rsqrt_data.cc
     f16_sqrt_data.cc
+    f16_erf_data.cc
+    f16_erfc_data.cc
     f16_tgamma_data.cc
     f16_j0_data.cc
     f16_j1_data.cc
