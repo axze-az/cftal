@@ -21,6 +21,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <map>
 
 namespace cftal {
 
@@ -40,6 +41,20 @@ namespace cftal {
 
         void
         finalize_header(std::ostream& h);
+
+        int16_t
+        table_offset(f16_t v);
+
+        // generate a table for f with f16 numbers between
+        // [b, e) if e != inf and [b, e] if e == inf
+        std::map<int16_t, std::pair<f16_t, uint16_t>>
+        gen_f16_tbl(test::call_mpfr::f1_t f,
+                    f16_t b, f16_t e);
+
+        void
+        gen_f16_tbl(test::call_mpfr::f1_t f,
+                    const std::string& tblname, std::ostream& h,
+                    f16_t b, f16_t e);
 
         // generate a table for f with f16 numbers between
         // l and high
@@ -112,6 +127,55 @@ finalize_header(std::ostream& h)
       << "}\n\n"
       << "#endif // " << header_guard << "\n";
 }
+
+cftal::int16_t
+cftal::utils::table_offset(f16_t f)
+{
+    int16_t i=as<int16_t>(f);
+    constexpr const int16_t offs=int16_t(0x7fff);
+    int16_t r=i<0 ? i^offs : i;
+    return r;
+}
+
+std::map<int16_t, std::pair<cftal::f16_t, uint16_t>>
+cftal::utils::
+gen_f16_tbl(test::call_mpfr::f1_t f,
+            f16_t b, f16_t e)
+{
+    auto cmp_lt= [](f16_t a, f16_t b)->bool {
+        return a < b;
+    };
+    auto cmp_le=[](f16_t a, f16_t b)->bool {
+        return a <= b;
+    };
+    using std::isinf;
+    auto cmp = isinf(e) ? cmp_le : cmp_lt;
+    std::map<int16_t, std::pair<f16_t, uint16_t>> r;
+
+    f16_t cur=b;
+    while (cmp(cur, e)) {
+        int16_t idx=table_offset(cur);
+        f16_t fcur=test::call_mpfr::func(cur, f);
+        uint16_t fcuri=as<uint16_t>(fcur);
+        auto ri=std::make_pair(idx, std::make_pair(cur, fcuri));
+        r.insert(ri);
+        // leave loop if e == +inf
+        if (cur == e)
+            break;
+        using std::nextafter;
+        cur = nextafter(cur, e);
+    }
+    return r;
+}
+
+void
+cftal::utils::
+gen_f16_tbl(test::call_mpfr::f1_t f,
+            const std::string& tblname, std::ostream& h,
+            f16_t b, f16_t e)
+{
+}
+
 
 void
 cftal::utils::
