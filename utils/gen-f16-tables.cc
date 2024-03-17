@@ -227,10 +227,11 @@ gen_f16_tbls()
 
 int main()
 {
-    // cftal::utils::gen_f16_tbls();
+#if 1
+    cftal::utils::gen_f16_tbls();
+#else
     using namespace cftal;
 
-#if 0
     const int16_t offs=int16_t(0x7fff);
     std::cout << int16_t(0x8000) << ' ' << int16_t(offs-int16_t(0x8000)) << std::endl;
     std::cout << int16_t(0x8001) << ' ' << int16_t(offs-int16_t(0x8001)) << std::endl;
