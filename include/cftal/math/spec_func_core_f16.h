@@ -92,6 +92,8 @@ typename cftal::math::spec_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::spec_func_core<cftal::f16_t, _T>::
 erf_k(arg_t<vf_type> xc)
 {
+    vf_type y=base_type:: template lookup_from<f16_erf_data>(xc);
+    y=copysign(y, xc);
     return xc;
 }
 
@@ -108,7 +110,8 @@ typename cftal::math::spec_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::spec_func_core<cftal::f16_t, _T>::
 erfc_tbl_k(arg_t<vf_type> xc)
 {
-    return xc;
+    vf_type y=base_type:: template lookup_from<f16_erfc_data>(xc);
+    return y;
 }
 
 template <typename _T>
@@ -117,10 +120,10 @@ typename cftal::math::spec_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::spec_func_core<cftal::f16_t, _T>::
 tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
 {
-    return x;
-
+    vf_type y=base_type:: template lookup_from<f16_tgamma_data>(x);
+    // zero and nan and negative xc are handletd in tgamma
+    return y;
 }
-
 
 template <typename _T>
 inline
@@ -137,13 +140,7 @@ typename cftal::math::spec_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::spec_func_core<cftal::f16_t, _T>::
 j0_k(arg_t<vf_type> xc)
 {
-    vf_type xp=abs(xc);
-    vi_type idx=_T::as_int(xp);
-    constexpr const int16_t max_idx=
-        static_cast<int16_t>(f16_j0_data::max_offset-1);
-    idx = min(idx, vi_type(max_idx));
-    auto lk=make_variable_lookup_table<f16_t>(idx);
-    vf_type y=lk.from(f16_j0_data::tbl_zero());
+    vf_type y=base_type:: template lookup_from<f16_j0_data>(xc);
     y=copysign(y, xc);
     // zero and nan are handled in j0
     return y;
@@ -155,13 +152,7 @@ typename cftal::math::spec_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::spec_func_core<cftal::f16_t, _T>::
 j1_k(arg_t<vf_type> xc)
 {
-    vf_type xp=abs(xc);
-    vi_type idx=_T::as_int(xp);
-    constexpr const int16_t max_idx=
-        static_cast<int16_t>(f16_j1_data::max_offset-1);
-    idx = min(idx, vi_type(max_idx));
-    auto lk=make_variable_lookup_table<f16_t>(idx);
-    vf_type y=lk.from(f16_j1_data::tbl_zero());
+    vf_type y=base_type:: template lookup_from<f16_j1_data>(xc);
     y=copysign(y, xc);
     // zero and nan are handled in j1
     return y;
@@ -173,13 +164,7 @@ typename cftal::math::spec_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::spec_func_core<cftal::f16_t, _T>::
 y0_k(arg_t<vf_type> xc)
 {
-    vf_type xp=abs(xc);
-    vi_type idx=_T::as_int(xp);
-    constexpr const int16_t max_idx=
-        static_cast<int16_t>(f16_y0_data::max_offset-1);
-    idx = min(idx, vi_type(max_idx));
-    auto lk=make_variable_lookup_table<f16_t>(idx);
-    vf_type y=lk.from(f16_y0_data::tbl_zero());
+    vf_type y=base_type:: template lookup_from<f16_y0_data>(xc);
     // zero and nan and negative xc are handletd in y1
     return y;
 }
@@ -190,13 +175,7 @@ typename cftal::math::spec_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::spec_func_core<cftal::f16_t, _T>::
 y1_k(arg_t<vf_type> xc)
 {
-    vf_type xp=abs(xc);
-    vi_type idx=_T::as_int(xp);
-    constexpr const int16_t max_idx=
-        static_cast<int16_t>(f16_y1_data::max_offset-1);
-    idx = min(idx, vi_type(max_idx));
-    auto lk=make_variable_lookup_table<f16_t>(idx);
-    vf_type y=lk.from(f16_y1_data::tbl_zero());
+    vf_type y=base_type:: template lookup_from<f16_y1_data>(xc);
     y= _T::sel(signbit(xc), _T::nan(), y);
     // zero and nan and negative xc handled in y1
     return y;

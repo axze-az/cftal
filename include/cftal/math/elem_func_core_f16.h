@@ -109,11 +109,12 @@ namespace cftal {
             ilogb(arg_t<vf_type> vf);
 
 
-	    template <typename _TBL>
-	    vf_type
-	    lookup_from(arg_t<vf_type> x);
+            template <typename _TBL>
+            static
+            vf_type
+            lookup_from(arg_t<vf_type> x);
 
-	    static
+            static
             vf_type
             sqrt(arg_t<vf_type> x);
 
@@ -396,18 +397,18 @@ cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 lookup_from(arg_t<vf_type> x)
 {
-    vf_type idx;
+    vi_type idx;
     if (_TBL::zero_offset == 0) {
-	vf_type ax=abs(x);
-	idx=_T::as_int(ax);
+        vf_type ax=abs(x);
+        idx=_T::as_int(ax);
     } else {
-	vmf_type ltz=_T::vmf_to_vmi(signbit(x));
-	vi_type i=_T::as_int(x);
-	const int16_t nmsk=0x7fff;
-	vi_type nidx= i^nmsk; // or nmsk - i;
-	idx=_T::sel(ltz, nidx, i);
-	const vi_type min_idx(static_cast<int16_t>(_TBL::min_offset));
-	idx=max(idx, min_idx);
+        vmi_type ltz=_T::vmf_to_vmi(signbit(x));
+        vi_type i=_T::as_int(x);
+        const int16_t nmsk=0x7fff;
+        vi_type nidx= i^nmsk; // or nmsk - i;
+        idx=_T::sel_vi(ltz, nidx, i);
+        const vi_type min_idx(static_cast<int16_t>(_TBL::min_offset));
+        idx=max(idx, min_idx);
     }
     const vi_type max_idx(static_cast<int16_t>(_TBL::max_offset));
     idx=min(idx, max_idx);
