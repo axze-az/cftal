@@ -108,7 +108,12 @@ namespace cftal {
             vi_type
             ilogb(arg_t<vf_type> vf);
 
-            static
+
+	    template <typename _TBL>
+	    vf_type
+	    lookup_from(arg_t<vf_type> x);
+
+	    static
             vf_type
             sqrt(arg_t<vf_type> x);
 
@@ -384,14 +389,39 @@ ilogb(arg_t<vf_type> d)
 }
 
 template <typename _T>
+template <typename _TBL>
+inline
+typename
+cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+lookup_from(arg_t<vf_type> x)
+{
+    vf_type idx;
+    if (_TBL::zero_offset == 0) {
+	vf_type ax=abs(x);
+	idx=_T::as_int(ax);
+    } else {
+	vmf_type ltz=_T::vmf_to_vmi(signbit(x));
+	vi_type i=_T::as_int(x);
+	const int16_t nmsk=0x7fff;
+	vi_type nidx= i^nmsk; // or nmsk - i;
+	idx=_T::sel(ltz, nidx, i);
+	const vi_type min_idx(static_cast<int16_t>(_TBL::min_offset));
+	idx=max(idx, min_idx);
+    }
+    const vi_type max_idx(static_cast<int16_t>(_TBL::max_offset));
+    idx=min(idx, max_idx);
+    auto lk=make_variable_lookup_table<f16_t>(idx);
+    vf_type y=lk.from(_TBL::tbl_zero());
+    return y;
+}
+
+template <typename _T>
 typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 sqrt(arg_t<vf_type> xc)
 {
-    vf_type xp=abs(xc);
-    vi_type idx=_T::as_int(xp);
-    auto lk=make_variable_lookup_table<f16_t>(idx);
-    vf_type y=lk.from(f16_sqrt_data::tbl_zero());
+    vf_type y=lookup_from<f16_sqrt_data>(xc);
     y=_T::sel(signbit(xc), _T::nan(), y);
     y=_T::sel(iszero(xc), xc, y);
     return y;
@@ -402,12 +432,7 @@ typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 rsqrt_k(arg_t<vf_type> x)
 {
-    vf_type xp=abs(x);
-    vi_type idx=_T::as_int(xp);
-    auto lk=make_variable_lookup_table<f16_t>(idx);
-    vf_type y=lk.from(f16_rsqrt_data::tbl_zero());
-    // y=_T::sel(signbit(y), _T::nan(), y);
-    // y=_T::sel(iszero(xc), xc, y);
+    vf_type y=lookup_from<f16_rsqrt_data>(x);
     return y;
 }
 
