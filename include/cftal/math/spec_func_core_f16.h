@@ -94,7 +94,7 @@ erf_k(arg_t<vf_type> xc)
 {
     vf_type y=base_type:: template lookup_from<f16_erf_data>(xc);
     y=copysign(y, xc);
-    return xc;
+    return y;
 }
 
 template <typename _T>
