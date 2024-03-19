@@ -318,7 +318,7 @@ cftal::utils::
 gen_f16_tbl_full(test::call_mpfr::f1_t f,
                  const std::string& tblname, std::ostream& h)
 {
-    gen_f16_tbl(f, tblname, h, -32768, 0x8000);
+    gen_f16_tbl(f, tblname, h, uint32_t(-32768), uint32_t(0x8000));
 }
 
 void
@@ -326,7 +326,7 @@ cftal::utils::
 gen_f16_tbl_pos(test::call_mpfr::f1_t f,
                 const std::string& tblname, std::ostream& h)
 {
-    gen_f16_tbl(f, tblname, h, 0x0000, 0x8000);
+    gen_f16_tbl(f, tblname, h, uint32_t(0x0000), uint32_t(0x8000));
 }
 
 void

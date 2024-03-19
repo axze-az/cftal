@@ -104,8 +104,8 @@ erf(arg_t<vf_type> x)
 {
     vf_type r=base_type::erf_k(x);
     using fc=func_constants<_FLOAT_T>;
-    r = _TRAITS_T::sel(x < -fc::erf_lt_one_fin(), vf_type(-1.0), r);
-    r = _TRAITS_T::sel(x > fc::erf_lt_one_fin(), vf_type(1.0), r);
+    r = _TRAITS_T::sel(x < -fc::erf_lt_one_fin(), _FLOAT_T(-1.0), r);
+    r = _TRAITS_T::sel(x > fc::erf_lt_one_fin(), _FLOAT_T(1.0), r);
     r = _TRAITS_T::sel(iszero(x)|isnan(x), x, r);
     return r;
 }
@@ -120,8 +120,8 @@ erfc(arg_t<vf_type> x)
     // vf_type r=base_type::erfc_k(x);
     using fc=func_constants<_FLOAT_T>;
     r = _TRAITS_T::sel_zero_or_val(x > fc::erfc_gt_zero_fin(), r);
-    r = _TRAITS_T::sel(x < -fc::erfc_gt_zero_fin(), vf_type(2.0), r);
-    r = _TRAITS_T::sel(iszero(x), vf_type(1.0), r);
+    r = _TRAITS_T::sel(x < -fc::erfc_gt_zero_fin(), _FLOAT_T(2.0), r);
+    r = _TRAITS_T::sel(iszero(x), _FLOAT_T(1.0), r);
     r = _TRAITS_T::sel(isnan(x), x, r);
     __asm__ volatile("# LLVM-MCA-END\n\t");
     return r;
@@ -133,17 +133,19 @@ cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::
 tgamma(arg_t<vf_type> xc)
 {
     __asm__ volatile("# LLVM-MCA-BEGIN\n\t");
-    vmf_type xc_lt_0 = xc < vf_type(0.0);
+    vmf_type xc_lt_0 = xc < _FLOAT_T(0.0);
     vf_type r= base_type::tgamma_k(xc, xc_lt_0);
     using fc= func_constants<_FLOAT_T>;
     r = _TRAITS_T::sel(xc >= fc::tgamma_hi_inf(), _TRAITS_T::pinf(), r);
     if (_TRAITS_T::any_of_vmf(xc_lt_0)) {
         if (_TRAITS_T::any_of_vmf(xc <= fc::tgamma_lo_zero())) {
             // tgamma(x) = -0 for -odd < x <= -even
-            const vf_type half(0.5);
+            const _FLOAT_T half=static_cast<_FLOAT_T>(0.5);
             vmf_type is_even=
                 vf_type(floor(xc)*half) == floor(vf_type(xc*half));
-            vf_type n_r=_TRAITS_T::sel(is_even, vf_type(+0.0), vf_type(-0.0));
+            vf_type n_r=_TRAITS_T::sel(is_even,
+                                       vf_type(_FLOAT_T(+0.0)),
+                                       vf_type(_FLOAT_T(-0.0)));
             // nan selection is not necessary
             r = _TRAITS_T::sel(xc <= fc::tgamma_lo_zero(), n_r, r);
         }
@@ -162,7 +164,7 @@ typename cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::
 lgamma(arg_t<vf_type> xc, vi_type* signp)
 {
-    vmf_type x_lt_0 = xc < vf_type(0.0);
+    vmf_type x_lt_0 = xc < _FLOAT_T(0.0);
     vi_type si;
     vf_type lg=base_type::lgamma_k(xc, &si);
 
@@ -178,7 +180,7 @@ lgamma(arg_t<vf_type> xc, vi_type* signp)
     if (_TRAITS_T::any_of_vmf(t=iszero(xc))) {
         lg = _TRAITS_T::sel(t, _TRAITS_T::pinf(), lg);
         vmi_type ti=_TRAITS_T::vmf_to_vmi(t);
-        vf_type sgn=copysign(vf_type(1.0), xc);
+        vf_type sgn=copysign(vf_type(_FLOAT_T(1.0)), xc);
         vi_type ni=_TRAITS_T::cvt_f_to_i(sgn);
         si = _TRAITS_T::sel_vi(ti, ni, si);
     }
