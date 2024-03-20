@@ -103,9 +103,9 @@ namespace cftal {
         vec(std::initializer_list<f16_t> l)
             : vec(init_list<f16_t>(l.begin(), l.end())) {}
         vec(init_list<f16_t> l) :
-            _v(half_type(low_half<f16_t, _N>(l)),
-               half_type(high_half<f16_t, _N>(l))) {
-        }
+            _v(init_list<mf_f16_t>(
+                reinterpret_cast<const mf_f16_t*>(l.begin()),
+                reinterpret_cast<const mf_f16_t*>(l.end()))) {}
         half_type lh() const {
             return half_type::cvt_from_rep(low_half(_v));
         }
@@ -1162,7 +1162,7 @@ typename cftal::vec<cftal::f16_t, _N>::mask_type
 cftal::signbit(const vec<f16_t, _N>& a)
 {
     const int16_t z(0);
-    vec<int16_t, _N> ai=as<vec<int16_t, _N> >(a);
+    vec<int16_t, _N> ai=a();
     typename vec<int16_t, _N>::mask_type r=ai < z;
     return as<typename vec<f16_t, _N>::mask_type>(r);
 }
