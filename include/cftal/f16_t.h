@@ -500,6 +500,12 @@ namespace cftal {
     f16_t erf(const f16_t& v);
     f16_t erfc(const f16_t& v);
 
+    f16_t tgamma(const f16_t& v);
+    f16_t j0(const f16_t& v);
+    f16_t y0(const f16_t& v);
+    f16_t j1(const f16_t& v);
+    f16_t y1(const f16_t& v);
+
     std::ostream& operator<<(std::ostream& s, const f16_t& v);
     std::istream& operator>>(std::istream& s, f16_t& v);
 #endif // (__USE_STDCPP_FLOAT16_T__>0)
@@ -1063,6 +1069,36 @@ inline
 cftal::f16_t cftal::erfc(const f16_t& v)
 {
     return f16_t(std::erfc(float(v)));
+}
+
+inline
+cftal::f16_t cftal::tgamma(const f16_t& v)
+{
+    return f16_t(std::tgamma(float(v)));
+}
+
+inline
+cftal::f16_t cftal::j0(const f16_t& v)
+{
+    return f16_t(::j0f(float(v)));
+}
+
+inline
+cftal::f16_t cftal::y0(const f16_t& v)
+{
+    return f16_t(::y0f(float(v)));
+}
+
+inline
+cftal::f16_t cftal::j1(const f16_t& v)
+{
+    return f16_t(::j1f(float(v)));
+}
+
+inline
+cftal::f16_t cftal::y1(const f16_t& v)
+{
+    return f16_t(::y1f(float(v)));
 }
 
 inline
