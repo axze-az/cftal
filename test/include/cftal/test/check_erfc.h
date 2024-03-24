@@ -20,6 +20,7 @@
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
+#include <cftal/vec_f16.h>
 #include <cftal/test/call_mpfr.h>
 #include <cftal/test/func_domain_common.h>
 #include <cmath>
@@ -50,6 +51,15 @@ namespace cftal {
             const int shifts[]={0};
         };
 
+        template <>
+        struct domain_erfc<f16_t> {
+            constexpr static
+            const func_domain<f16_t> domains[]={
+                std::make_pair(-4.0_f16, 4.0_f16)
+            };
+            constexpr static
+            const int shifts[]={0};
+        };
 
 
         template <typename _T>
@@ -70,7 +80,8 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::erfc(a);
+                using std::erfc;
+                return erfc(a);
             }
             static
             const char* fname() { return "erfc"; }

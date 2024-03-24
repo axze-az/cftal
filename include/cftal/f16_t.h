@@ -498,6 +498,7 @@ namespace cftal {
     f16_t atanh(const f16_t& v);
 
     f16_t erf(const f16_t& v);
+    f16_t erfc(const f16_t& v);
 
     std::ostream& operator<<(std::ostream& s, const f16_t& v);
     std::istream& operator>>(std::istream& s, f16_t& v);
@@ -1056,6 +1057,12 @@ inline
 cftal::f16_t cftal::erf(const f16_t& v)
 {
     return f16_t(std::erf(float(v)));
+}
+
+inline
+cftal::f16_t cftal::erfc(const f16_t& v)
+{
+    return f16_t(std::erfc(float(v)));
 }
 
 inline
