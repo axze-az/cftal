@@ -20,6 +20,7 @@
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
+#include <cftal/vec_f16.h>
 #include <cftal/test/call_mpfr.h>
 #include <cmath>
 
@@ -44,7 +45,8 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::tgamma(a);
+		using std::tgamma;
+                return tgamma(a);
             }
             static
             const char* fname() { return "tgamma"; }

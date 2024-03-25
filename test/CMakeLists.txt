@@ -381,7 +381,7 @@ test_prog(test-sig-f16)
 
 test_prog(test-erf-f16)
 test_prog(test-erfc-f16)
-#test_prog(test-tgamma-f16)
+test_prog(test-tgamma-f16)
 #test_prog(test-lgamma-f16)
 test_prog(test-j0-f16)
 test_prog(test-j1-f16)
