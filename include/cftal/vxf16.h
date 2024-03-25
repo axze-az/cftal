@@ -1151,7 +1151,7 @@ cftal::vec<cftal::f16_t, _N>
 cftal::mulsign(const vec<f16_t, _N>& x, const vec<f16_t, _N>& y)
 {
     using v_t = vec<mf_f16_t, _N>;
-    const int16_t msk=sign_f16_msk::v.s16();
+    const mf_f16_t msk=sign_f16_msk::v.s16();
     v_t sgn_y = y() & msk;
     v_t r=x() ^ sgn_y;
     return vec<f16_t, _N>::cvt_from_rep(r);
@@ -1161,9 +1161,9 @@ template <cftal::size_t _N>
 typename cftal::vec<cftal::f16_t, _N>::mask_type
 cftal::signbit(const vec<f16_t, _N>& a)
 {
-    const int16_t z(0);
-    vec<int16_t, _N> ai=a();
-    typename vec<int16_t, _N>::mask_type r=ai < z;
+    constexpr const mf_f16_t z(0);
+    vec<mf_f16_t, _N> ai=a();
+    typename vec<mf_f16_t, _N>::mask_type r=ai < z;
     return as<typename vec<f16_t, _N>::mask_type>(r);
 }
 
