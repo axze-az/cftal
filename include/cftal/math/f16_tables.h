@@ -116,10 +116,10 @@ namespace cftal {
         };
 
         struct f16_tgamma_data {
-            static constexpr const uint32_t zero_offset=25602;
-            static constexpr const int16_t min_offset=-25602;
+            static constexpr const uint32_t zero_offset=19009;
+            static constexpr const int16_t min_offset=-19009;
             static constexpr const int32_t max_offset=18590;
-            alignas(64) static const uint16_t _tbl[44192+2];
+            alignas(64) static const uint16_t _tbl[37599+2];
 
             static const f16_t* tbl() {
                 return reinterpret_cast<const f16_t*>(_tbl);
