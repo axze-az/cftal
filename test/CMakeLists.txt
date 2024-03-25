@@ -386,7 +386,7 @@ test_prog(test-erfc-f16)
 test_prog(test-j0-f16)
 #test_prog(test-j1-f16)
 test_prog(test-y0-f16)
-#test_prog(test-y1-f16)
+test_prog(test-y1-f16)
 
 test_prog(test-permute)
 test_prog(test-compress-expand-elements)
