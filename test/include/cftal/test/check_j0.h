@@ -20,6 +20,7 @@
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
+#include <cftal/vec_f16.h>
 #include <cftal/math/func_data.h>
 #include <cftal/test/call_mpfr.h>
 #include <cftal/test/func_domain_common.h>
@@ -48,6 +49,20 @@ namespace cftal {
             };
         };
 
+        template <>
+        struct domain_j0<f16_t> {
+            constexpr
+            static const func_domain<f16_t> domains[]={
+                std::make_pair(-std::numeric_limits<f16_t>::max(),
+			       std::numeric_limits<f16_t>::max())
+            };
+
+            constexpr
+            static const int shifts[]={
+                0
+            };
+        };
+
         template <typename _T>
         struct check_j0 {
             template <std::size_t _N>
@@ -63,6 +78,12 @@ namespace cftal {
                 std::pair<_T, _T> i;
                 _T v=call_mpfr::func(a, mpfr_j0, &i);
                 return std::make_tuple(v, i.first, i.second);
+            }
+
+            static
+            f16_t
+            _s(const f16_t& a) {
+                return f16_t(::j0f(float(a)));
             }
 
             static

@@ -141,7 +141,6 @@ cftal::math::spec_func_core<cftal::f16_t, _T>::
 j0_k(arg_t<vf_type> xc)
 {
     vf_type y=base_type:: template lookup_from<f16_j0_data>(xc);
-    y=copysign(y, xc);
     // zero and nan are handled in j0
     return y;
 }
