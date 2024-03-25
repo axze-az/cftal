@@ -108,7 +108,7 @@ namespace cftal {
 
             // tgamma(x) == +- 0 for x<
             constexpr static f16_t
-            tgamma_lo_zero() { return -0.0_f16; /* FIXME */ }
+            tgamma_lo_zero() { return -12.5_f16; }
 
             constexpr static f16_t
             lgamma_hi_inf() { return 1.740000000000000000000000e+02_f16; }
