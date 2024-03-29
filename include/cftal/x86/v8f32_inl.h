@@ -766,8 +766,14 @@ cftal::v8f32
 cftal::impl::fixed_vec_lookup_table<8, float, int32_t, 8>::
 fromp(const float* tbl) const
 {
-    vec<float, 8> r=mem<vec<float, 8> >::load(tbl, 8);
-    r=_mm256_permutevar8x32_ps(r(), _msk);
+    vec<float, 8> r;
+    if (__likely(is_aligned_to<32>(tbl))) {
+        r=_mm256_permutevar8x32_ps(
+            *(reinterpret_cast<const __m256*>(tbl)), _msk);
+    } else {
+        __m256 t=_mm256_loadu_ps(tbl);
+        r=_mm256_permutevar8x32_ps(t, _msk);
+    }
     return r;
 }
 
