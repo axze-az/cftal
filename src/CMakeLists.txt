@@ -71,6 +71,7 @@ set (CSRCS
     f16_erf_data.cc
     f16_erfc_data.cc
     f16_tgamma_data.cc
+    f16_lgamma_data.cc
     f16_j0_data.cc
     f16_j1_data.cc
     f16_y0_data.cc

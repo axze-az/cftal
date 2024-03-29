@@ -57,6 +57,17 @@ namespace cftal {
                     const std::string& tblname, std::ostream& h,
                     f16_t b, f16_t e);
 
+        // generate a table for f with f16 numbers between
+        // [b, e) if e != inf and [b, e] if e == inf
+        std::map<int16_t, std::pair<f16_t, uint32_t>>
+        gen_f16_tbl(test::call_mpfr::f1i_t f,
+                    f16_t b, f16_t e);
+
+        void
+        gen_f16_tbl(test::call_mpfr::f1i_t f,
+                    const std::string& tblname, std::ostream& h,
+                    f16_t b, f16_t e);
+
         void
         gen_f16_tbls();
 
@@ -230,6 +241,120 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
       << "        };\n\n";
 }
 
+std::map<int16_t, std::pair<cftal::f16_t, uint32_t>>
+cftal::utils::
+gen_f16_tbl(test::call_mpfr::f1i_t f,
+            f16_t b, f16_t e)
+{
+    auto cmp_lt= [](f16_t a, f16_t b)->bool {
+        return a < b;
+    };
+    auto cmp_le=[](f16_t a, f16_t b)->bool {
+        return a <= b;
+    };
+    using std::isinf;
+    auto cmp = isinf(e) ? cmp_le : cmp_lt;
+    std::map<int16_t, std::pair<f16_t, uint32_t>> r;
+
+    f16_t cur=b;
+    while (cmp(cur, e)) {
+        int16_t idx=table_offset(cur);
+        int32_t i;
+        f16_t fcur=test::call_mpfr::func(&i, cur, f);
+        uint16_t fcuri=as<uint16_t>(fcur);
+        int32_t ifc=(int32_t(fcuri)<<16) | (i & 0xffff);
+        auto ri=std::make_pair(idx, std::make_pair(cur, ifc));
+        r.insert(ri);
+        // leave loop if e == +inf
+        if (cur == e)
+            break;
+        using std::nextafter;
+        // nextafter(-0.0, infinity) is not +0.0, but min subnormal instead
+        if (cur == -0.0_f16 && idx==-1) {
+            cur = 0.0_f16;
+        } else {
+            cur = nextafter(cur, e);
+        }
+    }
+    return r;
+}
+
+void
+cftal::utils::
+gen_f16_tbl(test::call_mpfr::f1i_t f,
+            const std::string& tblname, std::ostream& h,
+            f16_t b, f16_t e)
+{
+    auto m=gen_f16_tbl(f, b, e);
+    size_t size = std::size(m);
+
+    std::string class_name=tblname + "_data";
+    std::string fname=class_name + ".cc";
+    std::ofstream s(fname.c_str(), std::ios::out|std::ios::trunc);
+
+    s << copyright
+      << "#include \"cftal/math/" << header_name << "\"\n\n"
+      << "alignas(64) const cftal::uint32_t\n"
+      << "cftal::math::" << class_name << "::_tbl"
+      << '[' << size << "] = {\n";
+    char fc=s.fill();
+    s << std::scientific << std::setprecision(8);
+    uint32_t zero_offset=0;
+    auto mb0=std::cbegin(m);
+    int16_t last_idx=0;
+    for (auto mb=mb0, me=std::cend(m); mb!=me; ++mb) {
+	const int16_t idx=mb->first;
+	const auto& sr=mb->second;
+	f16_t x=sr.first;
+        uint32_t vp=sr.second;
+	uint16_t v=vp >> 16;
+        int16_t i=vp & 0xffff;
+	int16_t xi=as<int16_t>(x);
+	if (xi == 0) {
+	    zero_offset=-std::cbegin(m)->first;
+	}
+	if (mb0 != mb) {
+            if (idx != last_idx+1) {
+                std::cerr << "idx " << idx << " last idx " << last_idx << '\n';
+                // throw std::runtime_error(tblname+" generation failed, oops");
+            }
+        }
+        last_idx=idx;
+        s << "    // " << std::setw(6) << idx
+          << " " << x << " " << std::hex
+	  << " 0x" << std::setw(4) << std::setfill('0') << xi
+	  << std::setfill(fc) << " " << as<f16_t>(v)
+          << " " << std::dec << i << '\n'
+          << std::hex  << "    0x" << std::setw(8) << std::setfill('0')
+          << vp << std::setfill(fc) << std::dec;
+        if (std::next(mb) != me)
+            s << ',';
+        s << '\n';
+    }
+    s << "};\n\n" << std::dec;
+
+    auto mi=std::cbegin(m);
+    int32_t min_offset= int32_t(mi->first);
+    int32_t max_offset= size + mi->first;
+
+    h << "        struct " << class_name << " {\n"
+      << "            static constexpr const uint32_t zero_offset="
+      << zero_offset << ";\n"
+      << "            static constexpr const int16_t min_offset="
+      << min_offset << ";\n"
+      << "            static constexpr const int32_t max_offset="
+      << max_offset << ";\n"
+      << "            alignas(64) static const uint32_t _tbl["
+      <<  size << "];\n\n"
+      << "            static const int32_t* tbl() {\n"
+      << "                return reinterpret_cast<const int32_t*>(_tbl);\n"
+      << "            }\n\n"
+      << "            static const int32_t* tbl_zero() {\n"
+      << "                return tbl() + zero_offset;\n"
+      << "            }\n"
+      << "        };\n\n";
+}
+
 
 
 void
@@ -271,6 +396,13 @@ gen_f16_tbls()
     gen_f16_tbl(mpfr_gamma, "f16_tgamma", h,
                 -12.5_f16,
                 tgamma_hi_inf);
+
+    const f16_t lgamma_hi_inf=nextafter(
+        math::func_constants<f16_t>::lgamma_hi_inf(),
+        std::numeric_limits<f16_t>::infinity());
+    gen_f16_tbl(mpfr_lgamma, "f16_lgamma", h,
+                -1025.0_f16, // -std::numeric_limits<f16_t>::infinity(),
+                lgamma_hi_inf);
 
     const f16_t erfc_zero0=nextafter(
         math::func_constants<f16_t>::erfc_gt_zero_fin(),

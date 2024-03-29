@@ -130,6 +130,21 @@ namespace cftal {
             }
         };
 
+        struct f16_lgamma_data {
+            static constexpr const uint32_t zero_offset=25602;
+            static constexpr const int16_t min_offset=-25602;
+            static constexpr const int32_t max_offset=22897;
+            alignas(64) static const uint32_t _tbl[48499];
+
+            static const int32_t* tbl() {
+                return reinterpret_cast<const int32_t*>(_tbl);
+            }
+
+            static const int32_t* tbl_zero() {
+                return tbl() + zero_offset;
+            }
+        };
+
         struct f16_erfc_data {
             static constexpr const uint32_t zero_offset=17369;
             static constexpr const int16_t min_offset=-17369;
