@@ -610,7 +610,8 @@ cftal::v8u32
 cftal::variable_vec_lookup_table<uint32_t, int32_t, 8>::
 from(const uint32_t* tbl) const
 {
-    return _mm256_i32gather_epi32(tbl, _msk, sizeof(uint32_t));
+    return _mm256_i32gather_epi32(
+        reinterpret_cast<const int*>(tbl), _msk, sizeof(uint32_t));
 }
 
 inline
