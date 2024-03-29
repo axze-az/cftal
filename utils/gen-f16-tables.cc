@@ -57,23 +57,6 @@ namespace cftal {
                     const std::string& tblname, std::ostream& h,
                     f16_t b, f16_t e);
 
-        // generate a table for f with f16 numbers between
-        // l and high
-        void
-        gen_f16_tbl(test::call_mpfr::f1_t f,
-                    const std::string& tblname, std::ostream& h,
-                    uint32_t b, uint32_t e);
-
-        // generate a table for f with all f16 numbers
-        void
-        gen_f16_tbl_full(test::call_mpfr::f1_t f,
-                         const std::string& tblname, std::ostream& h);
-
-        // generate a table for f with all positive f16 numbers
-        void
-        gen_f16_tbl_pos(test::call_mpfr::f1_t f,
-                        const std::string& tblname, std::ostream& h);
-
         void
         gen_f16_tbls();
 
@@ -248,86 +231,6 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
 }
 
 
-void
-cftal::utils::
-gen_f16_tbl(test::call_mpfr::f1_t f,
-            const std::string& tblname, std::ostream& h,
-            uint32_t b, uint32_t e)
-{
-    uint32_t size=e-b;
-
-    std::string class_name=tblname + "_data";
-    std::string fname=class_name + ".cc";
-    std::ofstream s(fname.c_str(), std::ios::out|std::ios::trunc);
-
-    s << copyright
-      << "#include \"cftal/math/" << header_name << "\"\n\n"
-      << "alignas(64) const cftal::uint16_t\n"
-      << "cftal::math::" << class_name << "::_tbl"
-      << '[' << size << "+2] = {\n";
-    char fc=s.fill();
-    s << std::scientific << std::setprecision(8)
-      << std::hex;
-    uint32_t zero_offset=0;
-    for (uint32_t o=0; b!=e; ++b, ++o) {
-        int16_t bs=b;
-        if (bs==0)
-            zero_offset=o;
-        f16_t x=as<f16_t>(bs);
-        f16_t v=test::call_mpfr::func(x, f);
-        if (isnan(x) && isnan(v)) {
-            f16_t n=copysign(std::numeric_limits<f16_t>::quiet_NaN(),
-                             x);
-            v=n;
-        }
-        uint16_t vt=as<uint16_t>(v);
-        s << "    // " << std::setw(6) << std::dec << bs << std::hex
-          << " " << x << " " << v
-          << " offs: 0x" << std::setw(4) << std::setfill('0')
-          << o << std::setfill(fc) << '\n'
-          << "    0x" << std::setw(4) << std::setfill('0')
-          << vt << std::setfill(fc);
-        if (b+1!=e)
-            s << ',';
-        s << '\n';
-    }
-    int32_t min_offset= -(zero_offset);
-    int32_t max_offset=  (size-zero_offset);
-    s << "};\n\n" << std::dec;
-
-    h << "        struct " << class_name << " {\n"
-      << "            static constexpr const uint32_t zero_offset="
-      << zero_offset << ";\n"
-      << "            static constexpr const int16_t min_offset="
-      << min_offset << ";\n"
-      << "            static constexpr const int32_t max_offset="
-      << max_offset << ";\n"
-      << "            alignas(64) static const uint16_t _tbl["
-      <<  size << "+2];\n\n"
-      << "            static const f16_t* tbl() {\n"
-      << "                return reinterpret_cast<const f16_t*>(_tbl);\n"
-      << "            }\n\n"
-      << "            static const f16_t* tbl_zero() {\n"
-      << "                return tbl() + zero_offset;\n"
-      << "            }\n"
-      << "        };\n\n";
-}
-
-void
-cftal::utils::
-gen_f16_tbl_full(test::call_mpfr::f1_t f,
-                 const std::string& tblname, std::ostream& h)
-{
-    gen_f16_tbl(f, tblname, h, uint32_t(-32768), uint32_t(0x8000));
-}
-
-void
-cftal::utils::
-gen_f16_tbl_pos(test::call_mpfr::f1_t f,
-                const std::string& tblname, std::ostream& h)
-{
-    gen_f16_tbl(f, tblname, h, uint32_t(0x0000), uint32_t(0x8000));
-}
 
 void
 cftal::utils::
