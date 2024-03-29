@@ -149,6 +149,71 @@ namespace cftal {
     std::pair<vec<uint32_t, 4>, vec<uint32_t, 4> >
     mul_lo_hi(const vec<uint32_t, 4>& a,
               const vec<uint32_t, 4>& b);
+
+#if defined (__AVX2__)
+    template <>
+    class variable_vec_lookup_table<uint32_t, int32_t, 4> {
+    private:
+        vec<int32_t, 4> _msk;
+    public:
+        variable_vec_lookup_table(const vec<int32_t, 4>& idx);
+        vec<uint32_t, 4>
+        from(const uint32_t* tbl) const;
+    };
+#endif
+
+#if defined (__SSSE3__)
+    namespace impl {
+        template <>
+        class fixed_vec_lookup_table<4, uint32_t, int32_t, 4> {
+            // a msk
+            vec<int32_t, 4> _msk;
+            // setup function for _msk
+            static
+            vec<int32_t, 4>
+            setup_msk(const vec<int32_t, 4>& idx);
+        public:
+            fixed_vec_lookup_table(const vec<int32_t, 4>& idx);
+            // the lookup function
+            vec<uint32_t, 4>
+            fromp(const uint32_t*) const;
+        };
+    }
+#endif
+
+#if defined (__AVX2__)
+    namespace impl {
+        template <>
+        class fixed_vec_lookup_table<8, uint32_t, int32_t, 4> {
+            // a msk
+            vec<int32_t, 4> _msk;
+            // setup function for _msk
+            static
+            vec<int32_t, 4>
+            setup_msk(const vec<int32_t, 4>& idx);
+        public:
+            fixed_vec_lookup_table(const vec<int32_t, 4>& idx);
+            // the lookup function
+            vec<uint32_t, 4>
+            fromp(const uint32_t*) const;
+        };
+
+        template <>
+        class fixed_vec_lookup_table<32, uint32_t, int32_t, 4> {
+        private:
+            __m128i _msk;
+            __m128i _idx_gt_7;
+            __m128i _idx_gt_15;
+            __m128i _idx_gt_23;
+        public:
+            fixed_vec_lookup_table(const vec<int32_t, 4>& idx);
+            vec<uint32_t, 4>
+            fromp(const uint32_t* tbl) const;
+        };
+
+    }
+#endif
+
 }
 
 

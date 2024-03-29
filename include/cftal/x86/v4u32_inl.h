@@ -22,6 +22,7 @@
 #include <cftal/types.h>
 #include <cftal/x86/v4u32.h>
 #include <cftal/x86/v4s32.h>
+#include <cftal/x86/v8u32.h>
 #include <cftal/x86/perm.h>
 #include <cftal/x86/ops_1.h>
 
@@ -598,6 +599,141 @@ cftal::mul_lo_hi(const v4u32& x, const v4u32& y)
     v4u32 l = permute<0, 1, 4, 5>(t0, t1);
     return std::make_pair(l, h);
 }
+
+
+#if defined (__AVX2__)
+inline
+cftal::variable_vec_lookup_table<uint32_t, int32_t, 4>::
+variable_vec_lookup_table(const vec<int32_t, 4>& idx)
+    : _msk(idx)
+{
+}
+
+inline
+cftal::vec<cftal::uint32_t, 4>
+cftal::variable_vec_lookup_table<uint32_t, int32_t, 4>::
+from(const uint32_t* tbl) const
+{
+    return _mm_i32gather_epi32(
+        reinterpret_cast<const int*>(tbl), _msk(), sizeof(uint32_t));
+}
+
+#endif
+
+#if defined (__SSSE3__)
+inline
+cftal::v4s32
+cftal::impl::fixed_vec_lookup_table<4, uint32_t, int32_t, 4>::
+setup_msk(const vec<int32_t, 4>& idx)
+{
+#if defined (__AVX__)
+    return idx;
+#else
+    vec<int32_t, 4> idx4 = idx<<2;
+    const __m128i u8u32 =
+        x86::const_v16u8< 0, 0, 0, 0,  4,  4,  4,  4,
+                          8, 8, 8, 8, 12, 12, 12, 12>::iv();
+    __m128i m=_mm_shuffle_epi8(idx4(), u8u32);
+    const __m128i offs=
+        x86::const_v16u8< 0, 1, 2, 3, 0, 1, 2, 3,
+                          0, 1, 2, 3, 0, 1, 2, 3>::iv();
+    m = _mm_add_epi8(m, offs);
+    return m;
+#endif
+}
+
+inline
+cftal::impl::fixed_vec_lookup_table<4, uint32_t, int32_t, 4>::
+fixed_vec_lookup_table(const vec<int32_t, 4>& idx)
+    : _msk(setup_msk(idx))
+{
+}
+
+inline
+cftal::v4u32
+cftal::impl::fixed_vec_lookup_table<4, uint32_t, int32_t, 4>::
+fromp(const uint32_t* tbl) const
+{
+#if defined (__AVX__)
+    vec<uint32_t, 4> r=mem<vec<uint32_t, 4> >::load(tbl, 4);
+    r=_mm_castps_si128(_mm_permutevar_ps(_mm_castsi128_ps(r()), _msk()));
+    return r;
+#else
+    vec<uint32_t, 4> r=mem<vec<uint32_t, 4> >::load(tbl, 4);
+    __m128i ir = _mm_shuffle_epi8(r(), _msk());
+    return ir;
+#endif
+}
+
+#endif
+
+#if defined (__AVX2__)
+inline
+cftal::impl::fixed_vec_lookup_table<8, uint32_t, int32_t, 4>::
+fixed_vec_lookup_table(const vec<int32_t, 4>& idx)
+    : _msk(idx)
+{
+}
+
+inline
+cftal::vec<uint32_t, 4>
+cftal::impl::fixed_vec_lookup_table<8, uint32_t, int32_t, 4>::
+fromp(const uint32_t* tbl) const
+{
+    vec<uint32_t, 8> r=mem<vec<uint32_t, 8> >::load(tbl, 8);
+    __m256i m=_mm256_castsi128_si256(_msk());
+    r=_mm256_permutevar8x32_epi32(r(), m);
+    return low_half(r);
+}
+
+inline
+cftal::impl::fixed_vec_lookup_table<32, uint32_t, int32_t, 4>::
+fixed_vec_lookup_table(const vec<int32_t, 4>& idx)
+    : _msk(idx()),
+      _idx_gt_7(_mm_cmpgt_epi32(idx(), _mm_set1_epi32(7))),
+      _idx_gt_15(_mm_cmpgt_epi32(idx(), _mm_set1_epi32(15))),
+      _idx_gt_23(_mm_cmpgt_epi32(idx(), _mm_set1_epi32(23)))
+{
+}
+
+inline
+cftal::v4u32
+cftal::impl::fixed_vec_lookup_table<32, uint32_t, int32_t, 4>::
+fromp(const uint32_t* tbl) const
+{
+    __m256i m=_mm256_castsi128_si256(_msk);
+    __m256i r0, r1, r2, r3;
+    if (__likely(is_aligned_to<32>(tbl))) {
+        r0=_mm256_permutevar8x32_epi32(
+            *(reinterpret_cast<const __m256i*>(tbl+0)), m);
+        r1=_mm256_permutevar8x32_epi32(
+            *(reinterpret_cast<const __m256i*>(tbl+8)), m);
+        r2=_mm256_permutevar8x32_epi32(
+            *(reinterpret_cast<const __m256i*>(tbl+16)), m);
+        r3=_mm256_permutevar8x32_epi32(
+            *(reinterpret_cast<const __m256i*>(tbl+24)), m);
+    } else {
+        r0=_mm256_loadu_epi32(tbl);
+        r1=_mm256_loadu_epi32(tbl+8);
+        r2=_mm256_loadu_epi32(tbl+16);
+        r3=_mm256_loadu_epi32(tbl+24);
+        r0=_mm256_permutevar8x32_epi32(r0, m);
+        r1=_mm256_permutevar8x32_epi32(r1, m);
+        r2=_mm256_permutevar8x32_epi32(r2, m);
+        r3=_mm256_permutevar8x32_epi32(r3, m);
+    }
+    __m128i r0i=_mm256_castsi256_si128(r0);
+    __m128i r1i=_mm256_castsi256_si128(r1);
+    __m128i r2i=_mm256_castsi256_si128(r2);
+    __m128i r3i=_mm256_castsi256_si128(r3);
+    __m128i r01i=x86::select_u32(_idx_gt_7, r1i, r0i);
+    __m128i r23i=x86::select_u32(_idx_gt_23, r3i, r2i);
+    __m128i ri=x86::select_u32(_idx_gt_15, r23i, r01i);
+    vec<uint32_t, 4> r(ri);
+    return r;
+}
+
+#endif
 
 
 
