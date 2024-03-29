@@ -598,6 +598,114 @@ cftal::mul_lo_hi(const v8u32& x, const v8u32& y)
     return std::make_pair(l, h);
 }
 
+inline
+cftal::variable_vec_lookup_table<uint32_t, int32_t, 8>::
+variable_vec_lookup_table(const vec<int32_t, 8>& idx)
+    : _msk(idx())
+{
+}
+
+inline
+cftal::v8u32
+cftal::variable_vec_lookup_table<uint32_t, int32_t, 8>::
+from(const uint32_t* tbl) const
+{
+    return _mm256_i32gather_epi32(tbl, _msk, sizeof(uint32_t));
+}
+
+inline
+__m256i
+cftal::impl::fixed_vec_lookup_table<4, uint32_t, int32_t, 8>::
+setup_msk(const vec<int32_t, 8>& idx)
+{
+    return idx();
+}
+
+inline
+cftal::impl::fixed_vec_lookup_table<4, uint32_t, int32_t, 8>::
+fixed_vec_lookup_table(const vec<int32_t, 8>& idx)
+    : _msk(setup_msk(idx))
+{
+}
+
+inline
+cftal::v8u32
+cftal::impl::fixed_vec_lookup_table<4, uint32_t, int32_t, 8>::
+fromp(const uint32_t* tbl) const
+{
+    vec<uint32_t, 4> rh=mem<vec<uint32_t, 4> >::load(tbl, 4);
+    __m256i r=_mm256_castsi128_si256(rh());
+    r=_mm256_permutevar8x32_epi32(r, _msk);
+    return r;
+}
+
+inline
+__m256i
+cftal::impl::fixed_vec_lookup_table<8, uint32_t, int32_t, 8>::
+setup_msk(const vec<int32_t, 8>& idx)
+{
+    return idx();
+}
+
+inline
+cftal::impl::fixed_vec_lookup_table<8, uint32_t, int32_t, 8>::
+fixed_vec_lookup_table(const vec<int32_t, 8>& idx)
+    : _msk(setup_msk(idx))
+{
+}
+
+inline
+cftal::v8u32
+cftal::impl::fixed_vec_lookup_table<8, uint32_t, int32_t, 8>::
+fromp(const uint32_t* tbl) const
+{
+    vec<uint32_t, 8> r=mem<vec<uint32_t, 8> >::load(tbl, 8);
+    r=_mm256_permutevar8x32_epi32(r(), _msk);
+    return r;
+}
+
+inline
+cftal::impl::fixed_vec_lookup_table<32, uint32_t, int32_t, 8>::
+fixed_vec_lookup_table(const vec<int32_t, 8>& idx)
+    : _msk(idx()),
+      _idx_gt_7(_mm256_cmpgt_epi32(idx(), _mm256_set1_epi32(7))),
+      _idx_gt_15(_mm256_cmpgt_epi32(idx(), _mm256_set1_epi32(15))),
+      _idx_gt_23(_mm256_cmpgt_epi32(idx(), _mm256_set1_epi32(23)))
+{
+}
+
+inline
+cftal::v8u32
+cftal::impl::fixed_vec_lookup_table<32, uint32_t, int32_t, 8>::
+fromp(const uint32_t* tbl) const
+{
+    v8u32 r0, r1, r2, r3;
+    if (__likely(is_aligned_to<32>(tbl))) {
+        r0=_mm256_permutevar8x32_epi32(
+            *(reinterpret_cast<const __m256i*>(tbl+0)), _msk);
+        r1=_mm256_permutevar8x32_epi32(
+            *(reinterpret_cast<const __m256i*>(tbl+8)), _msk);
+        r2=_mm256_permutevar8x32_epi32(
+            *(reinterpret_cast<const __m256i*>(tbl+16)), _msk);
+        r3=_mm256_permutevar8x32_epi32(
+            *(reinterpret_cast<const __m256i*>(tbl+24)), _msk);
+    } else {
+        r0=mem<vec<uint32_t, 8> >::load(tbl, 8);
+        r1=mem<vec<uint32_t, 8> >::load(tbl+8, 8);
+        r2=mem<vec<uint32_t, 8> >::load(tbl+16, 8);
+        r3=mem<vec<uint32_t, 8> >::load(tbl+24, 8);
+        r0=_mm256_permutevar8x32_epi32(r0(), _msk);
+        r1=_mm256_permutevar8x32_epi32(r1(), _msk);
+        r2=_mm256_permutevar8x32_epi32(r2(), _msk);
+        r3=_mm256_permutevar8x32_epi32(r3(), _msk);
+    }
+    __m256i r01i=x86::select_u32(_idx_gt_7, r1(), r0());
+    __m256i r23i=x86::select_u32(_idx_gt_23, r3(), r2());
+    __m256i ri=x86::select_u32(_idx_gt_15, r23i, r01i);
+    vec<uint32_t, 8> r(ri);
+    return r;
+}
+
 // Local variables:
 // mode: c++
 // end:

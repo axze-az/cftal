@@ -20,6 +20,7 @@
 
 #include <cftal/config.h>
 #include <cftal/types.h>
+#include <cftal/x86/v4u32.h>
 #include <cftal/x86/vreg.h>
 #include <cftal/x86/vec_bit.h>
 #include <cftal/vec_op.h>
@@ -147,6 +148,61 @@ namespace cftal {
     std::pair<vec<uint32_t, 8>, vec<uint32_t, 8> >
     mul_lo_hi(const vec<uint32_t, 8>& a,
               const vec<uint32_t, 8>& b);
+
+    vec<uint32_t, 8>
+    permute(const vec<uint32_t, 8>& s, const vec<int32_t, 8>& idx);
+
+    template <>
+    class variable_vec_lookup_table<uint32_t, int32_t, 8> {
+    private:
+        __m256i _msk;
+    public:
+        variable_vec_lookup_table(const vec<int32_t, 8>& idx);
+        vec<uint32_t, 8>
+        from(const uint32_t* tbl) const;
+    };
+
+    namespace impl {
+        template <>
+        class fixed_vec_lookup_table<4, uint32_t, int32_t, 8> {
+        private:
+            __m256i _msk;
+            static
+            __m256i
+            setup_msk(const vec<int32_t, 8>& idx);
+        public:
+            fixed_vec_lookup_table(const vec<int32_t, 8>& idx);
+            vec<uint32_t, 8>
+            fromp(const uint32_t* tbl) const;
+        };
+
+        template <>
+        class fixed_vec_lookup_table<8, uint32_t, int32_t, 8> {
+        private:
+            __m256i _msk;
+            static
+            __m256i
+            setup_msk(const vec<int32_t, 8>& idx);
+        public:
+            fixed_vec_lookup_table(const vec<int32_t, 8>& idx);
+            vec<uint32_t, 8>
+            fromp(const uint32_t* tbl) const;
+        };
+
+        template <>
+        class fixed_vec_lookup_table<32, uint32_t, int32_t, 8> {
+        private:
+            __m256i _msk;
+            __m256i _idx_gt_7;
+            __m256i _idx_gt_15;
+            __m256i _idx_gt_23;
+        public:
+            fixed_vec_lookup_table(const vec<int32_t, 8>& idx);
+            vec<uint32_t, 8>
+            fromp(const uint32_t* tbl) const;
+        };
+    }
+
 }
 
 

@@ -152,6 +152,57 @@ namespace cftal {
     std::pair<vec<int32_t, 8>, vec<int32_t, 8> >
     mul_lo_hi(const vec<int32_t, 8>& a, const vec<int32_t, 8>& b);
 
+    template <>
+    class variable_vec_lookup_table<int32_t, int32_t, 8> {
+    private:
+        __m256i _msk;
+    public:
+        variable_vec_lookup_table(const vec<int32_t, 8>& idx);
+        vec<int32_t, 8>
+        from(const int32_t* tbl) const;
+    };
+
+    namespace impl {
+        template <>
+        class fixed_vec_lookup_table<4, int32_t, int32_t, 8> {
+        private:
+            __m256i _msk;
+            static
+            __m256i
+            setup_msk(const vec<int32_t, 8>& idx);
+        public:
+            fixed_vec_lookup_table(const vec<int32_t, 8>& idx);
+            vec<int32_t, 8>
+            fromp(const int32_t* tbl) const;
+        };
+
+        template <>
+        class fixed_vec_lookup_table<8, int32_t, int32_t, 8> {
+        private:
+            __m256i _msk;
+            static
+            __m256i
+            setup_msk(const vec<int32_t, 8>& idx);
+        public:
+            fixed_vec_lookup_table(const vec<int32_t, 8>& idx);
+            vec<int32_t, 8>
+            fromp(const int32_t* tbl) const;
+        };
+
+        template <>
+        class fixed_vec_lookup_table<32, int32_t, int32_t, 8> {
+        private:
+            __m256i _msk;
+            __m256i _idx_gt_7;
+            __m256i _idx_gt_15;
+            __m256i _idx_gt_23;
+        public:
+            fixed_vec_lookup_table(const vec<int32_t, 8>& idx);
+            vec<int32_t, 8>
+            fromp(const int32_t* tbl) const;
+        };
+    }
+
 }
 
 #endif
