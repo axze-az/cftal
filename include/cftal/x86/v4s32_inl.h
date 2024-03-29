@@ -22,7 +22,6 @@
 #include <cftal/types.h>
 #include <cftal/x86/v4s32.h>
 #include <cftal/x86/v4u32.h>
-#include <cftal/x86/v8s32.h>
 #include <cftal/x86/perm.h>
 #include <cftal/x86/ops_1.h>
 #include <cftal/divisor.h>
@@ -707,10 +706,10 @@ cftal::vec<int32_t, 4>
 cftal::impl::fixed_vec_lookup_table<8, int32_t, int32_t, 4>::
 fromp(const int32_t* tbl) const
 {
-    vec<int32_t, 8> r=mem<vec<int32_t, 8> >::load(tbl, 8);
     __m256i m=_mm256_castsi128_si256(_msk());
-    r=_mm256_permutevar8x32_epi32(r(), m);
-    return low_half(r);
+    __m256i r=_mm256_loadu_epi32(tbl);
+    r=_mm256_permutevar8x32_epi32(r, m);
+    return _mm256_castsi256_si128(r);
 }
 
 inline
