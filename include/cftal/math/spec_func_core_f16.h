@@ -131,7 +131,19 @@ typename cftal::math::spec_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::spec_func_core<cftal::f16_t, _T>::
 lgamma_k(arg_t<vf_type> xc, vi_type* signp)
 {
-    return xc;
+    vi_type idx=base_type:: template cvt_to_index_4<f16_lgamma_data>(xc);
+    using vli_type=typename _T::vli_type;
+    using v2i_type=typename _T::v2i_type;
+    vli_type idx32=cvt<vli_type>(idx);
+    auto lk=make_variable_lookup_table<typename vli_type::value_type>(idx32);
+    vli_type t=lk.from(f16_lgamma_data::tbl_zero());
+    v2i_type t1=as<v2i_type>(t);
+    vi_type yi=odd_elements(t1);
+    if (signp != nullptr) {
+        *signp= even_elements(t1);
+    }
+    vf_type y=as<vf_type>(yi);
+    return y;
 }
 
 template <typename _T>

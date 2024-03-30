@@ -108,6 +108,10 @@ namespace cftal {
             vi_type
             ilogb(arg_t<vf_type> vf);
 
+            template <typename _TBL>
+            static
+            vi_type
+            cvt_to_index_4(arg_t<vf_type> x);
 
             template <typename _TBL>
             static
@@ -393,9 +397,9 @@ template <typename _T>
 template <typename _TBL>
 inline
 typename
-cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::vi_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
-lookup_from(arg_t<vf_type> x)
+cvt_to_index_4(arg_t<vf_type> x)
 {
     vi_type idx;
     if (_TBL::zero_offset == 0) {
@@ -412,6 +416,18 @@ lookup_from(arg_t<vf_type> x)
     }
     const vi_type max_idx(static_cast<int16_t>(_TBL::max_offset));
     idx=min(idx, max_idx);
+    return idx;
+}
+
+template <typename _T>
+template <typename _TBL>
+inline
+typename
+cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+lookup_from(arg_t<vf_type> x)
+{
+    vi_type idx=cvt_to_index_4<_TBL>(x);
     auto lk=make_variable_lookup_table<f16_t>(idx);
     vf_type y=lk.from(_TBL::tbl_zero());
     return y;
