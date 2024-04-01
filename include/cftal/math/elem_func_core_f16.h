@@ -414,7 +414,7 @@ cvt_to_index_4(arg_t<vf_type> x)
         const vi_type min_idx(static_cast<int16_t>(_TBL::min_offset));
         idx=max(idx, min_idx);
     }
-    const vi_type max_idx(static_cast<int16_t>(_TBL::max_offset));
+    const vi_type max_idx(static_cast<int16_t>(_TBL::max_offset-1));
     idx=min(idx, max_idx);
     return idx;
 }
