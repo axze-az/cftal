@@ -632,7 +632,7 @@ inline
 cftal::vec<uint16_t, 8>
 cftal::even_elements(const vec<uint16_t, 16>& a)
 {
-    return x86::odd_elements_v16u16(a());
+    return x86::even_elements_v16u16(a());
 }
 
 // Local variables:
