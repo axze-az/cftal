@@ -133,8 +133,8 @@ namespace cftal {
         struct f16_lgamma_data {
             static constexpr const uint32_t zero_offset=25602;
             static constexpr const int16_t min_offset=-25602;
-            static constexpr const int32_t max_offset=22897;
-            alignas(64) static const uint32_t _tbl[48499];
+            static constexpr const int32_t max_offset=31745;
+            alignas(64) static const uint32_t _tbl[57347];
 
             static const int32_t* tbl() {
                 return reinterpret_cast<const int32_t*>(_tbl);

@@ -139,10 +139,15 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
     vli_type t=lk.from(f16_lgamma_data::tbl_zero());
     v2i_type t1=as<v2i_type>(t);
     vi_type yi=odd_elements(t1);
+    vmf_type is_nan=isnan(xc);
     if (signp != nullptr) {
-        *signp= even_elements(t1);
+        vmi_type i_is_nan=_T::vmf_to_vmi(is_nan);
+        vi_type s=even_elements(t1);
+        s = _T::sel_vi(i_is_nan, vi_type(1), s);
+        *signp= s;
     }
     vf_type y=as<vf_type>(yi);
+    y = _T::sel(is_nan, xc, y);
     return y;
 }
 

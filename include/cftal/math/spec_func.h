@@ -180,8 +180,13 @@ lgamma(arg_t<vf_type> xc, vi_type* signp)
     if (_TRAITS_T::any_of_vmf(t=iszero(xc))) {
         lg = _TRAITS_T::sel(t, _TRAITS_T::pinf(), lg);
         vmi_type ti=_TRAITS_T::vmf_to_vmi(t);
+#if 0
         vf_type sgn=copysign(vf_type(_FLOAT_T(1.0)), xc);
         vi_type ni=_TRAITS_T::cvt_f_to_i(sgn);
+#else
+        vi_type ni=_TRAITS_T::sel_vi(
+            _TRAITS_T::vmf_to_vmi(signbit(xc)), vi_type(-1), vi_type(1));
+#endif
         si = _TRAITS_T::sel_vi(ti, ni, si);
     }
     lg = _TRAITS_T::sel(isnan(xc), xc, lg);

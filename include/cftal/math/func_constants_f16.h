@@ -111,7 +111,7 @@ namespace cftal {
             tgamma_lo_zero() { return -12.5_f16; }
 
             constexpr static f16_t
-            lgamma_hi_inf() { return 1.740000000000000000000000e+02_f16; }
+            lgamma_hi_inf() { return 8.18400000e+03_f16; }
 
             constexpr static f16_t
             atan_equal_pi_2() { return 1.029000000000000000000000e+03_f16; }

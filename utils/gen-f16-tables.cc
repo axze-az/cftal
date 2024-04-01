@@ -402,7 +402,7 @@ gen_f16_tbls()
         std::numeric_limits<f16_t>::infinity());
     gen_f16_tbl(mpfr_lgamma, "f16_lgamma", h,
                 -1025.0_f16, // -std::numeric_limits<f16_t>::infinity(),
-                lgamma_hi_inf);
+                std::numeric_limits<f16_t>::infinity());
 
     const f16_t erfc_zero0=nextafter(
         math::func_constants<f16_t>::erfc_gt_zero_fin(),

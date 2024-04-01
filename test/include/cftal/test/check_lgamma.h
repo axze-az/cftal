@@ -20,19 +20,20 @@
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
+#include <cftal/vec_f16.h>
 #include <cftal/test/call_mpfr.h>
 #include <cmath>
 
 namespace cftal {
     namespace test {
 
-        template <typename _T>
+        template <typename _T, typename _I=int32_t>
         struct check_lgamma {
             template <std::size_t _N>
             static
-            std::pair<vec<int32_t, _N>, vec<_T, _N> >
+            std::pair<vec<_I, _N>, vec<_T, _N> >
             v(const vec<_T, _N>& a) {
-                vec<int32_t, _N> ir;
+                vec<_I, _N> ir;
                 vec<_T, _N> fr=lgamma(a, &ir);
                 return std::make_pair(ir, fr);
             }
@@ -46,7 +47,7 @@ namespace cftal {
                 auto s=std::make_tuple(v, i.first, i.second);
                 if (a == -std::numeric_limits<_T>::infinity())
                     sgn=1;
-                return std::make_pair(sgn, s);
+                return std::make_pair(_I(sgn), s);
             }
 
             static
@@ -62,11 +63,18 @@ namespace cftal {
             }
 
             static
+            f16_t
+            __lgamma(const f16_t& a, int32_t* sgn) {
+                auto af=static_cast<float>(a);
+                return __lgamma(af, sgn);
+            }
+
+            static
             auto
             s(const _T& a) {
                 int32_t sgn;
                 _T r=__lgamma(a, &sgn);
-                return std::make_pair(sgn, r);
+                return std::make_pair(_I(sgn), r);
             }
 
             static
