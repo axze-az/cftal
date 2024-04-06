@@ -562,7 +562,7 @@ namespace cftal {
             mask_type
             v(const full_type& a, const full_type& b) {
 #if VF16_USE_INT_CMP> 0
-                return impl::f16_eq(a, b);
+                return impl::f16_lt(a, b);
 #else
                 return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) < cvt_f16_to_f32(b()));
