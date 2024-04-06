@@ -37,7 +37,7 @@ namespace cftal {
 #if (V16F32_SPECIALIZED>0) || ((V8F32_SPECIALIZED>0) && (V8S32_SPECIALIZED>0))
 #define V16F16_SPECIALIZED 1
 #endif
-#define VF16_USE_INT_CMP 1
+#define VF16_USE_INT_CMP 0
 
     template <>
     class vec<f16_t, 1> {
