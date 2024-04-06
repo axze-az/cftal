@@ -37,6 +37,7 @@ namespace cftal {
 #if (V16F32_SPECIALIZED>0) || ((V8F32_SPECIALIZED>0) && (V8S32_SPECIALIZED>0))
 #define V16F16_SPECIALIZED 1
 #endif
+#define VF16_USE_INT_CMP 1
 
     template <>
     class vec<f16_t, 1> {
@@ -383,6 +384,174 @@ namespace cftal {
     bool
     none_of(const typename vec<f16_t, _N>::mask_type& m);
 
+    namespace impl {
+
+        template <size_t _N>
+        typename vec<int16_t, _N>::mask_type
+        f16_not_nan_abs(vec<int16_t, _N> v) {
+            return v < (exp_f16_msk::v.s16()+1);
+        }
+
+        template <size_t _N>
+        typename vec<int16_t, _N>::mask_type
+        f16_not_zero_abs(vec<int16_t, _N> v) {
+            return v > int16_t(0);
+        }
+
+        template <size_t _N>
+        typename vec<int16_t, _N>::mask_type
+        f16_zero_abs(vec<int16_t, _N> v) {
+            return v == int16_t(0);
+        }
+
+        template <size_t _N>
+        vec<int16_t, _N>
+        f16_abs(vec<int16_t, _N> v) {
+            return v & not_sign_f16_msk::v.s16();
+        }
+
+        template <size_t _N>
+        vec<int16_t, _N>
+        f16_sgn(vec<int16_t, _N> v) {
+            return v & sign_f16_msk::v.s16();
+        }
+
+        template <size_t _N>
+        typename vec<int16_t, _N>::mask_type
+        f16_eq(vec<int16_t, _N> a, vec<int16_t, _N> b) {
+            using vi_t=vec<int16_t, _N>;
+            using vmi_t=typename vi_t::mask_type;
+            vi_t aa = f16_abs(a), ab= f16_abs(b);
+            vmi_t r=
+                f16_not_nan_abs(aa) &
+                f16_not_nan_abs(ab) &
+                ((a==b) | f16_zero_abs(vi_t(aa|ab)));
+            return r;
+        }
+
+        template <size_t _N>
+        typename vec<int16_t, _N>::mask_type
+        f16_le(vec<int16_t, _N> a, vec<int16_t, _N> b) {
+            using vi_t=vec<int16_t, _N>;
+            using vmi_t=typename vi_t::mask_type;
+            vi_t aa = f16_abs(a), ab= f16_abs(b);
+            vi_t sa = f16_sgn(a), sb= f16_sgn(b);
+
+            vmi_t a_neg= sa < int16_t(0);
+            vmi_t eq_sgn= sa == sb;
+            vmi_t b_le_a= b <= a;
+            vmi_t a_le_b= a <= b;
+            vmi_t a_not_nan= f16_not_nan_abs(aa);
+            vmi_t b_not_nan= f16_not_nan_abs(ab);
+            vmi_t ab_zero=f16_zero_abs(vi_t(aa|ab));
+            // result for same signs:
+            vmi_t r_eq_sgn= select(a_neg, b_le_a, a_le_b);
+            // result for opposite signs:
+            vmi_t r_ne_sgn= a_neg | ab_zero;
+            // normal result
+            vmi_t r_sgn = select(eq_sgn, r_eq_sgn, r_ne_sgn);
+            // masked with not nan:
+            vmi_t r= a_not_nan & b_not_nan & r_sgn;
+            return r;
+        }
+
+        template <size_t _N>
+        typename vec<int16_t, _N>::mask_type
+        f16_lt(vec<int16_t, _N> a, vec<int16_t, _N> b) {
+            using vi_t=vec<int16_t, _N>;
+            using vmi_t=typename vi_t::mask_type;
+            vi_t aa = f16_abs(a), ab= f16_abs(b);
+            vi_t sa = f16_sgn(a), sb= f16_sgn(b);
+
+            vmi_t a_neg= sa < int16_t(0);
+            vmi_t eq_sgn= sa == sb;
+            vmi_t b_lt_a= b < a;
+            vmi_t a_lt_b= a < b;
+            vmi_t a_not_nan= f16_not_nan_abs(aa);
+            vmi_t b_not_nan= f16_not_nan_abs(ab);
+            vmi_t ab_not_zero=f16_not_zero_abs(vi_t(aa|ab));
+            // result for same signs:
+            vmi_t r_eq_sgn= select(a_neg, b_lt_a, a_lt_b);
+            // result for opposite signs:
+            vmi_t r_ne_sgn= a_neg & ab_not_zero;
+            // normal result
+            vmi_t r_sgn = select(eq_sgn, r_eq_sgn, r_ne_sgn);
+            // masked with not nan:
+            vmi_t r= a_not_nan & b_not_nan & r_sgn;
+            return r;
+        }
+
+        template <size_t _N>
+        typename vec<int16_t, _N>::mask_type
+        f16_ge(vec<int16_t, _N> a, vec<int16_t, _N> b) {
+            return f16_le(b, a);
+        }
+
+        template <size_t _N>
+        typename vec<int16_t, _N>::mask_type
+        f16_gt(vec<int16_t, _N> a, vec<int16_t, _N> b) {
+            return f16_lt(b, a);
+        }
+
+        template <size_t _N>
+        typename vec<int16_t, _N>::mask_type
+        f16_ne(vec<int16_t, _N> a, vec<int16_t, _N> b) {
+            using vi_t=vec<int16_t, _N>;
+            using vmi_t=typename vi_t::mask_type;
+            vi_t aa = f16_abs(a), ab= f16_abs(b);
+            vmi_t r=
+                f16_not_nan_abs(aa) &
+                f16_not_nan_abs(ab) &
+                ((a!=b) & f16_not_zero_abs(vi_t(aa|ab)));
+            return r;
+        }
+
+        template <size_t _N>
+        typename vec<f16_t, _N>::mask_type
+        f16_lt(vec<f16_t, _N> a, vec<f16_t, _N> b) {
+            using vmi_t=typename vec<f16_t, _N>::mask_type;
+            return vmi_t::cvt_from_rep(f16_lt(a(), b()));
+        }
+
+        template <size_t _N>
+        typename vec<f16_t, _N>::mask_type
+        f16_le(vec<f16_t, _N> a, vec<f16_t, _N> b) {
+            using vmi_t=typename vec<f16_t, _N>::mask_type;
+            return vmi_t::cvt_from_rep(f16_le(a(), b()));
+        }
+
+        template <size_t _N>
+        typename vec<f16_t, _N>::mask_type
+        f16_eq(vec<f16_t, _N> a, vec<f16_t, _N> b) {
+            using vmi_t=typename vec<f16_t, _N>::mask_type;
+            return vmi_t::cvt_from_rep(f16_eq(a(), b()));
+        }
+
+        template <size_t _N>
+        typename vec<f16_t, _N>::mask_type
+        f16_ne(vec<f16_t, _N> a, vec<f16_t, _N> b) {
+            using vmi_t=typename vec<f16_t, _N>::mask_type;
+            return vmi_t::cvt_from_rep(f16_ne(a(), b()));
+        }
+
+        template <size_t _N>
+        typename vec<f16_t, _N>::mask_type
+        f16_ge(vec<f16_t, _N> a, vec<f16_t, _N> b) {
+            using vmi_t=typename vec<f16_t, _N>::mask_type;
+            return vmi_t::cvt_from_rep(f16_ge(a(), b()));
+        }
+
+        template <size_t _N>
+        typename vec<f16_t, _N>::mask_type
+        f16_gt(vec<f16_t, _N> a, vec<f16_t, _N> b) {
+            using vmi_t=typename vec<f16_t, _N>::mask_type;
+            return vmi_t::cvt_from_rep(f16_gt(a(), b()));
+        }
+
+
+    }
+
+
     namespace op {
 
         template <>
@@ -392,8 +561,12 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if VF16_USE_INT_CMP> 0
+                return impl::f16_eq(a, b);
+#else
                 return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) < cvt_f16_to_f32(b()));
+#endif
             }
         };
 
@@ -404,8 +577,12 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if VF16_USE_INT_CMP> 0
+                return impl::f16_lt(a, b);
+#else
                 return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) < cvt_f16_to_f32(b()));
+#endif
             }
         };
 
@@ -416,8 +593,12 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if VF16_USE_INT_CMP> 0
+                return impl::f16_le(a, b);
+#else
                 return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) <= cvt_f16_to_f32(b()));
+#endif
             }
         };
 
@@ -428,8 +609,12 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if VF16_USE_INT_CMP> 0
+                return impl::f16_le(a, b);
+#else
                 return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) <= cvt_f16_to_f32(b()));
+#endif
             }
         };
 
@@ -440,8 +625,12 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if VF16_USE_INT_CMP> 0
+                return impl::f16_eq(a, b);
+#else
                 return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) == cvt_f16_to_f32(b()));
+#endif
             }
         };
 
@@ -452,8 +641,12 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if VF16_USE_INT_CMP> 0
+                return impl::f16_eq(a, b);
+#else
                 return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) == cvt_f16_to_f32(b()));
+#endif
             }
         };
 
@@ -464,8 +657,12 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if VF16_USE_INT_CMP> 0
+                return impl::f16_ne(a, b);
+#else
                 return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) != cvt_f16_to_f32(b()));
+#endif
             }
         };
 
@@ -476,8 +673,12 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if VF16_USE_INT_CMP> 0
+                return impl::f16_ne(a, b);
+#else
                 return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) != cvt_f16_to_f32(b()));
+#endif
             }
         };
 
@@ -488,8 +689,12 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if VF16_USE_INT_CMP> 0
+                return impl::f16_ge(a, b);
+#else
                 return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) >= cvt_f16_to_f32(b()));
+#endif
             }
         };
 
@@ -500,8 +705,12 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if VF16_USE_INT_CMP> 0
+                return impl::f16_ge(a, b);
+#else
                 return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) >= cvt_f16_to_f32(b()));
+#endif
             }
         };
 
@@ -512,8 +721,12 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if VF16_USE_INT_CMP> 0
+                return impl::f16_gt(a, b);
+#else
                 return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) > cvt_f16_to_f32(b()));
+#endif
             }
         };
 
@@ -524,8 +737,12 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if VF16_USE_INT_CMP> 0
+                return impl::f16_gt(a, b);
+#else
                 return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) > cvt_f16_to_f32(b()));
+#endif
             }
         };
 
@@ -1344,6 +1561,7 @@ cftal::trunc(const vec<f16_t, _N>& a)
     return vec<f16_t, _N>::cvt_from_rep(cvt_f32_to_f16(rf));
 }
 
+#undef VF16_USE_INT_CMP
 #endif
 
 // Local variables:
