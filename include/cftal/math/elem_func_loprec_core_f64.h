@@ -170,6 +170,10 @@ namespace cftal {
             vf_type
             __log_k(arg_t<vf_type> xc);
 
+            template <log_func _LFUNC>
+            static
+            vf_type
+            __log1p_k(arg_t<vf_type> xc);
 
             template <log_func _LFUNC>
             static
@@ -622,8 +626,6 @@ __reduce_log_arg(vf_type& xr, arg_t<vf_type> xc)
     return k;
 }
 
-
-
 template <typename _T>
 template <typename
     cftal::math::elem_func_loprec_core<double, _T>::log_func _LFUNC>
@@ -689,6 +691,30 @@ __log_k(arg_t<vf_type> xc)
         lh = kf * ctbl::m_lg2[0] + ll * ctbl::m_1_ln10[0];
     }
     return lh;
+}
+
+template <typename _T>
+template <typename
+    cftal::math::elem_func_loprec_core<double, _T>::log_func _LFUNC>
+inline
+typename cftal::math::elem_func_loprec_core<double, _T>::vf_type
+cftal::math::elem_func_loprec_core<double, _T>::
+__log1p_k(arg_t<vf_type> xc)
+{
+    vf_type xp1=xc + 1.0;
+    vf_type r= __log_k<_LFUNC>(xp1);
+    using ctbl=impl::d_real_constants<d_real<double>, double>;
+    vmf_type xc_tiny= abs(xc)< 0x1.0p-25;
+    vf_type r_tiny;
+    if (_LFUNC==log_func::c_log_e) {
+        r_tiny=xc;
+    } else if (_LFUNC==log_func::c_log_2) {
+        r_tiny= xc * ctbl::m_1_ln2[0];
+    } else if (_LFUNC==log_func::c_log_10) {
+        r_tiny = xc * ctbl::m_1_ln10[0];
+    }
+    r = _T::sel(xc_tiny, r_tiny, r);
+    return r;
 }
 
 template <typename _T>
