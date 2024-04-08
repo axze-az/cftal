@@ -92,9 +92,10 @@ printsingle(ib);
 i= [ib-1, (ib*2)-1];
 d = guessdegree(f, i, 0x1p-28);
 d;
-b = [|1, ..., 10|];
+b = [|2, ..., 10|];
 c = [|D, D...|];
-p = fpminimax(f, b, c, i, relative, floating);
+p = fpminimax(f, b, c, i, relative, floating, x);
+b = [|1|]@b;
 write_approx_prec(p, f, i);
 write_coeffs(p, "constexpr\n    const double log_c", "log", b, c);
 
