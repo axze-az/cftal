@@ -677,12 +677,12 @@ __log_k(arg_t<vf_type> xc)
     static const double ci[]={
         log_c10,
         log_c9, log_c8, log_c7, log_c6,
-        log_c5, log_c4, log_c3, log_c2
+        log_c5, log_c4, log_c3, log_c2, log_c1
     };
     vf_type r2=r*r;
     vf_type p=horner2(r, r2, ci);
     vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
-    vf_type ll=r+r2*p;
+    vf_type ll=r*p;
     vf_type lh;
     using ctbl=impl::d_real_constants<d_real<double>, double>;
     if (_LFUNC==log_func::c_log_e) {
