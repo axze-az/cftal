@@ -31,7 +31,7 @@ write_coeff(c1l, "", "constexpr\n    const f16_t _ln2_16_cw_l",
 /* ln(2)/N */
 c1h=halfprecision(log(2)/N);
 c1l=log(2)/N-c1h;
-write_coeff(c1h, "", constexpr\n    "const f16_t _ln2_16_h",
+write_coeff(c1h, "", "constexpr\n    const f16_t _ln2_16_h",
             halfprecision);
 write_coeff(c1l, "", "constexpr\n    const f16_t _ln2_16_l",
             halfprecision);
