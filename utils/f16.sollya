@@ -19,32 +19,42 @@ write_approx_prec(p, f1, i);
 write_coeffs(p, "constexpr\n    const f16_t exp_c", "exp", b, c);
 
 /* N/ln(2) */
-write_coeff(N/log(2), "", "const f16_t _16_ln2", halfprecision);
+write_coeff(N/log(2), "", "constexpr\n    const f16_t _16_ln2",
+            halfprecision);
 /* ln(2)/N Cody and Waite */
 c1h=round(log(2)/N, 11-3-4, RN);
 c1l=log(2)/N-c1h;
-write_coeff(c1h, "", "const f16_t _ln2_16_cw_h", halfprecision);
-write_coeff(c1l, "", "const f16_t _ln2_16_cw_l", halfprecision);
+write_coeff(c1h, "", "constexpr\n    const f16_t _ln2_16_cw_h",
+            halfprecision);
+write_coeff(c1l, "", "constexpr\n    const f16_t _ln2_16_cw_l",
+            halfprecision);
 /* ln(2)/N */
 c1h=halfprecision(log(2)/N);
 c1l=log(2)/N-c1h;
-write_coeff(c1h, "", "const f16_t _ln2_16_h", halfprecision);
-write_coeff(c1l, "", "const f16_t _ln2_16_l", halfprecision);
+write_coeff(c1h, "", constexpr\n    "const f16_t _ln2_16_h",
+            halfprecision);
+write_coeff(c1l, "", "constexpr\n    const f16_t _ln2_16_l",
+            halfprecision);
 
 /* log_10(x) = lg(10) */
 /* N/lg(2) */
-write_coeff(N/(log(2)/log(10)), "", "const f16_t _16_lg2", halfprecision);
+write_coeff(N/(log(2)/log(10)), "",
+            "constexpr\n    const f16_t _16_lg2", halfprecision);
 /* lg(2)/N Cody and Waite */
 lg_2_N=log(2)/(log(10))/N;
 c1h=round(lg_2_N, 11-3-4, RN);
 c1l=lg_2_N-c1h;
-write_coeff(c1h, "", "const f16_t _lg2_16_cw_h", halfprecision);
-write_coeff(c1l, "", "const f16_t _lg2_16_cw_l", halfprecision);
+write_coeff(c1h, "", "constexpr\n    const f16_t _lg2_16_cw_h",
+            halfprecision);
+write_coeff(c1l, "", "constexpr\n    const f16_t _lg2_16_cw_l",
+            halfprecision);
 /* lg(2)/N */
 c1h=halfprecision(lg_2_N);
 c1l=lg_2_N-c1h;
-write_coeff(c1h, "", "const f16_t _lg2_16_h", halfprecision);
-write_coeff(c1l, "", "const f16_t _lg2_16_l", halfprecision);
+write_coeff(c1h, "", "constexpr\n    const f16_t _lg2_16_h",
+            halfprecision);
+write_coeff(c1l, "", "constexpr\n    const f16_t _lg2_16_l",
+            halfprecision);
 
 /* a simple polynomial for exp f16 */
 f = exp(x);
@@ -55,8 +65,8 @@ b = [|0, ..., 3|];
 c = [|HP...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type exp_c", "exp", b, c);
-plot((p(x)-f(x))/f(x), i, postscriptfile, "exp-f32");
+write_coeffs(p, "constexpr\n    const f16_t exp_c", "exp", b, c);
+plot((p(x)-f(x))/f(x), i, postscriptfile, "exp-f16");
 
 /* a simple polynomial for higher precision exp f16 */
 f = exp(x);
@@ -68,7 +78,7 @@ c = [|HP...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
 write_coeffs(p, "constexpr\n    const f16_t pow_exp_c", "pow_exp", b, c);
-plot((p(x)-f(x))/f(x), i, postscriptfile, "pow-exp-f32");
+plot((p(x)-f(x))/f(x), i, postscriptfile, "pow-exp-f16");
 
 quit;
 
