@@ -679,7 +679,8 @@ typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
 cftal::math::elem_func_loprec_core<float, _T>::
 __exp_tbl_k(arg_t<vf_type> xr, arg_t<vi_type> idx)
 {
-#if defined (__tune_znver2__) || defined(__tune_znver3__)
+#if defined (__tune_znver2__) || defined(__tune_znver3__) \
+    || defined (__tune_znver4__)
     auto lk=make_fixed_lookup_table<exp_data<float>::EXP_N, float>(idx);
 #else
     auto lk=make_variable_lookup_table<float>(idx);
