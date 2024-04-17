@@ -783,6 +783,15 @@ namespace cftal {
                 __m128i sh= _mm_cvtsi32_si128(shift);
                 return v(a, sh);
             }
+#if defined (__AVX2__)
+            static __m256i v(__m256i a, __m128i shift) {
+                return _mm256_sll_epi16(a, shift);
+            }
+            static __m256i v(__m256i a, unsigned shift) {
+                __m128i sh= _mm_cvtsi32_si128(shift);
+                return v(a, sh);
+            }
+#endif
         };
 
         template <unsigned _P>
@@ -792,6 +801,13 @@ namespace cftal {
                     return make_zero_int::v();
                 return _mm_slli_epi16(a, _P);
             }
+#if defined (__AVX2__)
+            static __m256i v(__m256i a) {
+                if (_P>15)
+                    return make_zero_int256::v();
+                return _mm256_slli_epi16(a, _P);
+            }
+#endif
         };
 
         template <>
@@ -802,6 +818,11 @@ namespace cftal {
             static __m128i v(__m128i a) {
                 return _mm_add_epi16(a, a);
             }
+#if defined (__AVX2__)
+            static __m256i v(__m256i a) {
+                return _mm256_add_epi16(a, a);
+            }
+#endif
         };
 
         struct vpslld {
