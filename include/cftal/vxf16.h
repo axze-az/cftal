@@ -207,6 +207,90 @@ namespace cftal {
             return vec<f16_t, 16>::cvt_from_rep(r);
         }
 #endif
+
+#if defined (__SSSE3__)
+        template <>
+        class fixed_vec_lookup_table<8, f16_t, int16_t, 8> {
+        private:
+            __m128i _msk;
+
+            static
+            __m128i setup_msk(const vec<int16_t, 8>& i) {
+                // multiply by 2
+                __m128i m=x86::vpsllw_const<1>::v(i());
+                // shuffle it to lo/hi  bytes
+                const __m128i& p=x86::const_v16u8< 0,  0,  2,  2,
+                                                   4,  4,  6,  6,
+                                                   8,  8, 10, 10,
+                                                  12, 12, 14, 14>::iv();
+                m=x86::vpshufb::v(m, p);
+                // add one for the high bytes
+                const __m128i& o=x86::const_v16u8< 0,  1,  0,  1,
+                                                   0,  1,  0,  1,
+                                                   0,  1,  0,  1,
+                                                   0,  1,  0,  1>::iv();
+                return _mm_add_epi8(m, o);
+            }
+
+        public:
+            fixed_vec_lookup_table(const vec<int16_t, 8>& idx)
+                : _msk(setup_msk(idx)) {}
+            vec<f16_t, 8>
+            fromp(const f16_t* tbl) const {
+                vec<f16_t, 8> t=mem<vec<f16_t, 8>>::load(tbl);
+                vec<mf_f16_t, 8> ti=t();
+                vec<mf_f16_t, 8> ri=x86::vpshufb::v(ti(), _msk);
+                return vec<f16_t, 8>::cvt_from_rep(ri);
+           }
+        };
+#endif
+#if defined (__AVX2__)
+        template <>
+        class fixed_vec_lookup_table<8, f16_t, int16_t, 16> {
+        private:
+            __m256i _msk;
+
+            static
+            __m256i setup_msk(const vec<int16_t, 16>& i) {
+                // multiply by 2
+                __m256i it=i();
+                __m256i m=x86::vpsllw_const<1>::v(it);
+                // shuffle it to lo/hi  bytes
+                const __m256i& p=x86::const_v32u8< 0,  0,  2,  2,
+                                                   4,  4,  6,  6,
+                                                   8,  8, 10, 10,
+                                                  12, 12, 14, 14,
+                                                   0,  0,  2,  2,
+                                                   4,  4,  6,  6,
+                                                   8,  8, 10, 10,
+                                                  12, 12, 14, 14>::iv();
+                m=x86::vpshufb::v(m, p);
+                // add one for the high bytes
+                const __m256i& o=x86::const_v32u8< 0,  1,  0,  1,
+                                                   0,  1,  0,  1,
+                                                   0,  1,  0,  1,
+                                                   0,  1,  0,  1,
+                                                   0,  1,  0,  1,
+                                                   0,  1,  0,  1,
+                                                   0,  1,  0,  1,
+                                                   0,  1,  0,  1>::iv();
+                return _mm256_add_epi8(m, o);
+            }
+
+        public:
+            fixed_vec_lookup_table(const vec<int16_t, 16>& idx)
+                : _msk(setup_msk(idx)) {}
+            vec<f16_t, 16>
+            fromp(const f16_t* tbl) const {
+                vec<f16_t, 8> t=mem<vec<f16_t, 8>>::load(tbl);
+                vec<mf_f16_t, 8> ti=t();
+                vec<mf_f16_t, 16> ti2(ti, ti);
+                vec<mf_f16_t, 16> ri=x86::vpshufb::v(ti2(), _msk);
+                return vec<f16_t, 16>::cvt_from_rep(ri);
+            }
+        };
+#endif
+
 #endif
     }
 
