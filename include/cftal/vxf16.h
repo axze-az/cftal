@@ -213,7 +213,10 @@ namespace cftal {
         class fixed_vec_lookup_table<8, f16_t, int16_t, 8> {
         private:
             __m128i _msk;
-
+        protected:
+            __m128i msk() const {
+                return _msk;
+            }
             static
             __m128i setup_msk(const vec<int16_t, 8>& i) {
                 // multiply by 2
@@ -239,7 +242,7 @@ namespace cftal {
             fromp(const f16_t* tbl) const {
                 vec<f16_t, 8> t=mem<vec<f16_t, 8>>::load(tbl);
                 vec<mf_f16_t, 8> ti=t();
-                vec<mf_f16_t, 8> ri=x86::vpshufb::v(ti(), _msk);
+                vec<mf_f16_t, 8> ri=x86::vpshufb::v(ti(), msk());
                 return vec<f16_t, 8>::cvt_from_rep(ri);
            }
         };
@@ -249,7 +252,10 @@ namespace cftal {
         class fixed_vec_lookup_table<8, f16_t, int16_t, 16> {
         private:
             __m256i _msk;
-
+        protected:
+            __m256i msk() const {
+                return _msk;
+            }
             static
             __m256i setup_msk(const vec<int16_t, 16>& i) {
                 // multiply by 2
@@ -285,7 +291,7 @@ namespace cftal {
                 vec<f16_t, 8> t=mem<vec<f16_t, 8>>::load(tbl);
                 vec<mf_f16_t, 8> ti=t();
                 vec<mf_f16_t, 16> ti2(ti, ti);
-                vec<mf_f16_t, 16> ri=x86::vpshufb::v(ti2(), _msk);
+                vec<mf_f16_t, 16> ri=x86::vpshufb::v(ti2(), msk());
                 return vec<f16_t, 16>::cvt_from_rep(ri);
             }
         };
