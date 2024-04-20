@@ -18,8 +18,8 @@
 #if !defined (__CFTAL_VXF16_H__)
 #define __CFTAL_VXF16_H__ 1
 
-#if !defined(__AVX512VL__) || !defined(__AVX512FP16__) || \
-(__CFTAL_CFG_ENABLE_AVX512__==0)
+#if !defined(__AVX512VL__) || !defined(__AVX512FP16__) ||	\
+    (__CFTAL_CFG_ENABLE_AVX512__==0)
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/vec_cvt_f16.h>
@@ -54,8 +54,7 @@ namespace cftal {
         using value_type = f16_t;
         using mask_value_type =std::conditional_t<
             std::is_same_v<vec<float, 1>::mask_type, bit>,
-            bit, f16_t
-        >;
+            bit, f16_t>;
         using mask_type = vec<mask_value_type, 1>;
         vec() = default;
         vec(const vec& r) = default;
@@ -88,8 +87,7 @@ namespace cftal {
         using half_type = vec<f16_t, _N/2>;
         using mask_value_type =std::conditional_t<
             std::is_same_v<typename vec<float, _N>::mask_type, bit>,
-            bit, f16_t
-        >;
+            bit, f16_t>;
         using mask_type = vec<mask_value_type, _N>;
         vec() = default;
         vec(const vec& r) = default;
@@ -105,8 +103,9 @@ namespace cftal {
             : vec(init_list<f16_t>(l.begin(), l.end())) {}
         vec(init_list<f16_t> l) :
             _v(init_list<mf_f16_t>(
-                reinterpret_cast<const mf_f16_t*>(l.begin()),
-                reinterpret_cast<const mf_f16_t*>(l.end()))) {}
+		   reinterpret_cast<const mf_f16_t*>(l.begin()),
+		   reinterpret_cast<const mf_f16_t*>(l.end()))) {
+	}
         half_type lh() const {
             return half_type::cvt_from_rep(low_half(_v));
         }
@@ -165,10 +164,8 @@ namespace cftal {
         std::enable_if_t<
             std::is_same_v<
                 vec<f16_t, _N>,
-                typename vec<f16_t, _N>::mask_type
-            >,
-            vec<f16_t, _N>
-        >
+                typename vec<f16_t, _N>::mask_type>,
+            vec<f16_t, _N> >
         cvt_f32_msk_to_f16_msk(const vec<f32_t, _N>& m) {
             const vec<mf_f16_t, 2*_N> mv=as<const vec<mf_f16_t, 2*_N> >(m);
             auto oe=odd_elements(mv);
@@ -225,7 +222,7 @@ namespace cftal {
                 const __m128i& p=x86::const_v16u8< 0,  0,  2,  2,
                                                    4,  4,  6,  6,
                                                    8,  8, 10, 10,
-                                                  12, 12, 14, 14>::iv();
+						   12, 12, 14, 14>::iv();
                 m=x86::vpshufb::v(m, p);
                 // add one for the high bytes
                 const __m128i& o=x86::const_v16u8< 0,  1,  0,  1,
@@ -244,32 +241,32 @@ namespace cftal {
                 vec<mf_f16_t, 8> ti=t();
                 vec<mf_f16_t, 8> ri=x86::vpshufb::v(ti(), msk());
                 return vec<f16_t, 8>::cvt_from_rep(ri);
-           }
+	    }
         };
 
         template <>
         class fixed_vec_lookup_table<16, f16_t, int16_t, 8> :
-	    private fixed_vec_lookup_table<8, f16_t, int16_t, 8> {
-	    using base_type=fixed_vec_lookup_table<8, f16_t, int16_t, 8>;
+            private fixed_vec_lookup_table<8, f16_t, int16_t, 8> {
+            using base_type=fixed_vec_lookup_table<8, f16_t, int16_t, 8>;
         private:
             __m128i _idx_gt_7;
-	public:
-	    fixed_vec_lookup_table(const vec<int16_t, 8>& idx)
-		: base_type(idx),
-		  _idx_gt_7(_mm_cmpgt_epi16(idx(), _mm_set1_epi16(7))) {
-	    }
+        public:
+            fixed_vec_lookup_table(const vec<int16_t, 8>& idx)
+                : base_type(idx),
+                  _idx_gt_7(_mm_cmpgt_epi16(idx(), _mm_set1_epi16(7))) {
+            }
             vec<f16_t, 8>
             fromp(const f16_t* tbl) const {
                 vec<f16_t, 8> tl=mem<vec<f16_t, 8>>::load(tbl);
                 vec<f16_t, 8> th=mem<vec<f16_t, 8>>::load(tbl+8);
-		
+
                 vec<mf_f16_t, 8> til=tl(), tih=th();
                 vec<mf_f16_t, 8> ril=x86::vpshufb::v(til(), msk());
                 vec<mf_f16_t, 8> rih=x86::vpshufb::v(tih(), msk());
-		__m128i ri=x86::select_u16(_idx_gt_7, rih(), ril());
+                __m128i ri=x86::select_u16(_idx_gt_7, rih(), ril());
                 return vec<f16_t, 8>::cvt_from_rep(ri);
-	    }
-	};
+            }
+        };
 #endif
 #if defined (__AVX2__)
         template <>
@@ -289,11 +286,11 @@ namespace cftal {
                 const __m256i& p=x86::const_v32u8< 0,  0,  2,  2,
                                                    4,  4,  6,  6,
                                                    8,  8, 10, 10,
-                                                  12, 12, 14, 14,
+						   12, 12, 14, 14,
                                                    0,  0,  2,  2,
                                                    4,  4,  6,  6,
                                                    8,  8, 10, 10,
-                                                  12, 12, 14, 14>::iv();
+						   12, 12, 14, 14>::iv();
                 m=x86::vpshufb::v(m, p);
                 // add one for the high bytes
                 const __m256i& o=x86::const_v32u8< 0,  1,  0,  1,
@@ -312,7 +309,7 @@ namespace cftal {
                 : _msk(setup_msk(idx)) {}
             vec<f16_t, 16>
             fromp(const f16_t* tbl) const {
-		vec<f16_t, 8> t=mem<vec<f16_t, 8>>::load(tbl);
+                vec<f16_t, 8> t=mem<vec<f16_t, 8>>::load(tbl);
                 vec<mf_f16_t, 8> ti=t();
                 vec<mf_f16_t, 16> ti2(ti, ti);
                 vec<mf_f16_t, 16> ri=x86::vpshufb::v(ti2(), msk());
@@ -322,15 +319,15 @@ namespace cftal {
 
         template <>
         class fixed_vec_lookup_table<16, f16_t, int16_t, 16> :
-	    private fixed_vec_lookup_table<8, f16_t, int16_t, 16> {
-	    using base_type=fixed_vec_lookup_table<8, f16_t, int16_t, 16>;
+            private fixed_vec_lookup_table<8, f16_t, int16_t, 16> {
+            using base_type=fixed_vec_lookup_table<8, f16_t, int16_t, 16>;
         private:
             __m256i _idx_gt_7;
-	public:
-	    fixed_vec_lookup_table(const vec<int16_t, 16>& idx)
-		: base_type(idx),
-		  _idx_gt_7(_mm256_cmpgt_epi16(idx(), _mm256_set1_epi16(7))) {
-	    }
+        public:
+            fixed_vec_lookup_table(const vec<int16_t, 16>& idx)
+                : base_type(idx),
+                  _idx_gt_7(_mm256_cmpgt_epi16(idx(), _mm256_set1_epi16(7))) {
+            }
             vec<f16_t, 16>
             fromp(const f16_t* tbl) const {
                 vec<f16_t, 16> t=mem<vec<f16_t, 16>>::load(tbl);
@@ -340,15 +337,12 @@ namespace cftal {
                 vec<mf_f16_t, 16> th(thh, thh);
                 vec<mf_f16_t, 16> ril=x86::vpshufb::v(tl(), msk());
                 vec<mf_f16_t, 16> rih=x86::vpshufb::v(th(), msk());
-		__m256i ri=x86::select_u16(_idx_gt_7, rih(), ril());
+                __m256i ri=x86::select_u16(_idx_gt_7, rih(), ril());
                 return vec<f16_t, 16>::cvt_from_rep(ri);
-	    }
-	};
-
-
+            }
+        };
 #endif
-
-#endif
+#endif // __SSE2__
     }
 
     template <size_t _N>
@@ -364,8 +358,7 @@ namespace cftal {
         using type = std::conditional_t<
             std::is_same_v<vec<mf_f16_t, _N>, arg_t<vec<mf_f16_t, _N> > >,
             vec<f16_t, _N>,
-            const vec<f16_t, _N>&
-        >;
+            const vec<f16_t, _N>& >;
     };
 
     template <>
