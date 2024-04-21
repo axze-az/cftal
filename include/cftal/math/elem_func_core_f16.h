@@ -281,30 +281,26 @@ typename cftal::math::elem_func_core<cftal::f16_t, _T>::vi_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 __frexp_k(vf_type& m, arg_t<vf_type> x)
 {
-#if 1
-    return vi_type(0);
-#else
     vf_type xs=x;
     using fc=func_constants<f16_t>;
     vmf_type is_denom= abs(x) <= fc::max_denormal();
     // denormal handling
-    xs= _T::sel(is_denom, xs*vf_type(0x1.p25f), xs);
-    const int32_t neg_bias_p_1=-_T::bias()+1;
-    const int32_t neg_bias_p_1_m_25=neg_bias_p_1 - 25;
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p12_f16), xs);
+    const int16_t neg_bias_p_1=-_T::bias()+1;
+    const int16_t neg_bias_p_1_m_12=neg_bias_p_1 - 12;
     vi_type e=_T::sel_vi(_T::vmf_to_vmi(is_denom),
-                         neg_bias_p_1_m_25, neg_bias_p_1);
+                        neg_bias_p_1_m_12, neg_bias_p_1);;
     // reinterpret a integer
     vi_type i=_T::as_int(xs);
     // exponent:
-    e += ((i >> 23) & 0xff);
-    const int32_t half=0x3f000000;
-    const int32_t clear_exp_msk=0x807fffff;
+    e += ((i >> 10) & 0x1f);
+    const int16_t half=0x3800;
+    const int16_t clear_exp_msk=0x83ff;
     // insert exponent
     i &= clear_exp_msk;
     i |= half;
-    m= _T::as_f16_t(i);
+    m= _T::as_float(i);
     return e;
-#endif
 }
 
 template <typename _T>
