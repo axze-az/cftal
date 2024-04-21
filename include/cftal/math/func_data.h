@@ -19,6 +19,8 @@
 #define __CFTAL_MATH_FUNC_DATA_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/std_types.h>
+#include <cftal/f16_t.h>
 
 namespace cftal {
     namespace math {
@@ -44,6 +46,10 @@ namespace cftal {
             const table_t _tbl;
         };
 
+        // the half tables
+        template<>
+        const exp_data<f16_t>::table_t exp_data<f16_t>::_tbl;
+
         // the float tables
         template<>
         const exp_data<float>::table_t exp_data<float>::_tbl;
@@ -51,6 +57,8 @@ namespace cftal {
         // the double tables
         template<>
         const exp_data<double>::table_t exp_data<double>::_tbl;
+
+        extern template struct exp_data<f16_t>;
 
         extern template struct exp_data<float>;
 

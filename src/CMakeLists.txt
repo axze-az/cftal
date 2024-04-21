@@ -9,6 +9,7 @@ set (CSRCS
     mul_div_32.cc
     mul_div_64.cc
     d_real.cc
+    exp_data_f16.cc
     exp_data_f32.cc
     exp_data_f64.cc
     pow_log_data_f32.cc
