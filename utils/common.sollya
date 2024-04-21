@@ -615,6 +615,10 @@ write_coeff_table = proc(L, prefix, fmt) {
     {
         write("float");
     }
+    halfprecision:
+    {
+        write("cftal::f16_t");
+    }
     default:
     {
         write("unknown");
