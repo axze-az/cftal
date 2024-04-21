@@ -125,6 +125,54 @@ namespace cftal {
             static
             vf_type
             rsqrt_k(arg_t<vf_type> x);
+
+            class scale_result {
+                vf_type _f0;
+                vf_type _f1;
+            public:
+                constexpr
+                scale_result() = default;
+                constexpr
+                scale_result(const vf_type& s0, const vf_type& s1)
+                    : _f0(s0), _f1(s1) {}
+                constexpr const vf_type& f0() const { return _f0; }
+                constexpr const vf_type& f1() const { return _f1; }
+            };
+
+            // returns 2^k = r.f0()* r.f1() to avoid over and underflows
+            static
+            scale_result
+            __two_pow(arg_t<vi_type> ki);
+
+            // returns 2^k = r.f0()* r.f1() to avoid over and underflows
+            static
+            scale_result
+            __two_pow(arg_t<vf_type> k);
+
+            // returns y*2^ki
+            static
+            vf_type
+            __mul_two_pow(arg_t<vf_type> y, arg_t<vi_type> ki);
+
+            // returns y*2^ki, yl*2^ki
+            static
+            vdf_type
+            __mul_two_pow(arg_t<vf_type> y, arg_t<vf_type> yl,
+                          arg_t<vi_type> ki);
+
+            // scaling function for exponential functions
+            // returns y*2^k
+            static
+            vf_type
+            __mul_two_pow(arg_t<vf_type> y, arg_t<vf_type> k);
+
+            // scaling function for exponential functions
+            // returns yh*2^k, yl*2^k
+            static
+            vdf_type
+            __mul_two_pow(arg_t<vf_type> yh,
+                          arg_t<vf_type> yl,
+                          arg_t<vf_type> k);
         };
     }
 }
@@ -448,6 +496,87 @@ rsqrt_k(arg_t<vf_type> x)
     vf_type y=lookup_from<f16_rsqrt_data>(x);
     return y;
 }
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::scale_result
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+__two_pow(arg_t<vi_type> ki)
+{
+    vi_type kia= ki>>1;
+    vi_type kib= ki - kia;
+    vf_type rh= _T::insert_exp(_T::bias()+kia);
+    vf_type rl= _T::insert_exp(_T::bias()+kib);
+    return scale_result(rh, rl);
+}
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+__mul_two_pow(arg_t<vf_type> y, arg_t<vi_type> k)
+{
+    vi_type ka= k >> 1;
+    vi_type kb= k - ka;
+    ka <<= 10;
+    kb += _T::bias();
+    kb <<= 10;
+    vi_type yi=_T::as_int(y) + ka;
+    vf_type s1=_T::as_float(kb);
+    vf_type r=_T::as_float(yi) * s1;
+    return r;
+}
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vdf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+__mul_two_pow(arg_t<vf_type> y,  arg_t<vf_type> yl,
+              arg_t<vi_type> k)
+{
+    // use cftal::f16_ting point operations here because yl may underflow
+    auto sc=__two_pow(k);
+    vf_type rh= y*sc.f0();
+    vf_type rl= yl*sc.f0();
+    rh *= sc.f1();
+    rl *= sc.f1();
+    return vdf_type(rh, rl);
+}
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::scale_result
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+__two_pow(arg_t<vf_type> k)
+{
+    return __two_pow(_T::cvt_f_to_i(k));
+}
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+__mul_two_pow(arg_t<vf_type> ym, arg_t<vf_type> k)
+{
+    return __mul_two_pow(ym, _T::cvt_f_to_i(k));
+}
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vdf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+__mul_two_pow(arg_t<vf_type> yh, arg_t<vf_type> yl, arg_t<vf_type> k)
+{
+    return __mul_two_pow(yh, yl, _T::cvt_f_to_i(k));
+}
+
+
 
 
 // Local Variables:
