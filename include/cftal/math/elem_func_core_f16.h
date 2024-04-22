@@ -537,7 +537,7 @@ cftal::math::elem_func_core<cftal::f16_t, _T>::
 __mul_two_pow(arg_t<vf_type> y,  arg_t<vf_type> yl,
               arg_t<vi_type> k)
 {
-    // use cftal::f16_ting point operations here because yl may underflow
+    // use floating point operations here because yl may underflow
     auto sc=__two_pow(k);
     vf_type rh= y*sc.f0();
     vf_type rl= yl*sc.f0();
