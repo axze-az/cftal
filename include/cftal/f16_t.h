@@ -64,7 +64,8 @@ namespace cftal {
         constexpr const mf_f16_t& operator()() const { return _f; }
 
         constexpr f16_t(float v) : _f(impl::_cvt_f32_to_f16(v)) {}
-        explicit operator float() const { return cvt_f16_to_f32(_f); }
+        constexpr
+        explicit operator float() const { return impl::_cvt_f16_to_f32(_f); }
         explicit operator short int() const {
             return static_cast<short int>(cvt_f16_to_f32(_f));
         }
@@ -295,11 +296,17 @@ namespace cftal {
                                  eval(e._r._l));
     }
 
+    constexpr
     bool operator<(const f16_t& a, const f16_t& b);
+    constexpr
     bool operator<=(const f16_t& a, const f16_t& b);
+    constexpr
     bool operator==(const f16_t& a, const f16_t& b);
+    constexpr
     bool operator!=(const f16_t& a, const f16_t& b);
+    constexpr
     bool operator>=(const f16_t& a, const f16_t& b);
+    constexpr
     bool operator>(const f16_t& a, const f16_t& b);
 
     constexpr
@@ -536,36 +543,42 @@ namespace cftal {
 
 #if (__USE_STDCPP_FLOAT16_T__==0)
 
+constexpr
 inline
 bool cftal::operator<(const f16_t& a, const f16_t& b)
 {
     return float(a) < float(b);
 }
 
+constexpr
 inline
 bool cftal::operator<=(const f16_t& a, const f16_t& b)
 {
     return float(a) <= float(b);
 }
 
+constexpr
 inline
 bool cftal::operator==(const f16_t& a, const f16_t& b)
 {
     return float(a) == float(b);
 }
 
+constexpr
 inline
 bool cftal::operator!=(const f16_t& a, const f16_t& b)
 {
     return float(a) != float(b);
 }
 
+constexpr
 inline
 bool cftal::operator>=(const f16_t& a, const f16_t& b)
 {
     return float(a) >= float(b);
 }
 
+constexpr
 inline
 bool cftal::operator>(const f16_t& a, const f16_t& b)
 {
