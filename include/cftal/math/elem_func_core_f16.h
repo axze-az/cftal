@@ -173,6 +173,108 @@ namespace cftal {
             __mul_two_pow(arg_t<vf_type> yh,
                           arg_t<vf_type> yl,
                           arg_t<vf_type> k);
+
+            // arguments are the reduced xrh, xrl in
+            // [-log(2)/2, log(2)/2], and the argument
+            // k as argument for __mul_two_pow
+            // x is the unreduced argument
+            // calculates %e^(xrh+xrl)*2^k - 1 if exp_m1 is true,
+            // %e^(xrh+xrl)*2^k otherwise
+            template <bool _EXP_M1>
+            static
+            vf_type
+            __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
+                    arg_t<vf_type> k, arg_t<vf_type> x);
+
+            // arguments are the reduced xrh, xrl in
+            // [-log(2)/(2*N), log(2)/(2*N)], and the argument
+            // idx is the table index
+            // calculates %e^(xrh+xrl)*(2^idx/N)
+            template <result_prec _P>
+            static
+            vf_type
+            __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
+                        arg_t<vi_type> idx,
+                        vf_type* expl=nullptr);
+
+            // arguments are the reduced xrh, xrl in
+            // [-log(2)/(2*N), log(2)/(2*N)], and the argument
+            // ki as argument for __mul_two_pow
+            // idx is the table index
+            // calculates %e^(xrh+xrl)*(2^idx/N)*2^ki
+            static
+            vf_type
+            __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
+                        arg_t<vi_type> idx, arg_t<vi_type> ki,
+                        vf_type* expl=nullptr);
+
+            // argument reduction for %e^x and %e^x-1
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/2, log(2)/2] for calling __exp_k
+            static
+            void
+            __reduce_exp_arg(vf_type& __restrict xrh,
+                             vf_type& __restrict xrl,
+                             vf_type& __restrict kf,
+                             arg_t<vf_type> x);
+
+            // argument reduction for %e^(xh+xl) and %e^(xh+xl)-1
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/2, log(2)/2] for calling __exp_k
+            static
+            void
+            __reduce_exp_arg(vf_type& __restrict xrh,
+                             vf_type& __restrict xrl,
+                             vf_type& __restrict kf,
+                             arg_t<vf_type> xh,
+                             arg_t<vf_type> xl);
+
+            // argument reduction for %e^(x)
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
+            static
+            void
+            __reduce_exp_arg(vf_type& __restrict xrh,
+                             vf_type& __restrict xrl,
+                             vi_type& __restrict idx,
+                             vi_type& __restrict ki,
+                             arg_t<vf_type> x);
+
+            // argument reduction for %e^(xh+xl)
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
+            static
+            void
+            __reduce_exp_arg(vf_type& __restrict xrh,
+                             vf_type& __restrict xrl,
+                             vi_type& __restrict idx,
+                             vi_type& __restrict ki,
+                             arg_t<vf_type> xh,
+                             arg_t<vf_type> xl);
+
+            // calculates %e^x-1 if exp_m1 == true %e^x otherwise
+            template <bool _EXP_M1>
+            static
+            vf_type
+            exp_k(arg_t<vf_type> x);
+
+            // calculates %e^(xh+xl) into eh, el
+            static
+            void
+            exp_k2(vf_type& __restrict eh,
+                   vf_type& __restrict el,
+                   arg_t<vf_type> xh,
+                   arg_t<vf_type> xl);
+
+            // calculates %e^(-x*x)
+            static
+            vf_type
+            exp_mx2_k(arg_t<vf_type> x);
+
+            // calculates %e^(x*x)
+            static
+            vf_type
+            exp_px2_k(arg_t<vf_type> x);
         };
     }
 }
