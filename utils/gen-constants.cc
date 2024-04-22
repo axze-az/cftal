@@ -1060,11 +1060,13 @@ int main(int argc, char** argv)
                            math::impl::d_real_constants >(
                                std::cout,
                                "d_real_constants<_T, f16_t>");
+#if 0
         gen_math_constants<256,
                            t_real<f16_t>,
                            math::impl::t_real_constants >(
                                std::cout,
                                "t_real_constants<_T, f16_t>");
+#endif
     }
 
     return 0;
