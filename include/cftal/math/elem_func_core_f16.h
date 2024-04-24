@@ -28,6 +28,7 @@
 #include <cftal/math/func_data.h>
 #include <cftal/math/misc.h>
 #include <cftal/math/horner.h>
+#include <cftal/math/impl_d_real_constants_f16.h>
 #include <cftal/math/f16_tables.h>
 #include <cftal/mem.h>
 

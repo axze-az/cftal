@@ -116,7 +116,7 @@ cftal::math::impl::d_real_constants<_T, cftal::f16_t>::m_lg2(
 
 template <class _T>
 const _T
-cftal::math::impl::d_real_constants<_T, f16_t>::m_1_ln2(
+cftal::math::impl::d_real_constants<_T, cftal::f16_t>::m_1_ln2(
     +1.44238281e+00_f16, +3.12328339e-04_f16);
 
 template <class _T>
