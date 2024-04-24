@@ -30,7 +30,6 @@
 #include <cftal/math/horner.h>
 #include <cftal/math/impl_d_real_constants_f16.h>
 #include <cftal/math/f16_tables.h>
-#include <cftal/math/impl_d_real_constants_f32.h>
 #include <cftal/mem.h>
 
 namespace cftal {
@@ -860,7 +859,7 @@ __reduce_exp_arg(vf_type& xrh,
                  vf_type& kf,
                  arg_t<vf_type> x)
 {
-    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    using ctbl = impl::d_real_constants<d_real<f16_t>, f16_t>;
     kf = rint(vf_type(x * ctbl::m_1_ln2[0]));
     // l1h=round(log(2), 24-9, RN);
     // l1l=log(2)-l1h;
@@ -888,7 +887,7 @@ __reduce_exp_arg(vf_type& xrh,
                  arg_t<vf_type> xh,
                  arg_t<vf_type> xl)
 {
-    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    using ctbl = impl::d_real_constants<d_real<f16_t>, f16_t>;
     kf = rint(vf_type(xh * ctbl::m_1_ln2[0]));
     vf_type neg_kfln2h, neg_kfln2l;
     d_ops::unorm_mul122(neg_kfln2h, neg_kfln2l,
