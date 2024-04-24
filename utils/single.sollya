@@ -84,6 +84,10 @@ p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
 write_coeffs(p, "constexpr\n    const float exp_c", "exp", b, c);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "exp-f32");
+l1h=round(log(2), 24-9, RN);
+l1l=log(2)-l1h;
+write_coeff(l1h, "", "constexpr\n    const float _ln2_h_cw", single);
+write_coeff(l1l, "", "constexpr\n    const float _ln2_l_cw", single);
 
 /* a simple polynomial for higher precision exp f32 */
 f = exp(x);
