@@ -906,8 +906,8 @@ __reduce_exp_arg(vf_type& xrh,
                  vi_type& k,
                  arg_t<vf_type> x)
 {
-    static_assert(exp_data<float>::EXP_N==32,
-                 "exp_data<float>::EXP_N==32");
+    static_assert(exp_data<f16_t>::EXP_N==32,
+                 "exp_data<f16_t>::EXP_N==32");
     constexpr
     const float _32_ln2=+4.6166240692e+01f;
     // x^ : +0xb.17p-9f
@@ -924,8 +924,8 @@ __reduce_exp_arg(vf_type& xrh,
     vf_type kf= rint(x32ln2);
     vi_type ki=_T::cvt_f_to_i(x32ln2);
 #endif
-    idx = ki & int32_t(exp_data<float>::EXP_IDX_MASK);
-    k = ki >> int32_t(exp_data<float>::EXP_SHIFT);
+    idx = ki & int32_t(exp_data<f16_t>::EXP_IDX_MASK);
+    k = ki >> int32_t(exp_data<f16_t>::EXP_SHIFT);
     vf_type hi = x - kf * _ln2_32_cw_h;
     xrh = hi - kf * _ln2_32_cw_l;
     vf_type dx = hi-xrh;
@@ -942,8 +942,8 @@ __reduce_exp_arg(vf_type& xrh,
                  arg_t<vf_type> xh,
                  arg_t<vf_type> xl)
 {
-    static_assert(exp_data<float>::EXP_N==32,
-                 "exp_data<float>::EXP_N==32");
+    static_assert(exp_data<f16_t>::EXP_N==32,
+                 "exp_data<16_t>::EXP_N==32");
     constexpr
     const float _32_ln2=+4.6166240692e+01f;
    // x^ : +0xb.17218p-9f
@@ -960,8 +960,8 @@ __reduce_exp_arg(vf_type& xrh,
     vf_type kf= rint(xh32ln2);
     vi_type ki=_T::cvt_f_to_i(xh32ln2);
 #endif
-    idx = ki & int32_t(exp_data<float>::EXP_IDX_MASK);
-    k = ki >> int32_t(exp_data<float>::EXP_SHIFT);
+    idx = ki & int32_t(exp_data<f16_t>::EXP_IDX_MASK);
+    k = ki >> int32_t(exp_data<f16_t>::EXP_SHIFT);
     vf_type neg_kfln2h, neg_kfln2l;
     d_ops::unorm_mul122(neg_kfln2h, neg_kfln2l,
                         kf, -_ln2_32_h, -_ln2_32_l);
