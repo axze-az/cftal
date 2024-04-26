@@ -861,20 +861,10 @@ __reduce_exp_arg(vf_type& xrh,
 {
     using ctbl = impl::d_real_constants<d_real<f16_t>, f16_t>;
     kf = rint(vf_type(x * ctbl::m_1_ln2[0]));
-    // l1h=round(log(2), 24-9, RN);
-    // l1l=log(2)-l1h;
-    // write_coeff(l1h, "", "const float _ln2_h_cw", single);
-    // write_coeff(l1l, "", "const float _ln2_l_cw", single);
-    // x^ : +0xb.172p-4f
-    constexpr
-    const float _ln2_h_cw=+6.9314575195e-01f;
-    // x^ : +0xb.fbe8ep-23f
-    constexpr
-    const float _ln2_l_cw=+1.4286067653e-06f;
-    vf_type hi = x - kf * _ln2_h_cw;
-    xrh = hi - kf * _ln2_l_cw;
+    vf_type hi = x - kf * ctbl::m_ln2_cw[0];
+    xrh = hi - kf * ctbl::m_ln2_cw[1];
     vf_type dx = hi-xrh;
-    xrl = dx - kf * _ln2_l_cw;
+    xrl = dx - kf * ctbl::m_ln2_cw[1];
 }
 
 template <typename _T>
@@ -908,14 +898,15 @@ __reduce_exp_arg(vf_type& xrh,
 {
     static_assert(exp_data<f16_t>::EXP_N==32,
                  "exp_data<f16_t>::EXP_N==32");
+    // x^ : +0xb.8ap+2_f16
     constexpr
-    const float _32_ln2=+4.6166240692e+01f;
-    // x^ : +0xb.17p-9f
+    const f16_t _32_ln2=+4.61562e+01_f16;
+    // x^ : +0xbp-9_f16
     constexpr
-    const float _ln2_32_cw_h=+2.1659851074e-02f;
-    // x^ : +0x8.5fdf4p-23f
+    const f16_t _ln2_32_cw_h=+2.14844e-02_f16;
+    // x^ : +0xb.9p-16_f16
     constexpr
-    const float _ln2_32_cw_l=+9.9831822808e-07f;
+    const f16_t _ln2_32_cw_l=+1.76430e-04_f16;
 #if 0
     vf_type kf = rint(vf_type(x * _32_ln2));
     vi_type ki=_T::cvt_f_to_i(kf);
@@ -944,14 +935,15 @@ __reduce_exp_arg(vf_type& xrh,
 {
     static_assert(exp_data<f16_t>::EXP_N==32,
                  "exp_data<16_t>::EXP_N==32");
+    // x^ : +0xb.8ap+2_f16
     constexpr
-    const float _32_ln2=+4.6166240692e+01f;
-   // x^ : +0xb.17218p-9f
+    const f16_t _32_ln2=+4.61562e+01_f16;
+    // x^ : +0xb.18p-9_f16
     constexpr
-    const float _ln2_32_h=+2.1660849452e-02f;
-    // x^ : -0x8.2e308p-37f
+    const f16_t _ln2_32_h=+2.16675e-02_f16;
+    // x^ : -0xd.ep-21_f16
     constexpr
-    const float _ln2_32_l=-5.9520444129e-11f;
+    const f16_t _ln2_32_l=-6.61612e-06_f16;
 #if 0
     vf_type kf = rint(vf_type(xh * _32_ln2));
     vi_type ki=_T::cvt_f_to_i(kf);
