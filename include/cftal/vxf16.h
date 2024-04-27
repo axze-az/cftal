@@ -22,6 +22,7 @@
     (__CFTAL_CFG_ENABLE_AVX512__==0)
 #include <cftal/config.h>
 #include <cftal/vec.h>
+#include <cftal/cvt.h>
 #include <cftal/vec_cvt_f16.h>
 #include <cftal/f16_t.h>
 #include <cftal/vec_lookup.h>
@@ -1290,6 +1291,50 @@ namespace cftal {
             }
         };
 
+        template <>
+        struct cvt<vec<int16_t, 1>, vec<f16_t, 1> > {
+            static
+            vec<int16_t, 1>
+            v(const vec<f16_t, 1>& s) {
+                f16_t v=as<f16_t>(s());
+                int32_t r=float(v);
+                return r;
+            }
+        };
+
+        template <>
+        struct cvt<vec<f16_t, 1>, vec<int16_t, 1> > {
+            static
+            vec<f16_t, 1>
+            v(const vec<int16_t, 1>& s) {
+                float f=s();
+                return vec<f16_t, 1>(f);
+            }
+        };
+
+        template<size_t _N>
+        struct cvt<vec<int16_t, _N>, vec<f16_t, _N> > {
+            static
+            vec<int16_t, _N>
+            v(const vec<f16_t, _N>& s) {
+                auto s0=cvt<vec<float, _N>, vec<f16_t, _N> >::v(s);
+                auto s1=cvt<vec<int32_t, _N>, vec<float, _N> >::v(s0);
+                auto s2=cvt<vec<int16_t, _N>, vec<int32_t, _N> >::v(s1);
+                return s2;
+            }
+        };
+
+        template<size_t _N>
+        struct cvt<vec<f16_t, _N>, vec<int16_t, _N> > {
+            static
+            vec<f16_t, _N>
+            v(const vec<int16_t, _N>& s) {
+                auto s0=cvt<vec<int32_t, _N>, vec<int16_t, _N> >::v(s);
+                auto s1=cvt<vec<float, _N>, vec<int32_t, _N> >::v(s0);
+                auto s2=cvt<vec<f16_t, _N>, vec<float, _N> >::v(s1);
+                return s2;
+            }
+        };
     }
 
     // vector math functions for vxf16
