@@ -118,7 +118,7 @@ namespace cftal {
             }
             static
             vf_type insert_exp(const vi_type& e) {
-                vi_type ep(e << 23);
+                vi_type ep(e << 10);
                 return as<vf_type>(ep);
             }
 
