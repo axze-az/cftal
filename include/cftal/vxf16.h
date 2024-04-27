@@ -122,18 +122,6 @@ namespace cftal {
         vec(const expr<_OP<vec<f16_t, _N>>, _L, _R>& r) : vec(eval(r)) {}
     };
 
-    template <size_t _N>
-    vec<f16_t, _N/2>
-    low_half(const vec<f16_t, _N>& v) {
-        return v.lh();
-    }
-
-    template <size_t _N>
-    vec<f16_t, _N/2>
-    high_half(const vec<f16_t, _N>& v) {
-        retun v.hh();
-    }
-
     template <>
     struct mem< vec<f16_t, 1> > {
         static
@@ -233,7 +221,7 @@ namespace cftal {
                 const __m128i& p=x86::const_v16u8< 0,  0,  2,  2,
                                                    4,  4,  6,  6,
                                                    8,  8, 10, 10,
-						   12, 12, 14, 14>::iv();
+                                                  12, 12, 14, 14>::iv();
                 m=x86::vpshufb::v(m, p);
                 // add one for the high bytes
                 const __m128i& o=x86::const_v16u8< 0,  1,  0,  1,
@@ -248,11 +236,11 @@ namespace cftal {
                 : _msk(setup_msk(idx)) {}
             vec<f16_t, 8>
             fromp(const f16_t* tbl) const {
-                vec<f16_t, 8> t=mem<vec<f16_t, 8>>::load(tbl);
-                vec<mf_f16_t, 8> ti=t();
-                vec<mf_f16_t, 8> ri=x86::vpshufb::v(ti(), msk());
+                vec<f16_t, 8> tf=mem<vec<f16_t, 8>>::load(tbl);
+                vec<mf_f16_t, 8> t0=tf();
+                vec<mf_f16_t, 8> ri=x86::vpshufb::v(t0(), msk());
                 return vec<f16_t, 8>::cvt_from_rep(ri);
-	    }
+            }
         };
 
         template <>
@@ -268,12 +256,11 @@ namespace cftal {
             }
             vec<f16_t, 8>
             fromp(const f16_t* tbl) const {
-                vec<f16_t, 8> tl=mem<vec<f16_t, 8>>::load(tbl);
-                vec<f16_t, 8> th=mem<vec<f16_t, 8>>::load(tbl+8);
-
-                vec<mf_f16_t, 8> til=tl(), tih=th();
-                vec<mf_f16_t, 8> ril=x86::vpshufb::v(til(), msk());
-                vec<mf_f16_t, 8> rih=x86::vpshufb::v(tih(), msk());
+                vec<f16_t, 16> tf=mem<vec<f16_t, 16>>::load(tbl);
+                vec<mf_f16_t, 16> ti=tf();
+                vec<mf_f16_t, 8> t0=low_half(ti), t1=high_half(ti);
+                vec<mf_f16_t, 8> ril=x86::vpshufb::v(t0(), msk());
+                vec<mf_f16_t, 8> rih=x86::vpshufb::v(t1(), msk());
                 __m128i ri=x86::select_u16(_idx_gt_7, rih(), ril());
                 return vec<f16_t, 8>::cvt_from_rep(ri);
             }
@@ -297,11 +284,11 @@ namespace cftal {
                 const __m256i& p=x86::const_v32u8< 0,  0,  2,  2,
                                                    4,  4,  6,  6,
                                                    8,  8, 10, 10,
-						   12, 12, 14, 14,
+                                                  12, 12, 14, 14,
                                                    0,  0,  2,  2,
                                                    4,  4,  6,  6,
                                                    8,  8, 10, 10,
-						   12, 12, 14, 14>::iv();
+                                                  12, 12, 14, 14>::iv();
                 m=x86::vpshufb::v(m, p);
                 // add one for the high bytes
                 const __m256i& o=x86::const_v32u8< 0,  1,  0,  1,
@@ -320,10 +307,10 @@ namespace cftal {
                 : _msk(setup_msk(idx)) {}
             vec<f16_t, 16>
             fromp(const f16_t* tbl) const {
-                vec<f16_t, 8> t=mem<vec<f16_t, 8>>::load(tbl);
-                vec<mf_f16_t, 8> ti=t();
-                vec<mf_f16_t, 16> ti2(ti, ti);
-                vec<mf_f16_t, 16> ri=x86::vpshufb::v(ti2(), msk());
+                vec<f16_t, 8> tf=mem<vec<f16_t, 8>>::load(tbl);
+                vec<mf_f16_t, 8> ti=tf();
+                vec<mf_f16_t, 16> t0(ti, ti);
+                vec<mf_f16_t, 16> ri=x86::vpshufb::v(t0(), msk());
                 return vec<f16_t, 16>::cvt_from_rep(ri);
             }
         };
@@ -341,13 +328,13 @@ namespace cftal {
             }
             vec<f16_t, 16>
             fromp(const f16_t* tbl) const {
-                vec<f16_t, 16> t=mem<vec<f16_t, 16>>::load(tbl);
-                vec<mf_f16_t, 16> ti=t();
-                vec<mf_f16_t, 8> thl=low_half(ti), thh=high_half(ti);
-                vec<mf_f16_t, 16> tl(thl, thl);
-                vec<mf_f16_t, 16> th(thh, thh);
-                vec<mf_f16_t, 16> ril=x86::vpshufb::v(tl(), msk());
-                vec<mf_f16_t, 16> rih=x86::vpshufb::v(th(), msk());
+                vec<f16_t, 16> tf=mem<vec<f16_t, 16> >::load(tbl);
+                vec<mf_f16_t, 16> ti=tf();
+                vec<mf_f16_t, 8> t0l=low_half(ti), t1l=high_half(ti);
+                vec<mf_f16_t, 16> t0(t0l, t0l);
+                vec<mf_f16_t, 16> t1(t1l, t1l);
+                vec<mf_f16_t, 16> ril=x86::vpshufb::v(t0(), msk());
+                vec<mf_f16_t, 16> rih=x86::vpshufb::v(t1(), msk());
                 __m256i ri=x86::select_u16(_idx_gt_7, rih(), ril());
                 return vec<f16_t, 16>::cvt_from_rep(ri);
             }
