@@ -162,13 +162,13 @@ namespace cftal {
 
     // return the lower half of the vector
     template <typename _T, std::size_t _N>
-    const typename vec<_T, _N>::half_type&
-    low_half(const vec<_T, _N>& v);
+    auto
+    low_half(const vec<_T, _N>& v)->decltype(v.lh());
 
     // return the higher half of the vector
     template <typename _T, std::size_t _N>
-    const typename vec<_T, _N>::half_type&
-    high_half(const vec<_T, _N>& v);
+    auto
+    high_half(const vec<_T, _N>& v)->decltype(v.hh());
 
     // extract one element at pos _I from a vector
     template <std::size_t _I, typename _T, std::size_t _N>
@@ -762,16 +762,16 @@ cftal::size(const vec<_T, _N>& v)
 
 template <class _T, std::size_t _N>
 inline
-const typename cftal::vec<_T, _N>::half_type&
-cftal::low_half(const vec<_T, _N>& v)
+auto
+cftal::low_half(const vec<_T, _N>& v)->decltype(v.lh())
 {
     return v.lh();
 }
 
 template <class _T, std::size_t _N>
 inline
-const typename cftal::vec<_T, _N>::half_type&
-cftal::high_half(const vec<_T, _N>& v)
+auto
+cftal::high_half(const vec<_T, _N>& v)->decltype(v.hh())
 {
     return v.hh();
 }
