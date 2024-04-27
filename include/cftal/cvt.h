@@ -16,7 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
 #if !defined (__CFTAL_CVT_H__)
-#define __CFTAL_VEC_CVT_H__ 1
+#define __CFTAL_CVT_H__ 1
 
 #include <cftal/config.h>
 
