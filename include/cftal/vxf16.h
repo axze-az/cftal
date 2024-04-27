@@ -101,11 +101,11 @@ namespace cftal {
             _v(lh(), hh()) {}
         vec(std::initializer_list<f16_t> l)
             : vec(init_list<f16_t>(l.begin(), l.end())) {}
-        vec(init_list<f16_t> l) :
-            _v(init_list<mf_f16_t>(
-		   reinterpret_cast<const mf_f16_t*>(l.begin()),
-		   reinterpret_cast<const mf_f16_t*>(l.end()))) {
-	}
+        vec(init_list<f16_t> l) :_v(
+            init_list<mf_f16_t>(
+                reinterpret_cast<const mf_f16_t*>(l.begin()),
+                reinterpret_cast<const mf_f16_t*>(l.end()))) {
+        }
         half_type lh() const {
             return half_type::cvt_from_rep(low_half(_v));
         }
@@ -122,6 +122,17 @@ namespace cftal {
         vec(const expr<_OP<vec<f16_t, _N>>, _L, _R>& r) : vec(eval(r)) {}
     };
 
+    template <size_t _N>
+    vec<f16_t, _N/2>
+    low_half(const vec<f16_t, _N>& v) {
+        return v.lh();
+    }
+
+    template <size_t _N>
+    vec<f16_t, _N/2>
+    high_half(const vec<f16_t, _N>& v) {
+        retun v.hh();
+    }
 
     template <>
     struct mem< vec<f16_t, 1> > {
