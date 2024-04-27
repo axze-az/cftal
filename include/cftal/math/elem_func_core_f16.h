@@ -990,6 +990,66 @@ exp_k(arg_t<vf_type> xc)
     return y;
 }
 
+template <typename _T>
+void
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+exp_k2(vf_type& __restrict eh, vf_type& __restrict el,
+       arg_t<vf_type> xh, arg_t<vf_type> xl)
+{
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp_arg(xrh, xrl, idx, ki, xh, xl);
+    eh=__exp_tbl_k(xrh, xrl, idx, ki, &el);
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+exp_mx2_k(arg_t<vf_type> xc)
+{
+    vf_type y;
+    vf_type x2h, x2l;
+    if (d_real_traits<vf_type>::fma==true) {
+        d_ops::mul12(x2h, x2l, xc, -xc);
+    } else {
+        d_ops::sqr12(x2h, x2l, xc);
+        x2h = -x2h;
+        x2l = -x2l;
+    }
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp_arg(xrh, xrl, idx, ki, x2h, x2l);
+    y=__exp_tbl_k(xrh, xrl, idx, ki);
+    using fc_t = math::func_constants<f16_t>;
+    y= _T::sel_zero_or_val(x2h <= fc_t::exp_lo_zero(), y);
+    return y;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+exp_px2_k(arg_t<vf_type> xc)
+{
+    vf_type y;
+    using fc_t = math::func_constants<f16_t>;
+    vf_type x2h, x2l;
+    d_ops::sqr12(x2h, x2l, xc);
+#if 0
+    vmf_type border_case = (x2h == fc_t::exp_hi_inf()) &
+        (x2l < 0.0);
+    vf_type t= 0x1.01p-17f;
+    x2h = _T::sel(border_case, x2h - t, x2h);
+    x2l = _T::sel(border_case, x2l + t, x2l);
+#endif
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp_arg(xrh, xrl, idx, ki, x2h, x2l);
+    y=__exp_tbl_k(xrh, xrl, idx, ki);
+    y= _T::sel(x2h >= fc_t::exp_hi_inf(), _T::pinf(), y);
+    return y;
+}
 
 
 // Local Variables:
