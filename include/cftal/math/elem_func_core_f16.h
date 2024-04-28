@@ -944,7 +944,7 @@ __reduce_exp_arg(vf_type& xrh,
     // x^ : -0xd.ep-21_f16
     constexpr
     const f16_t _ln2_32_l=-6.61612e-06_f16;
-#if 0
+#if 1
     vf_type kf = rint(vf_type(xh * _32_ln2));
     vi_type ki=_T::cvt_f_to_i(kf);
 #else
