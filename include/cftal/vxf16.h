@@ -266,6 +266,40 @@ namespace cftal {
                 return vec<f16_t, 8>::cvt_from_rep(ri);
             }
         };
+
+        template <>
+        class fixed_vec_lookup_table<32, f16_t, int16_t, 8> :
+            private fixed_vec_lookup_table<8, f16_t, int16_t, 8> {
+            using base_type=fixed_vec_lookup_table<8, f16_t, int16_t, 8>;
+        private:
+            __m128i _idx_gt_7;
+            __m128i _idx_gt_15;
+            __m128i _idx_gt_23;
+        public:
+            fixed_vec_lookup_table(const vec<int16_t, 8>& idx)
+                : base_type(idx),
+                  _idx_gt_7(_mm_cmpgt_epi16(idx(), _mm_set1_epi16(7))),
+                  _idx_gt_15(_mm_cmpgt_epi16(idx(), _mm_set1_epi16(15))),
+                  _idx_gt_23(_mm_cmpgt_epi16(idx(), _mm_set1_epi16(23))) {
+            }
+            vec<f16_t, 8>
+            fromp(const f16_t* tbl) const {
+                vec<f16_t, 32> tf=mem<vec<f16_t, 32> >::load(tbl);
+                vec<mf_f16_t, 32> ti=tf();
+                vec<mf_f16_t, 16> t01=low_half(ti), t23=high_half(ti);
+                vec<mf_f16_t, 8> t0=low_half(t01), t1=high_half(t01);
+                vec<mf_f16_t, 8> t2=low_half(t23), t3=high_half(t23);
+                vec<mf_f16_t, 8> r0=x86::vpshufb::v(t0(), msk());
+                vec<mf_f16_t, 8> r1=x86::vpshufb::v(t1(), msk());
+                vec<mf_f16_t, 8> r2=x86::vpshufb::v(t2(), msk());
+                vec<mf_f16_t, 8> r3=x86::vpshufb::v(t3(), msk());
+                __m128i r01=x86::select_u16(_idx_gt_7, r1(), r0());
+                __m128i r23=x86::select_u16(_idx_gt_23, r3(), r2());
+                __m128i ri=x86::select_u16(_idx_gt_15, r23, r01);
+                return vec<f16_t, 8>::cvt_from_rep(ri);
+            }
+        };
+
 #endif
 #if defined (__AVX2__)
         template <>
@@ -340,6 +374,42 @@ namespace cftal {
                 return vec<f16_t, 16>::cvt_from_rep(ri);
             }
         };
+
+        template <>
+        class fixed_vec_lookup_table<32, f16_t, int16_t, 16> :
+            private fixed_vec_lookup_table<8, f16_t, int16_t, 16> {
+            using base_type=fixed_vec_lookup_table<8, f16_t, int16_t, 16>;
+        private:
+            __m256i _idx_gt_7;
+            __m256i _idx_gt_15;
+            __m256i _idx_gt_23;
+        public:
+            fixed_vec_lookup_table(const vec<int16_t, 16>& idx)
+                : base_type(idx),
+                  _idx_gt_7(_mm256_cmpgt_epi16(idx(), _mm256_set1_epi16(7))),
+                  _idx_gt_15(_mm256_cmpgt_epi16(idx(), _mm256_set1_epi16(15))),
+                  _idx_gt_23(_mm256_cmpgt_epi16(idx(), _mm256_set1_epi16(23))) {
+            }
+            vec<f16_t, 16>
+            fromp(const f16_t* tbl) const {
+                vec<f16_t, 32> tf=mem<vec<f16_t, 32> >::load(tbl);
+                vec<mf_f16_t, 32> ti=tf();
+                vec<mf_f16_t, 16> t01=low_half(ti), t23=high_half(ti);
+                vec<mf_f16_t, 8> t0l=low_half(t01), t1l=high_half(t01);
+                vec<mf_f16_t, 8> t2l=low_half(t23), t3l=high_half(t23);
+                vec<mf_f16_t, 16> t0(t0l, t0l), t1(t1l, t1l);
+                vec<mf_f16_t, 16> t2(t2l, t2l), t3(t3l, t3l);
+                vec<mf_f16_t, 16> r0=x86::vpshufb::v(t0(), msk());
+                vec<mf_f16_t, 16> r1=x86::vpshufb::v(t1(), msk());
+                vec<mf_f16_t, 16> r2=x86::vpshufb::v(t2(), msk());
+                vec<mf_f16_t, 16> r3=x86::vpshufb::v(t3(), msk());
+                __m256i r01=x86::select_u16(_idx_gt_7, r1(), r0());
+                __m256i r23=x86::select_u16(_idx_gt_23, r3(), r2());
+                __m256i ri=x86::select_u16(_idx_gt_15, r23, r01);
+                return vec<f16_t, 16>::cvt_from_rep(ri);
+            }
+        };
+
 #endif
 #endif // __SSE2__
     }
