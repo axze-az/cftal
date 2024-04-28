@@ -12,7 +12,7 @@ f1 = expm1(x);
 g=log(2)/2;
 i=[-g/N, g/N];
 exp_table(N, halfprecision);
-b = [|1|];
+b = [|1, 2|];
 c = [|HP...|];
 p = fpminimax(f1, b, c, i, relative, floating);
 write_approx_prec(p, f1, i);
