@@ -907,7 +907,7 @@ __reduce_exp_arg(vf_type& xrh,
     // x^ : +0xb.9p-16_f16
     constexpr
     const f16_t _ln2_32_cw_l=+1.76430e-04_f16;
-#if 0
+#if 1
     vf_type kf = rint(vf_type(x * _32_ln2));
     vi_type ki=_T::cvt_f_to_i(kf);
 #else
@@ -915,8 +915,8 @@ __reduce_exp_arg(vf_type& xrh,
     vf_type kf= rint(x32ln2);
     vi_type ki=_T::cvt_f_to_i(x32ln2);
 #endif
-    idx = ki & int32_t(exp_data<f16_t>::EXP_IDX_MASK);
-    k = ki >> int32_t(exp_data<f16_t>::EXP_SHIFT);
+    idx = ki & int16_t(exp_data<f16_t>::EXP_IDX_MASK);
+    k = ki >> int16_t(exp_data<f16_t>::EXP_SHIFT);
     vf_type hi = x - kf * _ln2_32_cw_h;
     xrh = hi - kf * _ln2_32_cw_l;
     vf_type dx = hi-xrh;
