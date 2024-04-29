@@ -800,9 +800,9 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type tl=lk.from(tbl._2_pow_i_n_l);
     vf_type th=lk.from(tbl._2_pow_i_n_h);
 
-    // vf_type x2=xrh*xrh;
+    vf_type x2=xrh*xrh;
     // vf_type p2=horner(xrh, exp_c3, exp_c2);
-    vf_type xrlp=xrl /*+x2*p2*/;
+    vf_type xrlp=xrl +x2*exp_c2;
     vf_type y;
     if (_P == result_prec::high) {
         vf_type eh, e0;
