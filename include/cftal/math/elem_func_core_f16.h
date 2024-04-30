@@ -366,7 +366,7 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
 {
     vf_type xs=x;
     using fc=func_constants<f16_t>;
-    vmf_type is_denom= abs(x) <= fc::max_denormal();
+    vmf_type is_denom= abs(x) < fc::min_normal();
 
     // input denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p12_f16), xs);
@@ -434,7 +434,7 @@ __frexp_k(vf_type& m, arg_t<vf_type> x)
 {
     vf_type xs=x;
     using fc=func_constants<f16_t>;
-    vmf_type is_denom= abs(x) <= fc::max_denormal();
+    vmf_type is_denom= abs(x) < fc::min_normal();
     // denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p12_f16), xs);
     const int16_t neg_bias_p_1=-_T::bias()+1;
@@ -462,7 +462,7 @@ frexp(arg_t<vf_type> x, vi_type* ve)
 {
     vf_type xs=x;
     using fc=func_constants<f16_t>;
-    vmf_type is_denom= abs(x) <= fc::max_denormal();
+    vmf_type is_denom= abs(x) < fc::min_normal();
     // denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p12_f16), xs);
     const int16_t neg_bias_p_1=-_T::bias()+1;
@@ -499,7 +499,7 @@ __ilogb_plus(arg_t<vf_type> x)
 {
     vf_type xs=abs(x);
     using fc=func_constants<f16_t>;
-    vmf_type is_denom= xs <= fc::max_denormal();
+    vmf_type is_denom= xs < fc::min_normal();
     vi_type eo=vi_type(0);
     // denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p12_f16), xs);

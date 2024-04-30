@@ -30,7 +30,7 @@ namespace cftal {
         template <>
         struct func_constants<f16_t> {
             constexpr static f16_t
-            min_normal() { return std::numeric_limits<f16_t>::min(); }
+            min_normal() { return 0x1p-14_f16; }
 
             constexpr static f16_t
             max_denormal() { return 6.097555160522460937500000e-05_f16; }

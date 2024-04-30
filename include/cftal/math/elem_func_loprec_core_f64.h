@@ -606,7 +606,7 @@ __reduce_log_arg(vf_type& xr, arg_t<vf_type> xc)
     const bytes8 offs=int64_t(0x3fe6a09e00000000LL);
 #if 0
     using fc = func_constants<double>;
-    vmf_type is_denom=xc <= fc::max_denormal();
+    vmf_type is_denom=xc < fc::min_normal();
     vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
     vi2_type k=_T::sel_vi2(_T::vmf_to_vmi2(is_denom),
                            vi2_type(-54-_T::bias()),

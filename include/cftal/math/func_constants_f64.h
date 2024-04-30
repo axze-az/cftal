@@ -29,7 +29,7 @@ namespace cftal {
         template <>
         struct func_constants<double> {
             static constexpr double
-            min_normal() { return std::numeric_limits<double>::min(); }
+            min_normal() { return 0x1p-1022; }
 
             static constexpr double
             max_denormal() { return 2.225073858507200889024587e-308; }
