@@ -80,26 +80,22 @@ namespace cftal {
         template <>
         struct check_max_denormal<double> {
             bool operator() (double a) const  {
-                const double dbl_max_denormal= 2.225073858507200889024587e-308;
-                return std::fabs(a) <= dbl_max_denormal;
+                return std::fabs(a) < 0x1p-1022;
             }
         };
 
         template <>
         struct check_max_denormal<float> {
             bool operator() (float a) const  {
-                const float flt_max_denormal= 1.175494210692441075487029e-38;
-                return std::fabs(a) <= flt_max_denormal;
+                return std::fabs(a) < 0x1p-126f;
             }
         };
 
         template <>
         struct check_max_denormal<f16_t> {
             bool operator() (f16_t a) const  {
-                const f16_t flt_max_denormal=
-                    nextafter(std::numeric_limits<f16_t>::min(), 0.0_f16);
                 using std::abs;
-                return abs(a) <= flt_max_denormal;
+                return abs(a) < 0x1p-14_f16;
             }
         };
 

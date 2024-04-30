@@ -696,7 +696,7 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> n)
 {
     vf_type xs=x;
     using fc=func_constants<double>;
-    vmf_type is_denom= abs(x) <= fc::max_denormal();
+    vmf_type is_denom= abs(x) < fc::min_normal();
     // input denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
     vmi2_type i_is_denom= _T::vmf_to_vmi2(is_denom);
@@ -789,7 +789,7 @@ cftal::math::elem_func_core<double, _T>::
 __frexp_k(vf_type& m, arg_t<vf_type> x)
 {
     using fc = func_constants<double>;
-    vmf_type is_denom= abs(x) <= fc::max_denormal();
+    vmf_type is_denom= abs(x) < fc::min_normal();
     vf_type xn=_T::sel(is_denom, x*0x1p54, x);
     const int32_t neg_bias_p_1=-_T::bias()+1;
     const int32_t neg_bias_p_1_m_54=neg_bias_p_1 - 54;
@@ -813,7 +813,7 @@ cftal::math::elem_func_core<double, _T>::
 frexp(arg_t<vf_type> x, vi_type* ve)
 {
     using fc = func_constants<double>;
-    vmf_type is_denom= abs(x) <= fc::max_denormal();
+    vmf_type is_denom= abs(x) < fc::min_normal();
     vf_type xn=_T::sel(is_denom, x*0x1p54, x);
     const int32_t neg_bias_p_1=-_T::bias()+1;
     const int32_t neg_bias_p_1_m_54=neg_bias_p_1 - 54;
@@ -847,7 +847,7 @@ __ilogb_plus(arg_t<vf_type> x)
 {
     vf_type xs=abs(x);
     using fc=func_constants<double>;
-    vmf_type is_denom= xs <= fc::max_denormal();
+    vmf_type is_denom= xs < fc::min_normal();
     // denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
     vmi2_type i_is_denom= _T::vmf_to_vmi2(is_denom);
@@ -2608,7 +2608,7 @@ __reduce_log_arg(vf_type& xr,
     const bytes8 offs=int64_t(0x3fe6a09e00000000LL);
 
     using fc = func_constants<double>;
-    vmf_type is_denom=xc <= fc::max_denormal();
+    vmf_type is_denom=xc < fc::min_normal();
     vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
     vi2_type k=_T::sel_vi2(_T::vmf_to_vmi2(is_denom),
                            vi2_type(-54-_T::bias()),
@@ -2637,7 +2637,7 @@ __reduce_log_arg(vf_type& xr,
     const bytes8 offs=int64_t(0x3fe6800000000000LL);
 
     using fc = func_constants<double>;
-    vmf_type is_denom=xc <= fc::max_denormal();
+    vmf_type is_denom=xc < fc::min_normal();
     vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
     vi2_type k=_T::sel_vi2(_T::vmf_to_vmi2(is_denom),
                            vi2_type(-54-_T::bias()),

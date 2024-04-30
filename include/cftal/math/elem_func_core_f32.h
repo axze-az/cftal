@@ -700,7 +700,7 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
 {
     vf_type xs=x;
     using fc=func_constants<float>;
-    vmf_type is_denom= abs(x) <= fc::max_denormal();
+    vmf_type is_denom= abs(x) < fc::min_normal();
 
     // input denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p25f), xs);
@@ -768,7 +768,7 @@ __frexp_k(vf_type& m, arg_t<vf_type> x)
 {
     vf_type xs=x;
     using fc=func_constants<float>;
-    vmf_type is_denom= abs(x) <= fc::max_denormal();
+    vmf_type is_denom= abs(x) < fc::min_normal();
     // denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p25f), xs);
     const int32_t neg_bias_p_1=-_T::bias()+1;
@@ -796,7 +796,7 @@ frexp(arg_t<vf_type> x, vi_type* ve)
 {
     vf_type xs=x;
     using fc=func_constants<float>;
-    vmf_type is_denom= abs(x) <= fc::max_denormal();
+    vmf_type is_denom= abs(x) < fc::min_normal();
     // denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p25f), xs);
     const int32_t neg_bias_p_1=-_T::bias()+1;
@@ -833,7 +833,7 @@ __ilogb_plus(arg_t<vf_type> x)
 {
     vf_type xs=abs(x);
     using fc=func_constants<float>;
-    vmf_type is_denom= xs <= fc::max_denormal();
+    vmf_type is_denom= xs < fc::min_normal();
     vi_type eo=vi_type(0);
     // denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p25f), xs);
@@ -2407,7 +2407,7 @@ __reduce_log_arg(vf_type& xr,
     const bytes4 offs=0x3f3504f3;
 
     using fc = func_constants<float>;
-    vmf_type is_denom=xc <= fc::max_denormal();
+    vmf_type is_denom=xc < fc::min_normal();
     vf_type x=_T::sel(is_denom, xc*0x1p25f, xc);
     vi_type k=_T::sel_vi(_T::vmf_to_vmi(is_denom),
                          vi_type(-25-_T::bias()),
@@ -2435,7 +2435,7 @@ __reduce_log_arg(vf_type& xr,
     constexpr
     const bytes4 offs=0x3f340000;
     using fc = func_constants<float>;
-    vmf_type is_denom=xc <= fc::max_denormal();
+    vmf_type is_denom=xc < fc::min_normal();
     vf_type x=_T::sel(is_denom, xc*0x1p25f, xc);
     vi_type k=_T::sel_vi(_T::vmf_to_vmi(is_denom),
                          vi_type(-25-_T::bias()),
