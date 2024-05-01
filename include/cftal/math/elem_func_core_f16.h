@@ -276,6 +276,89 @@ namespace cftal {
             static
             vf_type
             exp_px2_k(arg_t<vf_type> x);
+
+            // argument reduction for 2^(x)
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
+            static
+            void
+            __reduce_exp2_arg(vf_type& __restrict xrh,
+                              vf_type& __restrict xrl,
+                              vi_type& __restrict idx,
+                              vi_type& __restrict ki,
+                              arg_t<vf_type> x);
+
+            // argument reduction for 2^(xh+xl)
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
+            static
+            void
+            __reduce_exp2_arg(vf_type& __restrict xrh,
+                              vf_type& __restrict xrl,
+                              vi_type& __restrict idx,
+                              vi_type& __restrict ki,
+                              arg_t<vf_type> xh,
+                              arg_t<vf_type> xl);
+
+            // calculates 2^x-1 if exp_m1 == true 2^x otherwise
+            template <bool _EXP2_M1>
+            static
+            vf_type
+            exp2_k(arg_t<vf_type> x);
+
+            // calculates 2^(-x*x)
+            static
+            vf_type
+            exp2_mx2_k(arg_t<vf_type> x);
+
+            // calculates 2^(x*x)
+            static
+            vf_type
+            exp2_px2_k(arg_t<vf_type> x);
+
+            // argument reduction for 10^(x)
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
+            static
+            void
+            __reduce_exp10_arg(vf_type& __restrict xrh,
+                               vf_type& __restrict xrl,
+                               vi_type& __restrict idx,
+                               vi_type& __restrict ki,
+                               arg_t<vf_type> x);
+
+            // argument reduction for 10^(xh+xl)
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
+            static
+            void
+            __reduce_exp10_arg(vf_type& __restrict xrh,
+                               vf_type& __restrict xrl,
+                               vi_type& __restrict idx,
+                               vi_type& __restrict ki,
+                               arg_t<vf_type> xh,
+                               arg_t<vf_type> xl);
+
+            // calculates 10^x-1 if exp_m1 == true 10^x otherwise
+            template <bool _EXP10_M1>
+            static
+            vf_type
+            exp10_k(arg_t<vf_type> x);
+
+            // calculates 10^(-x*x)
+            static
+            vf_type
+            exp10_mx2_k(arg_t<vf_type> x);
+
+            // calculates 10^(x*x)
+            static
+            vf_type
+            exp10_px2_k(arg_t<vf_type> x);
+
+            // returns 1/(1+exp(-x))
+            static
+            vf_type
+            sig_k(arg_t<vf_type> x);
         };
     }
 }
@@ -640,7 +723,7 @@ cftal::math::elem_func_core<cftal::f16_t, _T>::
 __mul_two_pow(arg_t<vf_type> y,  arg_t<vf_type> yl,
               arg_t<vi_type> k)
 {
-    // use floating point operations here because yl may underflow
+    // use f16_ting point operations here because yl may underflow
     auto sc=__two_pow(k);
     vf_type rh= y*sc.f0();
     vf_type rl= yl*sc.f0();
@@ -973,7 +1056,7 @@ cftal::math::elem_func_core<cftal::f16_t, _T>::
 exp_k(arg_t<vf_type> xc)
 {
     vf_type y;
-    // float vector only code
+    // f16_t vector only code
     vf_type xrh, xrl;
     if (_EXP_M1==false) {
 #if 0
@@ -1054,6 +1137,320 @@ exp_px2_k(arg_t<vf_type> xc)
     return y;
 }
 
+template <typename _T>
+void
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+__reduce_exp2_arg(vf_type& xrh,
+                  vf_type& xrl,
+                  vi_type& idx,
+                  vi_type& k,
+                  arg_t<vf_type> x)
+{
+    static_assert(exp_data<f16_t>::EXP_N == 32,
+                  "exp_data<f16_t>::EXP_N == 32 expected");
+    constexpr const f16_t _ND=exp_data<f16_t>::EXP_N;
+    constexpr const f16_t _1_ND=f16_t(1.0f/float(exp_data<f16_t>::EXP_N));
+#if 0
+    vf_type kf= rint(vf_type(x*_ND));
+    vi_type ki=_T::cvt_f_to_i(kf);
+#else
+    vf_type xnd=x*_ND;
+    vf_type kf= rint(xnd);
+    vi_type ki=_T::cvt_f_to_i(xnd);
+#endif
+    idx= ki & exp_data<f16_t>::EXP_IDX_MASK;
+    k= ki >> exp_data<f16_t>::EXP_SHIFT;
+    vf_type xr= x- kf*_1_ND;
+    using ctbl = impl::d_real_constants<d_real<f16_t>, f16_t>;
+    d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2[0], ctbl::m_ln2[1]);
+    // d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2[0]);
+}
+
+template <typename _T>
+void
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+__reduce_exp2_arg(vf_type& xrh,
+                  vf_type& xrl,
+                  vi_type& idx,
+                  vi_type& k,
+                  arg_t<vf_type> xh,
+                  arg_t<vf_type> xl)
+{
+    static_assert(exp_data<f16_t>::EXP_N==32,
+                 "exp_data<f16_t>::EXP_N==32");
+    constexpr const f16_t _ND=exp_data<f16_t>::EXP_N;
+    constexpr const f16_t _1_ND=f16_t(1.0f/float(exp_data<f16_t>::EXP_N));
+#if 0
+    vf_type kf= rint(vf_type(xh*_ND));
+    vi_type ki=_T::cvt_f_to_i(kf);
+#else
+    vf_type xhnd=xh*_ND;
+    vf_type kf= rint(xhnd);
+    vi_type ki=_T::cvt_f_to_i(xhnd);
+#endif
+    idx= ki & exp_data<f16_t>::EXP_IDX_MASK;
+    k= ki >> exp_data<f16_t>::EXP_SHIFT;
+    d_ops::add122cond(xrh, xrl, kf*(-_1_ND), xh, xl);
+    using ctbl = impl::d_real_constants<d_real<f16_t>, f16_t>;
+    d_ops::mul22(xrh, xrl, xrh, xrl,
+                 ctbl::m_ln2[0], ctbl::m_ln2[1]);
+}
+
+template <typename _T>
+template <bool _EXP2_M1>
+inline
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+exp2_k(arg_t<vf_type> x)
+{
+    vf_type y;
+    vf_type xrh, xrl;
+    using ctbl = impl::d_real_constants<d_real<f16_t>, f16_t>;
+    if (_EXP2_M1==false) {
+        vi_type idx, ki;
+        __reduce_exp2_arg(xrh, xrl, idx, ki, x);
+        y=__exp_tbl_k(xrh, xrl, idx, ki);
+    } else {
+        vf_type kf= rint(vf_type(x));
+        vf_type xr = x - kf;
+        // for exp2 mul12 would be sufficient
+        d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2[0], ctbl::m_ln2[1]);
+        y=__exp_k<_EXP2_M1>(xrh, xrl, kf, x*ctbl::m_ln2[0]);
+    }
+    return y;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+exp2_mx2_k(arg_t<vf_type> xc)
+{
+    vf_type y;
+    vf_type x2h, x2l;
+    if (d_real_traits<vf_type>::fma==true) {
+        d_ops::mul12(x2h, x2l, xc, -xc);
+    } else {
+        d_ops::sqr12(x2h, x2l, xc);
+        x2h = -x2h;
+        x2l = -x2l;
+    }
+
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp2_arg(xrh, xrl, idx, ki, x2h, x2l);
+    y=__exp_tbl_k(xrh, xrl, idx, ki);
+    using fc_t = math::func_constants<f16_t>;
+    y= _T::sel_zero_or_val(x2h <= fc_t::exp2_lo_zero(), y);
+    return y;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+exp2_px2_k(arg_t<vf_type> xc)
+{
+    vf_type y;
+    vf_type x2h, x2l;
+    d_ops::sqr12(x2h, x2l, xc);
+
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp2_arg(xrh, xrl, idx, ki, x2h, x2l);
+    y=__exp_tbl_k(xrh, xrl, idx, ki);
+    using fc_t = math::func_constants<f16_t>;
+    y= _T::sel(x2h >= fc_t::exp2_hi_inf(), _T::pinf(), y);
+    return y;
+}
+
+template <typename _T>
+void
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+__reduce_exp10_arg(vf_type& xrh,
+                   vf_type& xrl,
+                   vi_type& idx,
+                   vi_type& k,
+                   arg_t<vf_type> x)
+{
+    static_assert(exp_data<f16_t>::EXP_N == 32,
+                  "exp_data<f16_t>::EXP_N == 32 expected");
+    // x^ : +0xd.4ap+3_f16
+    constexpr
+    const f16_t _32_lg2=+1.06312e+02_f16;
+    // x^ : +0xap-10_f16
+    constexpr
+    const f16_t _lg2_32_cw_h=+9.76562e-03_f16;
+    // x^ : -0xb.bep-15_f16
+    constexpr
+    const f16_t _lg2_32_cw_l=-3.58343e-04_f16;
+#if 0
+    vf_type kf= rint(vf_type(x*_32_lg2));
+    vi_type ki=_T::cvt_f_to_i(kf);
+#else
+    vf_type x32lg2=x*_32_lg2;
+    vf_type kf= rint(x32lg2);
+    vi_type ki=_T::cvt_f_to_i(x32lg2);
+#endif
+    idx= ki & int16_t(exp_data<f16_t>::EXP_IDX_MASK);
+    k= ki >> int16_t(exp_data<f16_t>::EXP_SHIFT);
+    vf_type hi = x - kf * _lg2_32_cw_h;
+    xrh = hi - kf * _lg2_32_cw_l;
+    vf_type dx= hi-xrh;
+    vf_type cr = dx- kf * _lg2_32_cw_l;
+    using ctbl = impl::d_real_constants<d_real<f16_t>, f16_t>;
+    d_ops::mul122(xrh, xrl, xrh, ctbl::m_ln10[0], ctbl::m_ln10[1]);
+    xrl += cr * ctbl::m_ln10[0];
+}
+
+template <typename _T>
+void
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+__reduce_exp10_arg(vf_type& xrh,
+                   vf_type& xrl,
+                   vi_type& idx,
+                   vi_type& k,
+                   arg_t<vf_type> xh,
+                   arg_t<vf_type> xl)
+{
+    static_assert(exp_data<f16_t>::EXP_N==32,
+                 "exp_data<f16_t>::EXP_N==32");
+    // x^ : +0xd.4ap+3_f16
+    constexpr
+    const f16_t _32_lg2=+1.06312e+02_f16;
+    // x^ : +0x9.a2p-10_f16
+    constexpr
+    const f16_t _lg2_32_h=+9.40704e-03_f16;
+    // x^ : +0x8p-26_f16
+    constexpr
+    const f16_t _lg2_32_l=+1.19209e-07_f16;
+    using ctbl = impl::d_real_constants<d_real<f16_t>, f16_t>;
+#if 0
+    vf_type kf = rint(vf_type(xh*_32_lg2));
+    vi_type ki=_T::cvt_f_to_i(kf);
+#else
+    vf_type xh32lg2=xh*_32_lg2;
+    vf_type kf= rint(xh32lg2);
+    vi_type ki=_T::cvt_f_to_i(xh32lg2);
+#endif
+    idx= ki & int16_t(exp_data<f16_t>::EXP_IDX_MASK);
+    k= ki >> int16_t(exp_data<f16_t>::EXP_SHIFT);
+    vf_type kf_lg_2_32_h, kf_lg_2_32_l;
+    d_ops::unorm_mul122(kf_lg_2_32_h, kf_lg_2_32_l,
+                        kf, -_lg2_32_h, -_lg2_32_l);
+    d_ops::add22cond(xrh, xrl,
+                     xh, xl,
+                     kf_lg_2_32_h, kf_lg_2_32_l);
+    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln10[0], ctbl::m_ln10[1]);
+}
+
+template <typename _T>
+template <bool _EXP10_M1>
+inline
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+exp10_k(arg_t<vf_type> x)
+{
+    vf_type y;
+    vf_type xrh, xrl;
+    if (_EXP10_M1==false) {
+        vi_type idx, ki;
+        __reduce_exp10_arg(xrh, xrl, idx, ki, x);
+        y=__exp_tbl_k(xrh, xrl, idx, ki);
+    } else {
+        using ctbl = impl::d_real_constants<d_real<f16_t>, f16_t>;
+        vf_type kf = rint(vf_type(x * ctbl::m_1_lg2[0]));
+        vf_type hi = x - kf * ctbl::m_lg2_cw[0];
+        vf_type xr = hi - kf * ctbl::m_lg2_cw[1];
+        vf_type dx= (hi-xr);
+        vf_type cr = dx-kf * ctbl::m_lg2_cw[1];
+        // for exp10 mul12 would be sufficient
+        d_ops::mul122(xrh, xrl, xr, ctbl::m_ln10[0], ctbl::m_ln10[1]);
+        xrl += cr * ctbl::m_ln10[0];
+        // do not normalize xrh, xrl
+        // d_ops::add12(xrh, xrl, xrh, xrl);
+        y=__exp_k<_EXP10_M1>(xrh, xrl, kf, x*ctbl::m_ln10[0]);
+    }
+    return y;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+exp10_mx2_k(arg_t<vf_type> xc)
+{
+    vf_type y;
+    vf_type x2h, x2l;
+    if (d_real_traits<vf_type>::fma==true) {
+        d_ops::mul12(x2h, x2l, xc, -xc);
+    } else {
+        d_ops::sqr12(x2h, x2l, xc);
+        x2h = -x2h;
+        x2l = -x2l;
+    }
+
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp10_arg(xrh, xrl, idx, ki, x2h, x2l);
+    y=__exp_tbl_k(xrh, xrl, idx, ki);
+    using fc_t = math::func_constants<f16_t>;
+    y= _T::sel_zero_or_val(x2h <= fc_t::exp10_lo_zero(), y);
+    return y;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+exp10_px2_k(arg_t<vf_type> xc)
+{
+    vf_type y;
+    vf_type x2h, x2l;
+    d_ops::sqr12(x2h, x2l, xc);
+
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp10_arg(xrh, xrl, idx, ki, x2h, x2l);
+    y=__exp_tbl_k(xrh, xrl, idx, ki);
+    using fc_t = math::func_constants<f16_t>;
+    y= _T::sel(x2h >= fc_t::exp10_hi_inf(), _T::pinf(), y);
+    return y;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+sig_k(arg_t<vf_type> x)
+{
+    using fc= func_constants<f16_t>;
+    constexpr const f16_t lgf_lo_eq_exp= fc::sig_le_eq_exp();
+    vmf_type xm= x>lgf_lo_eq_exp;
+    vf_type xe= _T::sel(xm, -x, x);
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp_arg(xrh, xrl, idx, ki, xe);
+    vf_type el, eh=
+        __exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &el);
+    auto sc=__two_pow(ki);
+    eh *= sc.f0();
+    eh *= sc.f1();
+    constexpr const f16_t lgf_hi_one=  fc::sig_hi_one();
+    vmf_type x_not_hi= x < lgf_hi_one;
+    vf_type rh, rl;
+    // avoid multiplication of subnormal numbers
+    vmf_type avoid_sn= xm & x_not_hi;
+    vf_type th=_T::sel_val_or_zero(avoid_sn, eh);
+    vf_type tl=_T::sel_val_or_zero(avoid_sn, el);
+    tl *= sc.f0();
+    tl *= sc.f1();
+    d_ops::add122cond(rh, rl, f16_t(1.0), th, tl);
+    d_ops::rcp21(rh, rh, rl);
+    vf_type r = _T::sel(xm, rh, eh);
+    r = _T::sel(x_not_hi, r, f16_t(1.0));
+    return r;
+}
 
 // Local Variables:
 // mode: c++
