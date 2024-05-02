@@ -1215,7 +1215,11 @@ exp2_k(arg_t<vf_type> x)
         vf_type xr = x - kf;
         // for exp2 mul12 would be sufficient
         d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2[0], ctbl::m_ln2[1]);
-        y=__exp_k<_EXP2_M1>(xrh, xrl, kf, x*ctbl::m_ln2[0]);
+        vf_type t, tl;
+        d_ops::mul122(t, tl, x*0x1p11_f16, ctbl::m_ln2[0], ctbl::m_ln2[1]);
+        t *= 0x1p-11_f16;
+        t = _T::sel(x==0.0_f16, x, t);
+        y=__exp_k<_EXP2_M1>(xrh, xrl, kf, t);
     }
     return y;
 }
