@@ -1153,7 +1153,7 @@ __reduce_exp2_arg(vf_type& xrh,
                   "exp_data<f16_t>::EXP_N == 32 expected");
     constexpr const f16_t _ND=exp_data<f16_t>::EXP_N;
     constexpr const f16_t _1_ND=f16_t(1.0f/float(exp_data<f16_t>::EXP_N));
-#if 0
+#if 1
     vf_type kf= rint(vf_type(x*_ND));
     vi_type ki=_T::cvt_f_to_i(kf);
 #else
@@ -1183,7 +1183,7 @@ __reduce_exp2_arg(vf_type& xrh,
                  "exp_data<f16_t>::EXP_N==32");
     constexpr const f16_t _ND=exp_data<f16_t>::EXP_N;
     constexpr const f16_t _1_ND=f16_t(1.0f/float(exp_data<f16_t>::EXP_N));
-#if 0
+#if 1
     vf_type kf= rint(vf_type(xh*_ND));
     vi_type ki=_T::cvt_f_to_i(kf);
 #else
@@ -1291,7 +1291,7 @@ __reduce_exp10_arg(vf_type& xrh,
     // x^ : -0xb.bep-15_f16
     constexpr
     const f16_t _lg2_32_cw_l=-3.58343e-04_f16;
-#if 0
+#if 1
     vf_type kf= rint(vf_type(x*_32_lg2));
     vi_type ki=_T::cvt_f_to_i(kf);
 #else
@@ -1332,7 +1332,7 @@ __reduce_exp10_arg(vf_type& xrh,
     constexpr
     const f16_t _lg2_32_l=+1.19209e-07_f16;
     using ctbl = impl::d_real_constants<d_real<f16_t>, f16_t>;
-#if 0
+#if 1
     vf_type kf = rint(vf_type(xh*_32_lg2));
     vi_type ki=_T::cvt_f_to_i(kf);
 #else
