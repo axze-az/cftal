@@ -1218,9 +1218,10 @@ exp2_k(arg_t<vf_type> x)
         vf_type xr = x - kf;
         const f16_t x_small_v=0x1p-11_f16/ctbl::m_ln2[0];
         vmf_type x_small = abs(x) < x_small_v;
-        xr = _T::sel(x_small, x, xr);
+        xr = _T::sel(x_small, x*0x1p14_f16, xr);
         // for exp2 mul12 would be sufficient
         d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2[0], ctbl::m_ln2[1]);
+        xrh = _T::sel(x_small, xrh*0x1p-14_f16, xrh);
         xrh=_T::sel(iszero(x), x, xrh);
         y=__exp_k<_EXP2_M1>(xrh, xrl, kf, x_small);
     }
@@ -1373,12 +1374,12 @@ exp10_k(arg_t<vf_type> x)
         vf_type cr = dx-kf * ctbl::m_lg2_cw[1];
         const f16_t x_small_v=0x1p-11_f16/ctbl::m_ln10[0];
         vmf_type x_small = abs(x) < x_small_v;
-        xrh = _T::sel(x_small, x, xrh);
-        xrl = _T::sel_zero_or_val(x_small, xrl);
+        xr = _T::sel(x_small, x*0x1p14_f16, xr);
         // for exp10 mul12 would be sufficient
         d_ops::mul122(xrh, xrl, xr, ctbl::m_ln10[0], ctbl::m_ln10[1]);
         xrl += cr * ctbl::m_ln10[0];
         // do not normalize xrh, xrl
+        xrh = _T::sel(x_small, xrh*0x1p-14_f16, xrh);
         xrh = _T::sel(iszero(x), x, xrh);
         // d_ops::add12(xrh, xrl, xrh, xrl);
         y=__exp_k<_EXP10_M1>(xrh, xrl, kf, x_small);
