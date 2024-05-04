@@ -1379,9 +1379,9 @@ exp10_k(arg_t<vf_type> x)
         d_ops::mul122(xrh, xrl, xr, ctbl::m_ln10[0], ctbl::m_ln10[1]);
         xrl += cr * ctbl::m_ln10[0];
         // do not normalize xrh, xrl
+        // d_ops::add12(xrh, xrl, xrh, xrl);
         xrh = _T::sel(x_small, xrh*0x1p-11_f16, xrh);
         xrh = _T::sel(iszero(x), x, xrh);
-        // d_ops::add12(xrh, xrl, xrh, xrl);
         y=__exp_k<_EXP10_M1>(xrh, xrl, kf, x_small);
     }
     return y;
