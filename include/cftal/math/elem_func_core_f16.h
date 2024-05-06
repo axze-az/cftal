@@ -1521,13 +1521,14 @@ sinh_cosh_k(arg_t<vf_type> xc)
             // x^5 : +0x8.c4p-10_f16
             constexpr
             const f16_t sinh_c5=+8.56018e-03_f16;
+            static_assert(sinh_c1==1.0_f16, "constraint violated");
 
             constexpr
             static const f16_t cs[]= {
-                sinh_c5, sinh_c3, sinh_c1
+                sinh_c5, sinh_c3
             };
             vf_type x2=x*x;
-            res = x * horner(x2, cs);
+            res = x + x*(x2*horner(x2, cs));
         }
     }
     // x^ : +0x8p-3_f16
@@ -1595,9 +1596,9 @@ sinh_cosh_k(arg_t<vf_type> xc)
             // base_type::__reduce_exp_arg(nxrh, nxrl, nidx, nk, -x);
             nxrh = -xrh;
             nxrl = -xrl;
-            vi_type s=-((k0<<exp_data<f16_t>::EXP_SHIFT)+idx);
-            nk = s >> exp_data<f16_t>::EXP_SHIFT;
-            nidx = s & exp_data<f16_t>::EXP_IDX_MASK;
+            vi_type s=-((k0<<int16_t(exp_data<f16_t>::EXP_SHIFT))+idx);
+            nk = s >> int16_t(exp_data<f16_t>::EXP_SHIFT);
+            nidx = s & int16_t(exp_data<f16_t>::EXP_IDX_MASK);
 
             nk -= 1;
             vf_type nyh, nyl;
@@ -1605,8 +1606,8 @@ sinh_cosh_k(arg_t<vf_type> xc)
             // we know k < 14
             // create the scaling factor, produce a negative sign
             // for sinh because we want to subtract %e^-x
-            const int32_t bias_with_sgn=
-                _F == hyperbolic_func::c_sinh ? _T::bias()+256 : _T::bias();
+            const int16_t bias_with_sgn=
+                _F == hyperbolic_func::c_sinh ? _T::bias()+32 : _T::bias();
             vf_type nsc=_T::insert_exp(bias_with_sgn + nk);
             nyh *= nsc;
             nyl *= nsc;
@@ -1752,7 +1753,7 @@ tanh_k(arg_t<vf_type> xc)
 {
     vf_type xa=abs(xc);
     using fc=func_constants<f16_t>;
-    vf_type tanh_x=1.0;
+    vf_type tanh_x=1.0_f16;
     // x^ : +0xb.18p-9_f16
     constexpr
     const f16_t tanh_i0_right=+2.16675e-02_f16;
@@ -1780,9 +1781,9 @@ tanh_k(arg_t<vf_type> xc)
         exl *= sc;
 
         vf_type exm1, exm1l;
-        d_ops::add212(exm1, exm1l, ex, exl, -1.0f);
+        d_ops::add212(exm1, exm1l, ex, exl, -1.0_f16);
         vf_type exp1, exp1l;
-        d_ops::add212(exp1, exp1l, ex, exl, 1.0f);
+        d_ops::add212(exp1, exp1l, ex, exl, 1.0_f16);
         vf_type tanh_h;
         d_ops::div21(tanh_h, exm1, exm1l, exp1, exp1l);
         tanh_x = _T::sel(x_medium, tanh_h, tanh_x);
