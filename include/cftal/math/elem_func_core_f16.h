@@ -1666,10 +1666,10 @@ sinh_cosh_k(arg_t<vf_type> xc)
         yh *= sc.f0();
         yh *= sc.f1();
 
-        // fpprec: 32
-        // bf16_t(rhs(solve(2^-30*%e^x=%e^(-x), x)[2]));
+        // fpprec: 32;
+        // bfloat(rhs(solve(2^-14*%e^x=%e^(-x), x)[2]));
         constexpr const f16_t
-        x_medium_max = 1.0397207708399179641258481821873e1;
+        x_medium_max = 4.8520302639196171659206248502072e0_f16;
         vmf_type x_medium= x <= x_medium_max;
         if (_F == hyperbolic_func::c_sinh)
             x_medium &= (x > sinh_i0_right);
@@ -1700,7 +1700,7 @@ sinh_cosh_k(arg_t<vf_type> xc)
             // create the scaling factor, produce a negative sign
             // for sinh because we want to subtract %e^-x
             const int32_t bias_with_sgn=
-                _F == hyperbolic_func::c_sinh ? _T::bias()+256 : _T::bias();
+                _F == hyperbolic_func::c_sinh ? _T::bias()+32 : _T::bias();
             vf_type nsc=_T::insert_exp(bias_with_sgn + nk);
             nyh *= nsc;
             nyl *= nsc;
