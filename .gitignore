@@ -4,3 +4,4 @@ build*
 distcc*
 .kdev4*
 *~
+*.bin
