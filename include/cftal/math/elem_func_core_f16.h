@@ -2466,13 +2466,13 @@ log10_k(arg_t<vf_type> xc)
     vf_type xr;
     vi_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(ki);
-    vf_type r=xr-1.0;
+    vf_type r=xr-1.0_f16;
 
     // log10(x) = kf*lg(2) + (r + r2*c2 + r3*p)/ln10;
     vf_type r2, r2l;
     d_ops::sqr12(r2, r2l, r);
     vf_type p= __log_poly_k_poly(r, r2);
-    constexpr const double log_c2=-0.5;
+    constexpr const f16_t log_c2=-0.5_f16;
     vf_type l= log_c2*r2;
     vf_type ei;
     d_ops::add12(l, ei, r, l);
@@ -2494,7 +2494,7 @@ log10p1_k(arg_t<vf_type> xc)
     vf_type r=xr-1.0f;
 
     vf_type abs_xc=abs(xc);
-    vmf_type xc_near_zero=abs_xc < 0x1p-3f;
+    vmf_type xc_near_zero=abs_xc < 0x1p-3_f16;
     r = _T::sel(xc_near_zero, xc, r);
 
     vf_type r2, r2l;
@@ -2527,7 +2527,7 @@ log10p1_k(arg_t<vf_type> xc)
     vf_type res=__mul_invln10_add_kflg2(l, ll, kf);
 
     vmf_type xc_tiny= abs_xc <
-        0x1p1f*func_constants<f16_t>::min_normal();
+        0x1p1_f16*func_constants<f16_t>::min_normal();
     using ctbl = impl::d_real_constants<d_real<f16_t>, f16_t>;
     vf_type t=xc * ctbl::m_1_ln10[0];
     res= _T::sel(xc_tiny, t, res);
