@@ -2995,13 +2995,13 @@ log10_k(arg_t<vf_type> xc)
     vf_type xr;
     vi_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(ki);
-    vf_type r=xr-1.0;
+    vf_type r=xr-1.0f;
 
     // log10(x) = kf*lg(2) + (r + r2*c2 + r3*p)/ln10;
     vf_type r2, r2l;
     d_ops::sqr12(r2, r2l, r);
     vf_type p= __log_poly_k_poly(r, r2);
-    constexpr const double log_c2=-0.5;
+    constexpr const float log_c2=-0.5f;
     vf_type l= log_c2*r2;
     vf_type ei;
     d_ops::add12(l, ei, r, l);
