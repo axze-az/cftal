@@ -56,6 +56,11 @@ log_around_1_table = proc(l, fmt) {
             printsingle(ci);
             pinvci = round(1/cic, l, RN);
             invci = round(1/cic, 12-3, RN);
+        }
+        halfprecision: {
+            // printsingle(ci);
+            pinvci = round(1/cic, l, RN);
+            invci = round(1/cic, 6-3, RN);
         };
         if (ci < 1.0) then {
             /* index is rounded down */
@@ -92,6 +97,16 @@ log_around_1_table = proc(l, fmt) {
             log10il=single(log10i-log10ih);
             plogih=single(plogi);
             plogil=single(plogi-plogih);
+        }
+        halfprecision: {
+            logih=halfprecision(logi);
+            logil=halfprecision(logi-logih);
+            log2ih=halfprecision(log2i);
+            log2il=halfprecision(log2i-log2ih);
+            log10ih=halfprecision(log10i);
+            log10il=halfprecision(log10i-log10ih);
+            plogih=halfprecision(plogi);
+            plogil=halfprecision(plogi-plogih);
         };
         lc=lc:.ci;
         lh=lh:.logih;
@@ -126,11 +141,16 @@ log_around_1_table = proc(l, fmt) {
     single: {
         write("    constexpr\n    const int32_t offs=");
         printsingle(offs);
+    }
+    halfprecision: {
+        write("    constexpr\n    const bytes2 offs=");
+        halfprecision(offs);
     };
     write(";\n");
 };
 
 /* f32: table based logarithm */
+write("// f32 data: \n");
 L=7;
 log_around_1_table(L, single);
 e_1_128=exp(1/128);
@@ -179,6 +199,7 @@ write_coeff(invln10lo, "",
             "constexpr\n    const float invln10lo", single);
 
 /* f64: table based logarithm */
+write("// f64 data: \n");
 L=7;
 log_around_1_table(L, double);
 e_1_128=exp(1/128);
@@ -225,3 +246,53 @@ write_coeff(invln10hi, "",
             "constexpr\n    const double invln10hi", double);
 write_coeff(invln10lo, "",
             "constexpr\n    const double invln10lo", double);
+
+/* f16: table based logarithm */
+write("// f16 data: \n");
+L=7;
+log_around_1_table(L, halfprecision);
+e_1_128=exp(1/128);
+ir = round(e_1_128, L, RU)-1;
+il = round(1-(e_1_128-1), L, RD)-1;
+if ( ir < 2*2^-L ) then {
+    ir = 2*2^-L;
+};
+if ( il > 2*2^-L ) then {
+    il = -2*2^-L;
+};
+i=[il, ir];
+f=log1p(x);
+d = guessdegree(f, i, 0x1p-13);
+d;
+b = [|1, ..., 2|];
+c = [|HP...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const f16_t log_c", "log", b, c);
+
+b = [|1, ..., 3|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const f16_t log_hp_c", "log_hp", b, c);
+
+write_coeff(1+il, "",
+            "constexpr\n    const f16_t _one_m_delta", halfprecision);
+write_coeff(1+ir, "",
+            "constexpr\n    const f16_t _one_p_delta", halfprecision);
+
+invln2=1.0/log(2);
+invln2hi=round(invln2, 6, RN);
+invln2lo=invln2-invln2hi;
+write_coeff(invln2hi, "",
+            "constexpr\n    const f16_t invln2hi", halfprecision);
+write_coeff(invln2lo, "",
+            "constexpr\n    const f16_t invln2lo", halfprecision);
+
+invln10=1.0/log(10);
+invln10hi=round(invln10, 6, RN);
+invln10lo=invln10-invln10hi;
+write_coeff(invln10hi, "",
+            "constexpr\n    const f16_t invln10hi", halfprecision);
+write_coeff(invln10lo, "",
+            "constexpr\n    const f16_t invln10lo", halfprecision);
+
