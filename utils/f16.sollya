@@ -133,7 +133,22 @@ write_coeffs(p, "constexpr\n    const f16_t tanh_c", "tanh", b, c);
 write_coeff(sup(i), "", "constexpr\n    const f16_t tanh_i0_right",
             halfprecision);
 
-quit;
+/* log1p for log implementation */
+f= log1p(x);
+ib=halfprecision(sqrt(2)/2);
+write_coeff(ib, "", "constexpr\n    const f16_t sqrt2_2",
+            halfprecision);
+i= [ib-1, (ib*2)-1];
+d = guessdegree(f, i, 0x1p-13);
+d;
+c = [|HP...|];
+b = [|1, ..., 6|];
+p = fpminimax(f, b, c, i, relative, floating);
+// b = [|3, ..., 6|];
+// p = fpminimax(f, b, c, i, relative, floating, x-0.5*x*x);
+// b =[|1, 2|]@b;
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const f16_t log_c", "log", b, c);
 
 /*
  * Local variables:
