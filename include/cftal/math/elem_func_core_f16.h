@@ -2389,17 +2389,13 @@ log2p1_k(arg_t<vf_type> xc)
     e += ei;
     vf_type ll=e + r2*(r*p);
 
-    vf_type res=__mul_invln2_add_kf(l, ll, kf);
-
     vmf_type xc_tiny= abs_xc <
         0x1p2_f16*func_constants<f16_t>::min_normal();
         // 0x1p-11_f16;
-    using ctbl = impl::d_real_constants<d_real<f16_t>, f16_t>;
-    // vf_type t=((xc*0x1p11_f16) * ctbl::m_1_ln2[0])*0x1p-11_f16;
-    vf_type t, tl;
-    d_ops::mul122(t, tl, xc*0x1p11_f16, ctbl::m_1_ln2[0], ctbl::m_1_ln2[1]);
-    t *= 0x1p-11_f16;
-    res= _T::sel(xc_tiny, t, res);
+    l = _T::sel(xc_tiny, xc*0x1p11_f16, l);
+    ll = _T::sel_zero_or_val(xc_tiny, ll);
+    vf_type res=__mul_invln2_add_kf(l, ll, kf);
+    res = _T::sel(xc_tiny, res*0x1p-11_f16, res);
     res= _T::sel(iszero(xc), xc, res);
     return res;
 }
