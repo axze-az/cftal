@@ -2394,8 +2394,12 @@ log2p1_k(arg_t<vf_type> xc)
     vmf_type xc_tiny= abs_xc <
         0x1p2f*func_constants<f16_t>::min_normal();
     using ctbl = impl::d_real_constants<d_real<f16_t>, f16_t>;
-    vf_type t=xc * ctbl::m_1_ln2[0];
+    // vf_type t=((xc*0x1p11_f16) * ctbl::m_1_ln2[0])*0x1p-11_f16;
+    vf_type t, tl;
+    d_ops::mul122(t, tl, xc*0x1p11_f16, ctbl::m_1_ln2[0], ctbl::m_1_ln2[1]);
+    t *= 0x1p-11_f16;
     res= _T::sel(xc_tiny, t, res);
+    res= _T::sel(iszero(xc), xc, res);
     return res;
 }
 
