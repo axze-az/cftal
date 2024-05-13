@@ -2937,13 +2937,14 @@ log2p1_k(arg_t<vf_type> xc)
     e += ei;
     vf_type ll=e + r2*(r*p);
 
-    vf_type res=__mul_invln2_add_kf(l, ll, kf);
-
     vmf_type xc_tiny= abs_xc <
         0x1p2f*func_constants<float>::min_normal();
-    using ctbl = impl::d_real_constants<d_real<float>, float>;
-    vf_type t=xc * ctbl::m_1_ln2[0];
-    res= _T::sel(xc_tiny, t, res);
+    l = _T::sel(xc_tiny, xc*0x1p24f, l);
+    ll = _T::sel_zero_or_val(xc_tiny, ll);
+    vf_type res=__mul_invln2_add_kf(l, ll, kf);
+    res = _T::sel(xc_tiny, res*0x1p-24f, res);
+    res= _T::sel(iszero(xc), xc, res);
+
     return res;
 }
 
@@ -3053,13 +3054,14 @@ log10p1_k(arg_t<vf_type> xc)
     e += ei;
     vf_type ll=e + r2*(r*p);
 
-    vf_type res=__mul_invln10_add_kflg2(l, ll, kf);
-
     vmf_type xc_tiny= abs_xc <
-        0x1p1f*func_constants<float>::min_normal();
-    using ctbl = impl::d_real_constants<d_real<float>, float>;
-    vf_type t=xc * ctbl::m_1_ln10[0];
-    res= _T::sel(xc_tiny, t, res);
+        0x1p2f*func_constants<float>::min_normal();
+    l = _T::sel(xc_tiny, xc*0x1p24f, l);
+    ll = _T::sel_zero_or_val(xc_tiny, ll);
+    vf_type res =__mul_invln10_add_kflg2(l, ll, kf);
+    res = _T::sel(xc_tiny, res*0x1p-24f, res);
+    res= _T::sel(iszero(xc), xc, res);
+
     return res;
 }
 
