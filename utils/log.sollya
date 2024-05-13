@@ -121,7 +121,7 @@ log_around_1_table = proc(l, fmt) {
         lpll=lpll:.plogil;
         i = i + 1;
     };
-    
+
     write_coeff_table(lc, "c", fmt);
     // write_coeff_table(linv, "invc", fmt);
     // write_coeff_table(lh, "logc_h", fmt);
@@ -289,7 +289,7 @@ write_coeff(invln2lo, "",
             "constexpr\n    const f16_t invln2lo", halfprecision);
 
 invln10=1.0/log(10);
-invln10hi=round(invln10, 6, RN);
+invln10hi=round(invln10, 6, RD);
 invln10lo=invln10-invln10hi;
 write_coeff(invln10hi, "",
             "constexpr\n    const f16_t invln10hi", halfprecision);

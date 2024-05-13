@@ -2389,13 +2389,14 @@ log2p1_k(arg_t<vf_type> xc)
     e += ei;
     vf_type ll=e + r2*(r*p);
 
-    vf_type res=__mul_invln2_add_kf(l, ll, kf);
-
     vmf_type xc_tiny= abs_xc <
-        0x1p2f*func_constants<f16_t>::min_normal();
-    using ctbl = impl::d_real_constants<d_real<f16_t>, f16_t>;
-    vf_type t=xc * ctbl::m_1_ln2[0];
-    res= _T::sel(xc_tiny, t, res);
+        0x1p2_f16*func_constants<f16_t>::min_normal();
+        // 0x1p-11_f16;
+    l = _T::sel(xc_tiny, xc*0x1p11_f16, l);
+    ll = _T::sel_zero_or_val(xc_tiny, ll);
+    vf_type res=__mul_invln2_add_kf(l, ll, kf);
+    res = _T::sel(xc_tiny, res*0x1p-11_f16, res);
+    res= _T::sel(iszero(xc), xc, res);
     return res;
 }
 
@@ -2407,12 +2408,12 @@ __mul_invln10_add_kflg2(arg_t<vf_type> l,
                         arg_t<vf_type> ll,
                         arg_t<vf_type> kf)
 {
-    // x^ : +0xep-5_f16
+    // x^ : +0xd.cp-5_f16
     constexpr
-    const f16_t invln10hi=+4.37500e-01_f16;
-    // x^ : -0xd.22p-12_f16
+    const f16_t invln10hi=+4.29688e-01_f16;
+    // x^ : +0x9.7p-11_f16
     constexpr
-    const f16_t invln10lo=-3.20625e-03_f16;
+    const f16_t invln10lo=+4.60815e-03_f16;
 
     vf_type l0, l1;
     vf_type l2, l3;
@@ -2506,13 +2507,15 @@ log10p1_k(arg_t<vf_type> xc)
     e += ei;
     vf_type ll=e + r2*(r*p);
 
-    vf_type res=__mul_invln10_add_kflg2(l, ll, kf);
-
     vmf_type xc_tiny= abs_xc <
-        0x1p1_f16*func_constants<f16_t>::min_normal();
-    using ctbl = impl::d_real_constants<d_real<f16_t>, f16_t>;
-    vf_type t=xc * ctbl::m_1_ln10[0];
-    res= _T::sel(xc_tiny, t, res);
+        // 0x1.0p3_f16*func_constants<f16_t>::min_normal();
+        0x1p-11_f16;
+    l = _T::sel(xc_tiny, xc*0x1p11_f16, l);
+    ll = _T::sel_zero_or_val(xc_tiny, ll);
+    vf_type res =__mul_invln10_add_kflg2(l, ll, kf);
+    res = _T::sel(xc_tiny, res*0x1p-11_f16, res);
+    res= _T::sel(iszero(xc), xc, res);
+
     return res;
 }
 

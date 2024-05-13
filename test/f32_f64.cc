@@ -524,7 +524,7 @@ bool cftal::test::f_eq_ulp(f16_t a,
     bool r=cmp_ulp(a, std::get<0>(b), ulp, us);
     if (us != nullptr) {
         bool f= is_faithful(a, b);
-#if 0
+#if 1
         if (f==false) {
             r=false;
         }
