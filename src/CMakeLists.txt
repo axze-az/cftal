@@ -12,6 +12,7 @@ set (CSRCS
     exp_data_f16.cc
     exp_data_f32.cc
     exp_data_f64.cc
+    pow_log_data_f16.cc
     pow_log_data_f32.cc
     pow_log_data_f64.cc
     erfc_data_f32.cc

@@ -321,6 +321,10 @@ cftal::math::exp_data<cftal::f16_t>::_tbl={
     }
 };
 
+namespace {
+    __attribute__((used)) cftal::int64_t _pad=-1LL;
+}
+
 template struct cftal::math::exp_data<cftal::f16_t>;
 
 
