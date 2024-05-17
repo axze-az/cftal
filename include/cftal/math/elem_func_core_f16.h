@@ -2211,7 +2211,7 @@ cftal::math::elem_func_core<cftal::f16_t, _T>::
 __log1p_poly_k(arg_t<vf_type> xc)
 {
     vf_type x=xc;
-    vf_type u=1.0f+xc;
+    vf_type u=1.0_f16+xc;
     vf_type xr;
     vi_type ki=__reduce_log_arg(xr, u);
     vf_type kf=_T::cvt_i_to_f(ki);
@@ -2350,11 +2350,11 @@ typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 log2p1_k(arg_t<vf_type> xc)
 {
-    vf_type u=1.0f+xc;
+    vf_type u=1.0_f16+xc;
     vf_type xr;
     vi_type ki=__reduce_log_arg(xr, u);
     vf_type kf=_T::cvt_i_to_f(ki);
-    vf_type r=xr-1.0f;
+    vf_type r=xr-1.0_f16;
 
     // log2p1(x) = kf + (r + r2*c2 + r3*p)/ln2
     vf_type abs_xc= abs(xc);
@@ -2469,7 +2469,7 @@ typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 log10p1_k(arg_t<vf_type> xc)
 {
-    vf_type u=1.0f+xc;
+    vf_type u=1.0_f16+xc;
     vf_type xr;
     vi_type ki=__reduce_log_arg(xr, u);
     vf_type kf=_T::cvt_i_to_f(ki);
