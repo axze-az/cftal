@@ -2113,7 +2113,7 @@ __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xcl)
     return __log_tbl_k2<_P>(r, rl, log_c_h, log_c_l, kf);
 }
 
-#define FORCE_FMA 1
+#define FORCE_FMA 0
 template <typename _T>
 inline
 typename cftal::math::elem_func_core<cftal::f16_t, _T>::vdf_type
@@ -2136,11 +2136,17 @@ __log_tbl_k12(arg_t<vf_type> xc)
     if (FORCE_FMA || d_real_traits<vf_type>::fma == true) {
         r = xr * inv_c - 1.0_f16;
     } else {
+#if 1
+        d_ops::mul12(rh, rl, xr, inv_c);
+        rh -= 1.0_f16;
+        r = rh + rl;
+#else
         d_real_traits<vf_type>::split(xr, rh, rl);
         rh *= inv_c;
         rl *= inv_c;
         rh -= 1.0_f16;
         r = rh + rl;
+#endif
     }
 #if 0
     // [-1.5625e-2, 1.5625e-2] : | p - f | <= 2^-31.0546875
