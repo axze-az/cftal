@@ -2563,7 +2563,6 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     ylnx[0] *= scale_up;
     ylnx[1] *= scale_up;
 #endif
-    vmf_type rnan=isnan(ylnx[0]);
     // ylnx[0] = _T::sel_zero_or_val(rnan, ylnx[0]);
     // ylnx[1] = _T::sel_zero_or_val(rnan, ylnx[1]);
     vf_type xrh, xrl;
@@ -2590,6 +2589,7 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
         (dh > exp_hi_inf) | ((dh == exp_hi_inf) & (dl >= 0.0_f16)),
         _T::pinf(), res);
     // guess the result if the calculation failed
+    vmf_type rnan=isnan(dh);
     vmf_type abs_x_lt_1 = abs_x < 1.0_f16;
     vmf_type y_gt_1 = y > 1.0_f16;
     res = _T::sel(rnan, _T::pinf(), res);
@@ -2649,13 +2649,31 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
     vf_type res=__exp_tbl_k(xrh, xrl, idx, ki);
 
     using fc=func_constants<f16_t>;
-    const vf_type& d= ylnx[0];
-    constexpr
-    const f16_t exp_hi_inf= fc::exp_hi_inf();
+    const vf_type& dh = ylnx[0];
+    const vf_type& dl = ylnx[1];
     constexpr
     const f16_t exp_lo_zero= fc::exp_lo_zero();
-    res = _T::sel_zero_or_val(d <= exp_lo_zero, res);
-    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
+    res = _T::sel_zero_or_val(
+        (dh < exp_lo_zero) | ((dh == exp_lo_zero) & (dl <= 0.0_f16)),
+        res);
+    constexpr
+    const f16_t exp_hi_inf= fc::exp_hi_inf();
+    res = _T::sel(
+        (dh > exp_hi_inf) | ((dh == exp_hi_inf) & (dl >= 0.0_f16)),
+        _T::pinf(), res);
+
+    // guess the result if the calculation failed, because 16 bit integers
+    // are really large compared to fp16
+    if (_CALC_ROOT==false) {
+        vmf_type rnan=isnan(dh);
+        vmf_type abs_x_lt_1 = abs_x < 1.0_f16;
+        vmf_type y_gt_1 = _T::vmi_to_vmf(e > 1.0);
+        res = _T::sel(rnan, _T::pinf(), res);
+        res = _T::sel_zero_or_val(rnan &
+                                ((abs_x_lt_1 & y_gt_1) |
+                                ((~abs_x_lt_1) & (~y_gt_1))),
+                                res);
+    }
     return res;
 }
 
