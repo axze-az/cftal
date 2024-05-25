@@ -2524,8 +2524,8 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     vf_type abs_x= abs(x);
     vdf_type lnx= __log_tbl_k12(abs_x);
-    vdf_type ylnx;
 
+    vdf_type ylnx;
     d_ops::mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
 
     vf_type xrh, xrl;
