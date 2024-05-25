@@ -2656,12 +2656,13 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
     res = _T::sel_zero_or_val(
         (dh < exp_lo_zero) | ((dh == exp_lo_zero) & (dl <= 0.0_f16)),
         res);
-    constexpr
-    const f16_t exp_hi_inf= fc::exp_hi_inf();
-    res = _T::sel(
-        (dh > exp_hi_inf) | ((dh == exp_hi_inf) & (dl >= 0.0_f16)),
-        _T::pinf(), res);
-
+    if (_CALC_ROOT==false) {
+        constexpr
+        const f16_t exp_hi_inf= fc::exp_hi_inf();
+        res = _T::sel(
+            (dh > exp_hi_inf) | ((dh == exp_hi_inf) & (dl >= 0.0_f16)),
+            _T::pinf(), res);
+    }
     // guess the result if the calculation failed, because 16 bit integers
     // are really large compared to fp16
     if (_CALC_ROOT==false) {
