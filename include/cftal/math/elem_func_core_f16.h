@@ -838,7 +838,7 @@ cbrt_k(arg_t<vf_type> xc)
     vf_type xp=abs(xc);
 
     // reduce x into [2^-3, 1.0)
-    const int32_t shift_1_3 = 9;
+    const int32_t shift_1_3 = 7;
     const int32_t fac_1_3 = ((1<<shift_1_3)+2)/3;
 
     vf_type mm0;
@@ -949,7 +949,7 @@ rcbrt_k(arg_t<vf_type> xc)
     vf_type xp=abs(xc);
 
     // reduce x into [2^-3, 1.0)
-    const int32_t shift_1_3 = 9;
+    const int32_t shift_1_3 = 7;
     const int32_t fac_1_3 = ((1<<shift_1_3)+2)/3;
 
     vf_type mm0;
@@ -1049,8 +1049,8 @@ cftal::math::elem_func_core<cftal::f16_t, _T>::
 root12_k(arg_t<vf_type> xc)
 {
     // reduce x into [2^-12, 1.0)
-    const int32_t shift_1_12= 0x11;
-    const int32_t fac_1_12= 0x2aab;
+    const int32_t shift_1_12= 0xb;
+    const int32_t fac_1_12= 0xab;
 
     vf_type xp=abs(xc);
     vf_type mm0;
