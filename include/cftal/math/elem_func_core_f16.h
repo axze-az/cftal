@@ -1112,7 +1112,7 @@ root12_k(arg_t<vf_type> xc)
     vf_type mm_b= _T::sel(mm0 < 0x1p-3_f16, mm_i2, mm_i3);
     vf_type mm= _T::sel(mm0 < 0x1p-6_f16, mm_a, mm_b);
 
-    mm = impl::root_12::householder5<f16_t>(mm, mm0);
+    mm = impl::root_12::order3<f16_t>(mm, mm0);
     vi_type e12c_exp=(e12c<<10);
     vi_type mmi=_T::as_int(mm) + e12c_exp;
     mm=_T::as_float(mmi);
