@@ -20,6 +20,7 @@
 
 #include <cftal/config.h>
 #include <cftal/types.h>
+#include <cftal/f16_t.h>
 #include <cftal/type_traits.h>
 #include <cftal/vec_spec.h>
 #include <cftal/vec_cvt.h>
@@ -314,11 +315,14 @@ cftal::round_to_nearest_even_last_bits(const  vec<_T, _N>& v)
 
     using int_type =
         select_t<std::is_same_v<_T, double>,
-		 int64_t,
-		 select_t<std::is_same_v<_T, float>,
-			  int32_t,
-			  _T>
-		 >;
+                 int64_t,
+                 select_t<std::is_same_v<_T, float>,
+                          int32_t,
+                          select_t<std::is_same_v<_T, f16_t>,
+                                   int16_t,
+                                   _T>
+                          >
+                  >;
     using vi_type = vec<int_type, _N>;
     using vmi_type = typename vec<int_type, _N>::mask_type;
     return impl::round_to_nearest_even_last_bits<vec<_T, _N>, _T,
@@ -356,11 +360,14 @@ cftal::round_to_zero_last_bits(const vec<_T, _N>& v)
 
     using int_type =
         select_t<std::is_same_v<_T, double>,
-		 int64_t,
-		 select_t<std::is_same_v<_T, float>,
-			  int32_t,
-			  _T>
-		 >;
+                 int64_t,
+                 select_t<std::is_same_v<_T, float>,
+                          int32_t,
+                          select_t<std::is_same_v<_T, f16_t>,
+                                   int16_t,
+                                   _T>
+                          >
+                  >;
     return impl::round_to_zero_last_bits<vec<_T, _N>, _T,
                                          vec<int_type, _N>, int_type,
                                          _BITS>(v);

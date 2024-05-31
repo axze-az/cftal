@@ -3427,7 +3427,6 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 
     vdf_type ylnx;
     d_ops::mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
-    vmf_type rnan=isnan(ylnx[0]);
     // ylnx[0] = _T::sel_zero_or_val(rnan, ylnx[0]);
     // ylnx[1] = _T::sel_zero_or_val(rnan, ylnx[1]);
     vf_type xrh, xrl;
@@ -3436,14 +3435,20 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     vf_type res=__exp_tbl_k(xrh, xrl, idx, ki);
 
     using fc=func_constants<double>;
-    const vf_type& d= ylnx[0];
-    constexpr
-    const double exp_hi_inf= fc::exp_hi_inf();
+    const vf_type& dh = ylnx[0];
+    const vf_type& dl = ylnx[1];
     constexpr
     const double exp_lo_zero= fc::exp_lo_zero();
-    res = _T::sel_zero_or_val(d <= exp_lo_zero, res);
-    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
+    res = _T::sel_zero_or_val(
+        (dh < exp_lo_zero) | ((dh == exp_lo_zero) & (dl <= 0.0)),
+        res);
+    constexpr
+    const double exp_hi_inf= fc::exp_hi_inf();
+    res = _T::sel(
+        (dh > exp_hi_inf) | ((dh == exp_hi_inf) & (dl >= 0.0)),
+        _T::pinf(), res);
     // guess the result if the calculation failed
+    vmf_type rnan=isnan(dh);
     vmf_type abs_x_lt_1 = abs_x < 1.0;
     vmf_type y_gt_1 = y > 1.0;
     res = _T::sel(rnan, _T::pinf(), res);
@@ -3499,14 +3504,20 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
     vf_type res=__exp_tbl_k(xrh, xrl, idx, ki);
 
     using fc=func_constants<double>;
-    const vf_type& d= ylnx[0];
-    constexpr
-    const double exp_hi_inf= fc::exp_hi_inf();
+    const vf_type& dh = ylnx[0];
+    const vf_type& dl = ylnx[1];
     constexpr
     const double exp_lo_zero= fc::exp_lo_zero();
-    res = _T::sel_zero_or_val(d <= exp_lo_zero, res);
-    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
-
+    res = _T::sel_zero_or_val(
+        (dh < exp_lo_zero) | ((dh == exp_lo_zero) & (dl <= 0.0)),
+        res);
+    if (_CALC_ROOT==false) {
+        constexpr
+        const double exp_hi_inf= fc::exp_hi_inf();
+        res = _T::sel(
+            (dh > exp_hi_inf) | ((dh == exp_hi_inf) & (dl >= 0.0)),
+            _T::pinf(), res);
+    }
     return res;
 }
 
