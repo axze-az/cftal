@@ -513,6 +513,9 @@ namespace cftal {
             vf_type
             powi_k(arg_t<vf_type> x, arg_t<vi_type> e);
 
+            static
+            vf_type
+            hypot_k(arg_t<vf_type> xc, arg_t<vf_type> yc);
         };
     }
 }
@@ -2946,6 +2949,42 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
                                 res);
     }
     return res;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
+{
+    vf_type xa=abs(x);
+    vf_type ya=abs(y);
+    vf_type ma=max(xa, ya);
+    vf_type mi=min(xa, ya);
+
+    vf_type scale=1.0_f16;
+    vf_type factor=1.0_f16;
+    // avoid underflows
+    vmf_type ma_small= ma < 0x1p-6_f16;
+    scale = _T::sel(ma_small, 0x1p-7_f16, scale);
+    factor= _T::sel(ma_small, 0x1p7_f16, factor);
+    // avoid overflows
+    vmf_type ma_large= ma > 0x1p6_f16;
+    scale = _T::sel(ma_large, 0x1p7_f16, scale);
+    factor= _T::sel(ma_large, 0x1p-7_f16, factor);
+    ma *= factor;
+    mi *= factor;
+
+    vf_type smah, smal;
+    d_ops::sqr12(smah, smal, ma);
+    vf_type smih, smil;
+    d_ops::sqr12(smih, smil, mi);
+    vf_type sh, sl;
+    d_ops::add22(sh, sl, smah, smal, smih, smil);
+    vf_type r;
+    d_ops::sqrt21(r, sh, sl);
+    r *= scale;
+    return r;
 }
 
 // Local Variables:
