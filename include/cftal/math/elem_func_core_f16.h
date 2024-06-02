@@ -513,6 +513,9 @@ namespace cftal {
             vf_type
             powi_k(arg_t<vf_type> x, arg_t<vi_type> e);
 
+            static
+            vf_type
+            hypot_k(arg_t<vf_type> xc, arg_t<vf_type> yc);
         };
     }
 }
@@ -2829,8 +2832,8 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     vf_type abs_x= abs(x);
     vdf_type lnx= __log_tbl_k12(abs_x);
-    vdf_type ylnx;
 
+    vdf_type ylnx;
     d_ops::mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
 
     vf_type xrh, xrl;
@@ -2939,6 +2942,71 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
                                 res);
     }
     return res;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
+{
+    vf_type xa=abs(x);
+    vf_type ya=abs(y);
+    vf_type ma=max(xa, ya);
+    vf_type mi=min(xa, ya);
+
+#if 1
+    vf_type scale=1.0_f16;
+    vf_type factor=1.0_f16;
+    // avoid overflows
+    vmf_type ma_large= ma > 0x1p12_f16;
+    scale = _T::sel(ma_large, 0x1p4_f16, scale);
+    factor= _T::sel(ma_large, 0x1p-4_f16, factor);
+    ma *= factor;
+    mi *= factor;
+    /*
+     * r^2 = a^2 + b^2
+     * assume a>b
+     * r^2 = a^2 (1+b^2/a^2)
+     * r = a * (1+b^2/a^2)^(1/2)
+     */
+    vf_type q, ql;
+    d_ops::div12(q, ql, mi, ma);
+    vf_type q2, ql2;
+    d_ops::sqr22(q2, ql2, q, ql);
+    vf_type t, tl;
+    d_ops::add122(t, tl, 1.0_f16, q2, ql2);
+    vf_type s, sl;
+    d_ops::sqrt2(s, sl, t, tl);
+    vf_type r, rl;
+    d_ops::mul122(r, rl, ma, s, sl);
+    r = _T::sel_zero_or_val(iszero(ma), r);
+    r *= scale;
+#else
+    vf_type scale=1.0_f16;
+    vf_type factor=1.0_f16;
+    // avoid underflows
+    vmf_type ma_small= ma < 0x1p-6_f16;
+    scale = _T::sel(ma_small, 0x1p-7_f16, scale);
+    factor= _T::sel(ma_small, 0x1p7_f16, factor);
+    // avoid overflows
+    vmf_type ma_large= ma > 0x1p6_f16;
+    scale = _T::sel(ma_large, 0x1p7_f16, scale);
+    factor= _T::sel(ma_large, 0x1p-7_f16, factor);
+    ma *= factor;
+    mi *= factor;
+
+    vf_type smah, smal;
+    d_ops::sqr12(smah, smal, ma);
+    vf_type smih, smil;
+    d_ops::sqr12(smih, smil, mi);
+    vf_type sh, sl;
+    d_ops::add22(sh, sl, smah, smal, smih, smil);
+    vf_type r;
+    d_ops::sqrt21(r, sh, sl);
+    r *= scale;
+#endif
+    return r;
 }
 
 // Local Variables:
