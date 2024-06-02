@@ -2980,8 +2980,7 @@ hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
     d_ops::sqrt2(s, sl, t, tl);
     vf_type r, rl;
     d_ops::mul122(r, rl, ma, s, sl);
-    r = _T::sel(isnan(r), _T::pinf(), r);
-    r = _T::sel(iszero(ma), ma, r);
+    r = _T::sel_zero_or_val(iszero(ma), r);
     r *= scale;
 #else
     vf_type scale=1.0_f16;
