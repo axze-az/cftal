@@ -85,11 +85,17 @@ namespace cftal {
 
         // the float tables
         template<>
+        const pow_log_data<f16_t>::table_t pow_log_data<f16_t>::_tbl;
+
+        // the float tables
+        template<>
         const pow_log_data<float>::table_t pow_log_data<float>::_tbl;
 
         // the double tables
         template<>
         const pow_log_data<double>::table_t pow_log_data<double>::_tbl;
+
+        extern template struct pow_log_data<f16_t>;
 
         extern template struct pow_log_data<float>;
 
