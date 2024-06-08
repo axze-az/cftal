@@ -150,6 +150,49 @@ p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
 write_coeffs(p, "constexpr\n    const f16_t log_c", "log", b, c);
 
+/* sin(x) f32 */
+i = [0x1p-58, pi/4];
+f = sin(x)/x;
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|2,4|];
+c = [|HP...|];
+p = fpminimax(f, b, c, i, 1.0,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const f16_t sin_c", "sin", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "sin-f16");
+
+/* cos(x) f32 */
+i = [0x1p-58, pi/4];
+f = cos(x)-1+(x^2)/2;
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|4, 6|];
+c = [|HP...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const f16_t cos_c", "cos", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "cos-f32");
+
+/* tan as polynomial in [0, pi/4] */
+f = tan(x);
+i = [0, pi/4];
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|1, 3, 5, 7|];
+c = [|HP ...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const f16_t tan_c", "tan", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "tan-f32");
+
+
+
 /* cbrt(x) f16, 5 bits precision  */
 i = [2^-3, 1];
 f = (x)^(1/3);
