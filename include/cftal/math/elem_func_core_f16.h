@@ -3019,7 +3019,6 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
     return q;
 }
 
-
 template <typename _T>
 inline
 typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type

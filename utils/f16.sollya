@@ -191,6 +191,17 @@ write_coeffs(p, "constexpr\n    const f16_t tan_c", "tan", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "tan-f32");
 
+pi_2=pi/2;s
+pi_2_h=halfprecision(pi_2);
+pi_2= pi_2 - pi_2_h;
+pi_2_m=halfprecision(pi_2);
+pi_2 = pi_2 - pi_2_m;
+pi_2_l=halfprecision(pi_2);
+pi_2=pi/2;
+write("\n");
+write_coeff(-pi_2_h, "", "constexpr\n    const f16_t m_pi_2_h", halfprecision);
+write_coeff(-pi_2_m, "", "constexpr\n    const f16_t m_pi_2_m", halfprecision);
+write_coeff(-pi_2_l, "", "constexpr\n    const f16_t m_pi_2_l", halfprecision);
 
 
 /* cbrt(x) f16, 5 bits precision  */
