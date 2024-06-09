@@ -48,7 +48,7 @@ c1l=lg_2_N-c1h;
 write_coeff(c1h, "", "constexpr\n    const float _lg2_32_h", single);
 write_coeff(c1l, "", "constexpr\n    const float _lg2_32_l", single);
 
-quit;
+// quit;
 
 /* exp(x) f32 */
 f= x*(exp(x)+1)/(exp(x)-1);
@@ -262,6 +262,18 @@ write_approx_prec(p, f, i);
 write_coeffs(p, "constexpr\n    const float tan_sun_c", "tan", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "tan-sun-f32");
+
+pi_2=pi/2;
+pi_2_h=single(pi_2);
+pi_2= pi_2 - pi_2_h;
+pi_2_m=single(pi_2);
+pi_2 = pi_2 - pi_2_m;
+pi_2_l=single(pi_2);
+pi_2=pi/2;
+write("\n");
+write_coeff(-pi_2_h, "", "constexpr\n    const float m_pi_2_h", single);
+write_coeff(-pi_2_m, "", "constexpr\n    const float_t m_pi_2_m", single);
+write_coeff(-pi_2_l, "", "constexpr\n    const float m_pi_2_l", single);
 
 /* atan(x) f32, piecewise polynomial approximations */
 f = atan(x);

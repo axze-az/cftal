@@ -3188,13 +3188,19 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
     if (__likely(!_T::all_of_vmf(v_large_arg))) {
         vf_type x_2_pi=x* ctbl::m_2_pi[0];
         vf_type fn= rint(x_2_pi);
-        constexpr const float m_pi_2_h=+1.5707963705063e+00f;
-        constexpr const float m_pi_2_m=-4.3711388286738e-08f;
-        constexpr const float m_pi_2_l=-1.7151245100059e-15f;
+        // x^ : -0xc.90fdbp-3f
+        constexpr
+        const float m_pi_2_h=-1.5707963705e+00f;
+        // x^ : +0xb.bbd2ep-28f
+        constexpr
+        const float_t m_pi_2_m=+4.3711388287e-08f;
+        // x^ : +0xf.72cedp-53f
+        constexpr
+        const float m_pi_2_l=+1.7151245100e-15f;
         vf_type f0, f1, f2, f3, f4;
-        d_ops::mul12(f0, f1, fn, -m_pi_2_h);
-        d_ops::mul12(f2, f3, fn, -m_pi_2_m);
-        f4 = fn * -m_pi_2_l;
+        d_ops::mul12(f0, f1, fn, m_pi_2_h);
+        d_ops::mul12(f2, f3, fn, m_pi_2_m);
+        f4 = fn * m_pi_2_l;
         // normalize f0 - f4 into p0..p2
         vf_type p0, p1, p2, t;
         p0 = f0;
