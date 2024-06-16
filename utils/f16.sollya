@@ -183,7 +183,7 @@ i = [0x1p-58, pi/4];
 f = cos(x);
 d = guessdegree(f, i, 0x1p-14);
 d;
-b = [|4|];
+b = [|4, 6|];
 c = [|HP...|];
 p = fpminimax(f, b, c, i, 1-1/2*x^2, relative, floating);
 write_approx_prec(p, f, i);
