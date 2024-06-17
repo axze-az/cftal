@@ -29,6 +29,7 @@
 #include <cftal/math/misc.h>
 #include <cftal/math/horner.h>
 #include <cftal/math/impl_d_real_constants_f16.h>
+#include <cftal/math/impl_d_real_constants_f32.h>
 #include <cftal/math/f16_tables.h>
 #include <cftal/mem.h>
 
@@ -3004,12 +3005,12 @@ typename cftal::math::elem_func_core<cftal::f16_t, _T>::vi_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
 {
+#if 0
     using ctbl=impl::d_real_constants<d_real<f16_t>, f16_t>;
 
     xrh = 0.0_f16;
     xrl = 0.0_f16;
     vi_type q=0;
-
         vf_type x_2_pi=x* ctbl::m_2_pi[0];
         vf_type fn= rint(x_2_pi);
         // x^ : -0xc.9p-3_f16
@@ -3037,6 +3038,46 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
         xrl = p1 - (xrh - t) + p2;
         fn = __fmod<4>(fn);
         q=_T::cvt_f_to_i(fn);
+#else
+    vhf_type xf=cvt<vhf_type>(x);
+
+    using ctbl32=impl::d_real_constants<d_real<float>, float>;
+    vhf_type fn= rint(vhf_type(xf*ctbl32::m_2_pi[0]));
+    // conversion to double vectors does not make the code faster
+    // seven bit chunks of %pi/2
+    // x^ : +0xc.ap-3f
+    constexpr
+    const float pi_2_0=+1.5781250000e+00f;
+    // x^ : -0xfp-11f
+    constexpr
+    const float pi_2_1=-7.3242187500e-03f;
+    // x^ : -0x9.6p-21f
+    constexpr
+    const float pi_2_2=-4.4703483582e-06f;
+    // x^ : +0x8.8p-29f
+    constexpr
+    const float pi_2_3=+1.5832483768e-08f;
+    // x^ : +0x8.6p-37f
+    constexpr
+    const float pi_2_4=+6.0936145019e-11f;
+    // x^ : -0xb.9ee5ap-46f
+    constexpr
+    const float pi_2_5=-1.6513995575e-13f;
+
+    vhf_type xr = xf + fn * -pi_2_0;
+    xr = xr + fn * -pi_2_1;
+    xr = xr + fn * -pi_2_2;
+    xr = xr + fn * -pi_2_3;
+    xr = xr + fn * -pi_2_4;
+    xr = xr + fn * -pi_2_5;
+    vhi_type q32=f32_traits::cvt_f_to_i(fn);
+    vi_type q=cvt<vi_type>(q32);
+    xrh = cvt<vf_type>(xr);
+    xr -= cvt<vhf_type>(xrh);
+    xrl = cvt<vf_type>(xr);
+    return q;
+
+#endif
 
     return q;
 }
