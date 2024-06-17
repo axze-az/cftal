@@ -3119,9 +3119,18 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     // to increase precision add and subtract 1-0.5*x^2:
     //           = (1-0.5*x^2)+(1.0-(1.0-0.5*x^2)-0.5*x^2) + (p-x*xl)
     //           =      w     +(1.0-      w)     -0.5*x^2  + (p-x*xl)
+    vf_type x2= xrh * xrh;
+    vf_type x3= x2* xrh;
+    vf_type x4= x2* x2;
+    vf_type p_sin = sin_c5* x3;
+    vf_type p_cos = horner(x2, cos_c6, cos_c4);
 
-    vf_type s=0.0_f16;
-    vf_type c=0.0_f16;
+    vf_type s= xrh + (x3*sin_c3 + (x2*(p_sin-xrl*0.5_f16) + xrl));
+    // is this useless? :
+    // s = _T::sel(xrh == 0.0, xrh, s);
+    vf_type hx2=x2*0.5_f16;
+    vf_type w= 1.0_f16 -hx2;
+    vf_type c= w + (((1.0_f16-w)-hx2) + (x4*p_cos-xrh*xrl));
 
     vmi_type q_and_2(vi_type(q & vi_type(2))==vi_type(2));
     vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
