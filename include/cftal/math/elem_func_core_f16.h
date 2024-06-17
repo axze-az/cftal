@@ -29,6 +29,7 @@
 #include <cftal/math/misc.h>
 #include <cftal/math/horner.h>
 #include <cftal/math/impl_d_real_constants_f16.h>
+#include <cftal/math/impl_d_real_constants_f32.h>
 #include <cftal/math/f16_tables.h>
 #include <cftal/mem.h>
 
@@ -513,6 +514,60 @@ namespace cftal {
             vf_type
             powi_k(arg_t<vf_type> x, arg_t<vi_type> e);
 
+            // argument reduction for all trigonometric functions,
+            // reduction by %pi/2, the low bits of multiples of %pi/2
+            // are returned in the value, the reduced argument is
+            // stored into xrh and xrl
+            static
+            vi_type
+            __reduce_trig_arg(vf_type& __restrict xrh,
+                              vf_type& __restrict xrl,
+                              arg_t<vf_type> x);
+
+
+            // calculates tan(xh, xl) in [+0, pi/4] and
+            // returns tan or -1/tan if q & 1
+            static
+            vf_type
+            __tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl,
+                    arg_t<vi_type> q);
+
+            // core sine, cosine calculation
+            static
+            void
+            __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
+                        arg_t<vi_type> q,
+                        vf_type* s, vf_type* c);
+
+            // core sine, cosine calculation
+            static
+            void
+            sin_cos_k(arg_t<vf_type> x, vf_type* s, vf_type* c);
+
+            // core tan calculation
+            static
+            vf_type
+            tan_k(arg_t<vf_type> x);
+
+            static
+            vi_type
+            __reduce_trigpi_arg(vf_type& __restrict xrh,
+                                vf_type& __restrict xrl,
+                                arg_t<vf_type> x);
+
+            // calculates sin(pi*x), cos(pi*x)
+            static
+            void
+            sinpi_cospi_k(arg_t<vf_type> xc,
+                          vf_type* ps, vf_type *pc);
+
+            // tan(pi*x) calculation
+            static
+            vf_type
+            tanpi_k(arg_t<vf_type> x);
+
+
+
             static
             vf_type
             hypot_k(arg_t<vf_type> xc, arg_t<vf_type> yc);
@@ -567,7 +622,7 @@ cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 __fmod(arg_t<vf_type> v)
 {
-    constexpr const f16_t sd=1.0_f16/_U;
+    const f16_t sd=1.0_f16/_U;
     constexpr const f16_t su=_U;
     constexpr const f16_t nsu=-su;
     vf_type i= rint(vf_type(v*sd));
@@ -2942,6 +2997,259 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
                                 res);
     }
     return res;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vi_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+__reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
+{
+#if 0
+    using ctbl=impl::d_real_constants<d_real<f16_t>, f16_t>;
+
+    xrh = 0.0_f16;
+    xrl = 0.0_f16;
+    vi_type q=0;
+        vf_type x_2_pi=x* ctbl::m_2_pi[0];
+        vf_type fn= rint(x_2_pi);
+        // x^ : -0xc.9p-3_f16
+        constexpr
+        const f16_t m_pi_2_h=-1.57031e+00_f16;
+        // x^ : -0xf.dap-15_f16
+        constexpr
+        const f16_t m_pi_2_m=-4.83751e-04_f16;
+        // x^ : -0x8p-27_f16
+        constexpr
+        const f16_t m_pi_2_l=-5.96046e-08_f16;
+        vf_type f0, f1, f2, f3, f4;
+        d_ops::mul12(f0, f1, fn, m_pi_2_h);
+        d_ops::mul12(f2, f3, fn, m_pi_2_m);
+        f4 = fn * m_pi_2_l;
+        // normalize f0 - f4 into p0..p2
+        vf_type p0, p1, p2, t;
+        p0 = f0;
+        d_ops::add12(p1, t, f1, f2);
+        p2 = f4 + t + f3;
+        d_ops::add12(p0, p1, p0, p1);
+        d_ops::add12(p1, p2, p1, p2);
+        t = x + p0;
+        xrh = t + p1;
+        xrl = p1 - (xrh - t) + p2;
+        fn = __fmod<4>(fn);
+        q=_T::cvt_f_to_i(fn);
+#else
+    vhf_type xf=cvt<vhf_type>(x);
+
+    using ctbl32=impl::d_real_constants<d_real<float>, float>;
+    vhf_type fn= rint(vhf_type(xf*ctbl32::m_2_pi[0]));
+    // conversion to double vectors does not make the code faster
+    // seven bit chunks of %pi/2
+    // x^ : +0xc.ap-3f
+    constexpr
+    const float pi_2_0=+1.5781250000e+00f;
+    // x^ : -0xfp-11f
+    constexpr
+    const float pi_2_1=-7.3242187500e-03f;
+    // x^ : -0x9.6p-21f
+    constexpr
+    const float pi_2_2=-4.4703483582e-06f;
+    // x^ : +0x8.8p-29f
+    constexpr
+    const float pi_2_3=+1.5832483768e-08f;
+    // x^ : +0x8.6p-37f
+    constexpr
+    const float pi_2_4=+6.0936145019e-11f;
+    // x^ : -0xb.9ee5ap-46f
+    constexpr
+    const float pi_2_5=-1.6513995575e-13f;
+
+    vhf_type xr = xf + fn * -pi_2_0;
+    xr = xr + fn * -pi_2_1;
+    xr = xr + fn * -pi_2_2;
+    xr = xr + fn * -pi_2_3;
+    xr = xr + fn * -pi_2_4;
+    xr = xr + fn * -pi_2_5;
+    vhi_type q32=f32_traits::cvt_f_to_i(fn);
+    vi_type q=cvt<vi_type>(q32);
+    xrh = cvt<vf_type>(xr);
+    xr -= cvt<vhf_type>(xrh);
+    xrl = cvt<vf_type>(xr);
+    return q;
+
+#endif
+
+    return q;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+__tan_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl, arg_t<vi_type> q)
+{
+    // [0, 0.785398185253143310546875] : | p - f | <= 2^-14.3125
+    // coefficients for tan generated by sollya
+    // x^1 : +0x8p-3_f16
+    constexpr
+    const f16_t tan_c1=+1.00000e+00_f16;
+    // x^3 : +0xa.b8p-5_f16
+    constexpr
+    const f16_t tan_c3=+3.34961e-01_f16;
+    // x^5 : +0xf.1ep-7_f16
+    constexpr
+    const f16_t tan_c5=+1.18103e-01_f16;
+    // x^7 : +0xb.cap-7_f16
+    constexpr
+    const f16_t tan_c7=+9.21021e-02_f16;
+    vf_type xrh2;
+    d_ops::sqr21(xrh2, xrh, xrl);
+    constexpr
+    static const f16_t ci[]={
+        tan_c7, tan_c5, tan_c3
+    };
+    vf_type t= horner(xrh2, ci);
+    vf_type th, tl;
+    horner_comp_quick(th, tl, xrh2, t, tan_c1);
+    d_ops::mul22(th, tl, xrh, xrl, th, tl);
+    vi_type q1= q & 1;
+    vmi_type qm1= q1 == vi_type(1);
+    vmf_type fqm1= _T::vmi_to_vmf(qm1);
+
+    vf_type c;
+    d_ops::rcp21(c, th, tl);
+    th = _T::sel(fqm1, -c, th);
+    return th;
+}
+
+template <typename _T>
+__attribute__((flatten))
+void
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+__sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
+            arg_t<vi_type> q,
+            vf_type* ps, vf_type* pc)
+{
+    // [0, 0.785398185253143310546875] : | p - f | <= 2^-19.8515625
+    // coefficients for sin generated by sollya
+    // x^3 : -0xa.aap-6_f16
+    constexpr
+    const f16_t sin_c3=-1.66626e-01_f16;
+    // x^5 : +0x8.58p-10_f16
+    constexpr
+    const f16_t sin_c5=+8.14819e-03_f16;
+    // [3.4694469519536141888238489627838134765625e-18, 0.785398185253143310546875] : | p - f | <= 2^-21.8828125
+    // coefficients for cos generated by sollya
+    // x^4 : +0xa.aap-8_f16
+    constexpr
+    const f16_t cos_c4=+4.16565e-02_f16;
+    // x^6 : -0xb.1ep-13_f16
+    constexpr
+    const f16_t cos_c6=-1.35708e-03_f16;
+
+    // sin(x+xl) ~ sin(x) + cos(x)*xl
+    // sin(x+xl) ~ x+s3*x^3+s5*x^5 + ... + cos(x)*xl
+    //           = x+s3*x^3+s5*x^5 + ... + (1-x*x/2)*xl
+    //           = x+s3*x^3+s5*x^5 + ... + xl - x^2*xl/2
+    //           = x+s3^x^3+x^2*(s5*x^3+...) + xl - x^2*xl/2
+    // with p= s5*x^3+ s7*x^5 + s9*x^7 + ...
+    //           = s1*x+s3^x^3+x^2*(p-xl/2)+xl
+
+    // cos(x+xl) ~ 1.0 - 0.5*x^2 + c4*x^4+c4*x5 + ...- sin(x)*xl
+    //           ~ 1.0 - 0.5*x^2 + p - x*xl
+    // to increase precision add and subtract 1-0.5*x^2:
+    //           = (1-0.5*x^2)+(1.0-(1.0-0.5*x^2)-0.5*x^2) + (p-x*xl)
+    //           =      w     +(1.0-      w)     -0.5*x^2  + (p-x*xl)
+    vf_type x2= xrh * xrh;
+    vf_type x3= x2* xrh;
+    vf_type x4= x2* x2;
+    vf_type p_sin = sin_c5* x3;
+    vf_type p_cos = horner(x2, cos_c6, cos_c4);
+
+    vf_type s= xrh + (x3*sin_c3 + (x2*(p_sin-xrl*0.5_f16) + xrl));
+    // is this useless? :
+    // s = _T::sel(xrh == 0.0, xrh, s);
+    vf_type hx2=x2*0.5_f16;
+    vf_type w= 1.0_f16 -hx2;
+    vf_type c= w + (((1.0_f16-w)-hx2) + (x4*p_cos-xrh*xrl));
+
+    vmi_type q_and_2(vi_type(q & vi_type(2))==vi_type(2));
+    vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
+    vmi_type q_and_1(vi_type(q & vi_type(1))==vi_type(1));
+    vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
+    // swap sin/cos if q & 1
+    // swap signs
+    if (ps != nullptr) {
+        vf_type rs(_T::sel(q_and_1_f, c, s));
+        rs = _T::sel(q_and_2_f, -rs, rs);
+        *ps = rs;
+    }
+    if (pc != nullptr) {
+        vf_type rc(_T::sel(q_and_1_f, s, c));
+        vmf_type mt = q_and_2_f ^ q_and_1_f;
+        rc = _T::sel(mt, -rc, rc);
+        *pc= rc;
+    }
+}
+
+template <typename _T>
+__attribute__((flatten))
+void
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+sin_cos_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
+{
+    vf_type xrh, xrl;
+    auto q= __reduce_trig_arg(xrh, xrl, xc);
+    __sin_cos_k(xrh, xrl, q, ps, pc);
+}
+
+template <typename _T>
+__attribute__((flatten))
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+tan_k(arg_t<vf_type> xc)
+{
+    vf_type xrh, xrl;
+    auto q= __reduce_trig_arg(xrh, xrl, xc);
+    vf_type t=__tan_k(xrh, xrl, q);
+    return t;
+}
+
+template <typename _T>
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vi_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+__reduce_trigpi_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> xc)
+{
+    vf_type xt2=xc+xc;
+    vf_type fh= rint(xt2);
+    xrh = xc - 0.5f * fh;
+    // no need for fmod<4>(fh) here because |int(fh)| < |max integer|
+    using ctbl=impl::d_real_constants<d_real<f16_t>, f16_t>;
+    d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);
+    vi_type q= _T::cvt_f_to_i(xt2);
+    return q;
+}
+
+template <typename _T>
+void
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
+{
+    vf_type xrh, xrl;
+    auto q=__reduce_trigpi_arg(xrh, xrl, xc);
+    __sin_cos_k(xrh, xrl, q, ps, pc);
+}
+
+template <typename _T>
+__attribute__((flatten))
+typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_core<cftal::f16_t, _T>::
+tanpi_k(arg_t<vf_type> xc)
+{
+    vf_type xrh, xrl;
+    auto q= __reduce_trigpi_arg(xrh, xrl, xc);
+    vf_type t=__tan_k(xrh, xrl, q);
+    return t;
 }
 
 template <typename _T>

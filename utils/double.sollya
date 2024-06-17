@@ -334,6 +334,18 @@ write_coeffs(p, "constexpr\n    const double tan_sun_c", "tan", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "tan-sun-f64");
 
+pi_2=pi/2;
+pi_2_h=double(pi_2);
+pi_2= pi_2 - pi_2_h;
+pi_2_m=double(pi_2);
+pi_2 = pi_2 - pi_2_m;
+pi_2_l=double(pi_2);
+pi_2=pi/2;
+write("\n");
+write_coeff(-pi_2_h, "", "constexpr\n    const double m_pi_2_h", double);
+write_coeff(-pi_2_m, "", "constexpr\n    const double m_pi_2_m", double);
+write_coeff(-pi_2_l, "", "constexpr\n    const double m_pi_2_l", double);
+
 /* atan(x) f64, piecewise polynomial approximations */
 f = atan(x);
 i = [0, 0.375];
