@@ -621,7 +621,7 @@ cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 __fmod(arg_t<vf_type> v)
 {
-    constexpr const f16_t sd=1.0_f16/_U;
+    const f16_t sd=1.0_f16/_U;
     constexpr const f16_t su=_U;
     constexpr const f16_t nsu=-su;
     vf_type i= rint(vf_type(v*sd));
@@ -3006,8 +3006,8 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
 {
     using ctbl=impl::d_real_constants<d_real<f16_t>, f16_t>;
 
-    xrh = 0.0f;
-    xrl = 0.0f;
+    xrh = 0.0_f16;
+    xrl = 0.0_f16;
     vi_type q=0;
 
         vf_type x_2_pi=x* ctbl::m_2_pi[0];
