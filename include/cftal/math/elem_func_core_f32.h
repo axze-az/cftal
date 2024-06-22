@@ -3613,8 +3613,13 @@ __reduce_trigpi_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> xc)
     vf_type fh= rint(xt2);
     xrh = xc - 0.5f * fh;
     // no need for fmod<4>(fh) here because |int(fh)| < |max integer|
+    vmf_type xrh_tiny= abs(xrh) <
+        0x1p2f*func_constants<float>::min_normal();
     using ctbl=impl::d_real_constants<d_real<float>, float>;
+    xrh = _T::sel(xrh_tiny, xrh*0x1p24f, xrh);
     d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);
+    xrh = _T::sel(xrh_tiny, xrh*0x1p-24f, xrh);
+    xrl = _T::sel(xrh_tiny, xrl*0x1p-24f, xrl);
     vi_type q= _T::cvt_f_to_i(xt2);
     return q;
 }
