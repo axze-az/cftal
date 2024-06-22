@@ -3414,6 +3414,7 @@ __tan_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl, arg_t<vi_type> q)
 
     vf_type c;
     d_ops::rcp21(c, th, tl);
+    c = _T::sel(isnan(c), copysign(_T::pinf(), th), c);
     th = _T::sel(fqm1, -c, th);
     return th;
 }
