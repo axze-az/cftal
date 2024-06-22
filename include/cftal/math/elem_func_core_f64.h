@@ -4106,8 +4106,13 @@ __reduce_trigpi_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> xc)
     // poor mans fmod:
     fh = __fmod<4>(fh);
     // d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
+    vmf_type xrh_tiny= abs(xrh) <
+        0x1p2*func_constants<double>::min_normal();
     using ctbl=impl::d_real_constants<d_real<double>, double>;
+    xrh = _T::sel(xrh_tiny, xrh*0x1p53, xrh);
     d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);
+    xrh = _T::sel(xrh_tiny, xrh*0x1p-53, xrh);
+    xrl = _T::sel(xrh_tiny, xrl*0x1p-53, xrl);
     vi_type q0= _T::cvt_f_to_i(fh);
     vi2_type q=_T::vi_to_vi2(q0);
     return q;

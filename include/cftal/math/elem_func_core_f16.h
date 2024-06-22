@@ -3223,11 +3223,19 @@ __reduce_trigpi_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> xc)
 {
     vf_type xt2=xc+xc;
     vf_type fh= rint(xt2);
-    xrh = xc - 0.5f * fh;
+    xrh = xc - 0.5_f16 * fh;
+    // poor mans fmod:
+    fh = __fmod<4>(fh);
     // no need for fmod<4>(fh) here because |int(fh)| < |max integer|
     using ctbl=impl::d_real_constants<d_real<f16_t>, f16_t>;
+
+    vmf_type xrh_tiny= abs(xrh) <
+        0x1p2_f16*func_constants<f16_t>::min_normal();
+    xrh = _T::sel(xrh_tiny, xrh*0x1p11_f16, xrh);
     d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);
-    vi_type q= _T::cvt_f_to_i(xt2);
+    xrh = _T::sel(xrh_tiny, xrh*0x1p-11_f16, xrh);
+    xrl = _T::sel(xrh_tiny, xrl*0x1p-11_f16, xrl);
+    vi_type q= _T::cvt_f_to_i(fh);
     return q;
 }
 
