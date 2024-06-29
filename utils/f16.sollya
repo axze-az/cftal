@@ -238,7 +238,7 @@ f = atan(x);
 i = [0, 0.375];
 d = guessdegree(f, i, 0x1p-14);
 d;
-b = [|1, 3|];
+b = [|1, 3, 5|];
 c = [|HP...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
