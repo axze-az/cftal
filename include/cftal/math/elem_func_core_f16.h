@@ -3583,7 +3583,7 @@ asinh_k(arg_t<vf_type> xc)
 {
     vf_type x=abs(xc);
 
-    vf_type y=0;
+    vf_type y=0.0_f16;
     vmf_type sel;
 
     // x^ : +0xb.5p-4_f16
@@ -3689,7 +3689,7 @@ acosh_k(arg_t<vf_type> xc)
 {
     vf_type x=abs(xc);
 
-    vf_type y=0.0f;
+    vf_type y=0.0_f16;
     vmf_type sel;
     // x^ : +0x8p-2_f16
     constexpr
@@ -3699,7 +3699,7 @@ acosh_k(arg_t<vf_type> xc)
     const f16_t acosh_i1_right=+3.50000e+00_f16;
     if (_T::any_of_vmf(sel = x <= acosh_i1_left)) {
         vf_type xm1h, xm1l;
-        d_ops::add12(xm1h, xm1l, x, -1.0f);
+        d_ops::add12(xm1h, xm1l, x, -1.0_f16);
         vf_type sqrt2xm1h, sqrt2xm1l;
         d_ops::sqrt2(sqrt2xm1h, sqrt2xm1l, xm1h+xm1h, xm1l+xm1l);
         // acosh(x) = sqrt(2*x) * [1-1/12*x+3/160*x^2-5/896*x^3+ ...]
@@ -3723,7 +3723,7 @@ acosh_k(arg_t<vf_type> xc)
         static const f16_t ci[]={
             acosh_i0_c3, acosh_i0_c2, acosh_i0_c1
         };
-        vf_type ys=horner2(xm1h, ci);
+        vf_type ys=horner(xm1h, ci);
         vf_type ysl;
         horner_comp_quick(ys, ysl, xm1h, ys, acosh_i0_c0);
         vf_type t;
