@@ -3988,9 +3988,11 @@ asin_k(arg_t<vf_type> xc)
     // default: x>0.975
     // vf_type as = ctbl::m_pi_2[0] - (2*(s+s*r) - ctbl::m_pi_2[1]);
     // x in [0, 1]
-    vi_type t=_T::as_int(s);
-    t &= 0xfffff000;
-    vf_type f=_T::as_float(t);
+    // vi_type t=_T::as_int(s);
+    // t &= 0xfffff000;
+    // vf_type f=_T::as_float(t);
+    vf_type f, fl;
+    d_real_traits<vf_type>::split(s, f, fl);
     vf_type c= (z-f*f)/(s+f);
     vf_type as1= 0.5f * ctbl::m_pi_2[0] -
                          (2.0f*s*r - (ctbl::m_pi_2[1] -2.0f *c) -
@@ -4026,9 +4028,11 @@ acos_k(arg_t<vf_type> xc)
     vf_type ac1= 2*(ctbl::m_pi_2[0] - (s+wn));
     ac = _T::sel(x_lt_m_1_2, ac1, ac);
     // x in [0.5, 1.0]
-    vi_type t=_T::as_int(s);
-    t &= 0xfffff000;
-    vf_type df= _T::as_float(t);
+    // vi_type t=_T::as_int(s);
+    // t &= 0xfffff000;
+    // vf_type df= _T::as_float(t);
+    vf_type df, dfl;
+    d_real_traits<vf_type>::split(s, df, dfl);
     vf_type c= (z-df*df)/(s+df);
     vf_type wp= r*s+c;
     vf_type ac2=2.0f*(df+wp);

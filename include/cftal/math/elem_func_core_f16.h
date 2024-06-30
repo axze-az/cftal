@@ -3383,8 +3383,8 @@ atan_k(arg_t<vf_type> xc)
 {
     // atan(1/x) = M_PI/2 - atan(x)
     vf_type x=abs(xc);
-    using fc=func_constants<float>;
-    using ctbl=impl::d_real_constants<d_real<float>, float>;
+    using fc=func_constants<f16_t>;
+    using ctbl=impl::d_real_constants<d_real<f16_t>, f16_t>;
     vf_type at=ctbl::m_pi_2[0];
     vmf_type calc_at=x < fc::atan_equal_pi_2();
     if (_T::any_of_vmf(calc_at)) {
@@ -3422,8 +3422,8 @@ atan2_k(arg_t<vf_type> y, arg_t<vf_type> x)
     vf_type ay=abs(y);
     vf_type p=min(ax, ay), q=max(ax, ay);
 
-    constexpr const float x_y_small =
-        d_real_traits<float>::scale_div_threshold();
+    constexpr const f16_t x_y_small =
+        d_real_traits<f16_t>::scale_div_threshold();
     vf_type xrh, xrl;
     d_ops::div12(xrh, xrl, p, q);
     vmf_type s;
@@ -3442,7 +3442,7 @@ atan2_k(arg_t<vf_type> y, arg_t<vf_type> x)
         xrl = _T::sel(s, t_xrl, xrl);
     }
 
-    using ctbl=impl::d_real_constants<d_real<float>, float>;
+    using ctbl=impl::d_real_constants<d_real<f16_t>, f16_t>;
     auto dat = __atan_0_1_k(xrh, xrl);
     if (_T::any_of_vmf(s = ay > ax)) {
         vf_type th, tl;
@@ -3517,7 +3517,7 @@ cftal::math::elem_func_core<cftal::f16_t, _T>::
 asin_k(arg_t<vf_type> xc)
 {
     vf_type x=abs(xc);
-    using ctbl=impl::d_real_constants<d_real<float>, float>;
+    using ctbl=impl::d_real_constants<d_real<f16_t>, f16_t>;
     vmf_type x_lt_1_2= x<0.5_f16;
     vf_type x2= x*x;
     vf_type z= (1.0_f16-x)*0.5_f16;
@@ -3529,9 +3529,8 @@ asin_k(arg_t<vf_type> xc)
     // default: x>0.975
     // vf_type as = ctbl::m_pi_2[0] - (2*(s+s*r) - ctbl::m_pi_2[1]);
     // x in [0, 1]
-    vi_type t=_T::as_int(s);
-    t &= 0xfffff000;
-    vf_type f=_T::as_float(t);
+    vf_type f, fl;
+    d_real_traits<vf_type>::split(s, f, fl);
     vf_type c= (z-f*f)/(s+f);
     vf_type as1= 0.5f * ctbl::m_pi_2[0] -
                          (2.0f*s*r - (ctbl::m_pi_2[1] -2.0f *c) -
@@ -3560,16 +3559,15 @@ acos_k(arg_t<vf_type> xc)
     vf_type r= asin_k_poly(xr);
 
     // x in [-0.5, 0.5]
-    using ctbl=impl::d_real_constants<d_real<float>, float>;
+    using ctbl=impl::d_real_constants<d_real<f16_t>, f16_t>;
     vf_type ac = ctbl::m_pi_2[0] - (x - (ctbl::m_pi_2[1]-x*r));
     // x in [-1.0, -0.5]
     vf_type wn = r*s - ctbl::m_pi_2[1];
     vf_type ac1= 2*(ctbl::m_pi_2[0] - (s+wn));
     ac = _T::sel(x_lt_m_1_2, ac1, ac);
     // x in [0.5, 1.0]
-    vi_type t=_T::as_int(s);
-    t &= 0xfffff000;
-    vf_type df= _T::as_float(t);
+    vf_type df, dfl;
+    d_real_traits<vf_type>::split(s, df, dfl);
     vf_type c= (z-df*df)/(s+df);
     vf_type wp= r*s+c;
     vf_type ac2=2.0f*(df+wp);
@@ -3585,7 +3583,7 @@ asinh_k(arg_t<vf_type> xc)
 {
     vf_type x=abs(xc);
 
-    vf_type y=0;
+    vf_type y=0.0_f16;
     vmf_type sel;
 
     // x^ : +0xb.5p-4_f16
@@ -3665,7 +3663,7 @@ asinh_k(arg_t<vf_type> xc)
         y = _T::sel(sel, y_i1, y);
     }
     if (_T::any_of_vmf(sel = x > asinh_i1_right)) {
-        using ctbl=impl::d_real_constants<d_real<float>, float>;
+        using ctbl=impl::d_real_constants<d_real<f16_t>, f16_t>;
         vmf_type x_huge = x > 0x1p11_f16;
         vf_type add_2_log=_T::sel_val_or_zero(x_huge, ctbl::m_ln2[0]);
         // vf_type t= x*x;
@@ -3691,7 +3689,7 @@ acosh_k(arg_t<vf_type> xc)
 {
     vf_type x=abs(xc);
 
-    vf_type y=0.0f;
+    vf_type y=0.0_f16;
     vmf_type sel;
     // x^ : +0x8p-2_f16
     constexpr
@@ -3701,7 +3699,7 @@ acosh_k(arg_t<vf_type> xc)
     const f16_t acosh_i1_right=+3.50000e+00_f16;
     if (_T::any_of_vmf(sel = x <= acosh_i1_left)) {
         vf_type xm1h, xm1l;
-        d_ops::add12(xm1h, xm1l, x, -1.0f);
+        d_ops::add12(xm1h, xm1l, x, -1.0_f16);
         vf_type sqrt2xm1h, sqrt2xm1l;
         d_ops::sqrt2(sqrt2xm1h, sqrt2xm1l, xm1h+xm1h, xm1l+xm1l);
         // acosh(x) = sqrt(2*x) * [1-1/12*x+3/160*x^2-5/896*x^3+ ...]
@@ -3725,7 +3723,7 @@ acosh_k(arg_t<vf_type> xc)
         static const f16_t ci[]={
             acosh_i0_c3, acosh_i0_c2, acosh_i0_c1
         };
-        vf_type ys=horner2(xm1h, ci);
+        vf_type ys=horner(xm1h, ci);
         vf_type ysl;
         horner_comp_quick(ys, ysl, xm1h, ys, acosh_i0_c0);
         vf_type t;
@@ -3773,7 +3771,7 @@ acosh_k(arg_t<vf_type> xc)
         y = _T::sel(sel, y_i1, y);
     }
     if (_T::any_of_vmf(sel = x > acosh_i1_right)) {
-        using ctbl=impl::d_real_constants<d_real<float>, float>;
+        using ctbl=impl::d_real_constants<d_real<f16_t>, f16_t>;
         vmf_type x_huge = x > 0x1p11_f16;
         vf_type add_2_log=_T::sel_val_or_zero(x_huge, ctbl::m_ln2[0]);
         // vf_type t= x*x;
