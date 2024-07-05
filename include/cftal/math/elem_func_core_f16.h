@@ -916,7 +916,7 @@ cftal::math::elem_func_core<cftal::f16_t, _T>::
 sqrt(arg_t<vf_type> xc)
 {
     vf_type y=lookup_from<f16_sqrt_data>(xc);
-    y=_T::sel(signbit(xc), _T::nan(), y);
+    y=_T::sel(signbit(xc)|isnan(xc), _T::nan(), y);
     y=_T::sel(iszero(xc), xc, y);
     return y;
 }
