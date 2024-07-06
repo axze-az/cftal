@@ -911,7 +911,11 @@ typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 rsqrt_k(arg_t<vf_type> x)
 {
-    vf_type y=lookup_from<f16_rsqrt_data>(x);
+    // vf_type y=lookup_from<f16_rsqrt_data>(x);
+    constexpr
+    const f16_t one=1.0_f16;
+    vf_type y= vf_type(one/sqrt(x));
+    y = impl::root_r2::order2<f16_t, true>(y, x);
     return y;
 }
 

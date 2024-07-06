@@ -27,7 +27,7 @@
 #include <cftal/math/impl_d_real_constants_f32.h>
 #include <cftal/math/func_constants_f16.h>
 
-#define __CFTAL_CFG_USE_VF32_FOR_VF16_RSQRT__ 1
+#define __CFTAL_CFG_USE_VF32_FOR_VF16_RSQRT__ 0
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_CBRT__ 0
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_RCBRT__ 0
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_ROOT12__ 0
