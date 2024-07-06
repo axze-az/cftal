@@ -21,5 +21,5 @@
 #include "vec_def_math_elem_funcs.h"
 
 #if V8F16_FUNCS>0
-DEF_ELEM_FUNCS_F16(cftal, cftal, v8f16, v8s16, f16_t)
+DEF_ELEM_FUNCS(cftal, cftal, v8f16, v8s16, f16_t)
 #endif

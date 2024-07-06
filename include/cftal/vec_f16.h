@@ -57,10 +57,6 @@ namespace cftal {
 
     template <size_t _N>
     vec<f16_t, _N>
-    sqrt(const vec<f16_t, _N>& x);
-
-    template <size_t _N>
-    vec<f16_t, _N>
     rsqrt(const vec<f16_t, _N>& x);
 
     template <size_t _N>
@@ -295,9 +291,6 @@ namespace cftal {
     ilogb(arg_t<vec<f16_t, 1> > x);
 
     vec<f16_t, 1>
-    sqrt(arg_t<vec<f16_t, 1> > x);
-
-    vec<f16_t, 1>
     rsqrt(arg_t<vec<f16_t, 1> > x);
 
     vec<f16_t, 1>
@@ -472,9 +465,6 @@ namespace cftal {
 
     vec<int16_t, 2>
     ilogb(arg_t<vec<f16_t, 2> > x);
-
-    vec<f16_t, 2>
-    sqrt(arg_t<vec<f16_t, 2> > x);
 
     vec<f16_t, 2>
     rsqrt(arg_t<vec<f16_t, 2> > x);
@@ -655,9 +645,6 @@ namespace cftal {
     ilogb(arg_t<vec<f16_t, 4> > x);
 
     vec<f16_t, 4>
-    sqrt(arg_t<vec<f16_t, 4> > x);
-
-    vec<f16_t, 4>
     rsqrt(arg_t<vec<f16_t, 4> > x);
 
     vec<f16_t, 4>
@@ -834,9 +821,6 @@ namespace cftal {
     ilogb(arg_t<vec<f16_t, 8> > x);
 
     vec<f16_t, 8>
-    sqrt(arg_t<vec<f16_t, 8> > x);
-
-    vec<f16_t, 8>
     rsqrt(arg_t<vec<f16_t, 8> > x);
 
     vec<f16_t, 8>
@@ -1011,9 +995,6 @@ namespace cftal {
 
     vec<int16_t, 16>
     ilogb(arg_t<vec<f16_t, 16> > x);
-
-    vec<f16_t, 16>
-    sqrt(arg_t<vec<f16_t, 16> > x);
 
     vec<f16_t, 16>
     rsqrt(arg_t<vec<f16_t, 16> > x);
@@ -1226,15 +1207,6 @@ cftal::vec<cftal::int16_t, _N>
 cftal::ilogb(const vec<cftal::f16_t, _N>& v)
 {
     vec<int16_t, _N> r(ilogb(low_half(v)), ilogb(high_half(v)));
-    return r;
-}
-
-template <cftal::size_t _N>
-inline
-cftal::vec<cftal::f16_t, _N>
-cftal::sqrt(const vec<cftal::f16_t, _N>& v)
-{
-    vec<f16_t, _N> r(sqrt(low_half(v)), sqrt(high_half(v)));
     return r;
 }
 
