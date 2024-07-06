@@ -25,36 +25,6 @@
 namespace cftal {
     namespace math {
 
-        struct f16_sqrt_data {
-            static constexpr const uint32_t zero_offset=0;
-            static constexpr const int16_t min_offset=0;
-            static constexpr const int32_t max_offset=31745;
-            alignas(64) static const uint16_t _tbl[31745+2];
-
-            static const f16_t* tbl() {
-                return reinterpret_cast<const f16_t*>(_tbl);
-            }
-
-            static const f16_t* tbl_zero() {
-                return tbl() + zero_offset;
-            }
-        };
-
-        struct f16_rsqrt_data {
-            static constexpr const uint32_t zero_offset=0;
-            static constexpr const int16_t min_offset=0;
-            static constexpr const int32_t max_offset=31745;
-            alignas(64) static const uint16_t _tbl[31745+2];
-
-            static const f16_t* tbl() {
-                return reinterpret_cast<const f16_t*>(_tbl);
-            }
-
-            static const f16_t* tbl_zero() {
-                return tbl() + zero_offset;
-            }
-        };
-
         struct f16_j0_data {
             static constexpr const uint32_t zero_offset=0;
             static constexpr const int16_t min_offset=0;
