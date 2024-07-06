@@ -20,4 +20,4 @@
 #include "cftal/math/elem_func_wrapper_f16.h"
 #include "vec_def_math_elem_funcs.h"
 
-DEF_ELEM_FUNCS_F16(cftal, cftal, v1f16, v1s16, f16_t)
+DEF_ELEM_FUNCS(cftal, cftal, v1f16, v1s16, f16_t)

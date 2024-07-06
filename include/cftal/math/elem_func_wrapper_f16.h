@@ -27,7 +27,6 @@
 #include <cftal/math/impl_d_real_constants_f32.h>
 #include <cftal/math/func_constants_f16.h>
 
-#define __CFTAL_CFG_USE_VF32_FOR_VF16_SQRT__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_RSQRT__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_CBRT__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_RCBRT__ 1
@@ -67,11 +66,6 @@ namespace cftal {
             using vhi_type = typename f32_traits::vi_type;
             using vhmi_type = typename f32_traits::vmi_type;
 
-#if __CFTAL_CFG_USE_VF32_FOR_VF16_SQRT__>0
-            static
-            vf_type
-            sqrt(arg_t<vf_type> x);
-#endif
 #if __CFTAL_CFG_USE_VF32_FOR_VF16_RSQRT__>0
             static
             vf_type
@@ -251,26 +245,6 @@ namespace cftal {
         };
     }
 }
-
-#if __CFTAL_CFG_USE_VF32_FOR_VF16_SQRT__>0
-template <typename _T>
-inline
-typename cftal::math::elem_func_wrapper<cftal::f16_t, _T>::vf_type
-cftal::math::elem_func_wrapper<cftal::f16_t, _T>::
-sqrt(arg_t<vf_type> x)
-{
-    vhf_type xf=cvt<vhf_type>(x);
-#if 1
-    vhf_type rf=cftal::sqrt(xf);
-    vf_type r=cvt<vf_type>(rf);
-#else
-    vhf_type rf=f32_core::rsqrt_k(xf)*xf;
-    vf_type r=cvt<vf_type>(rf);
-    r = _T::sel(x==_T::pinf()|iszero(x), x, r);
-#endif
-    return r;
-}
-#endif
 
 #if __CFTAL_CFG_USE_VF32_FOR_VF16_RSQRT__>0
 template <typename _T>

@@ -365,6 +365,7 @@ gen_f16_tbls()
 
     prepare_header(h);
 
+#if 0
     gen_f16_tbl(mpfr_sqrt, "f16_sqrt", h,
                 0.0_f16,
                 std::numeric_limits<f16_t>::infinity());
@@ -372,6 +373,7 @@ gen_f16_tbls()
     gen_f16_tbl(mpfr_rec_sqrt, "f16_rsqrt", h,
                 0.0_f16,
                 std::numeric_limits<f16_t>::infinity());
+#endif
 
     gen_f16_tbl(mpfr_j0, "f16_j0", h,
                 0.0_f16,

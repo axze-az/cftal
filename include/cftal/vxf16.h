@@ -1424,6 +1424,9 @@ namespace cftal {
     vec<f16_t, _N>
     trunc(const vec<f16_t, _N>& x);
 
+    template <size_t _N>
+    vec<f16_t, _N>
+    sqrt(const vec<f16_t, _N>& x);
 }
 
 inline
@@ -1805,6 +1808,16 @@ cftal::trunc(const vec<f16_t, _N>& a)
 {
     vec<float, _N> af=cvt_f16_to_f32(a());
     vec<float, _N> rf=trunc(af);
+    return vec<f16_t, _N>::cvt_from_rep(cvt_f32_to_f16(rf));
+}
+
+template <cftal::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::sqrt(const vec<f16_t, _N>& a)
+{
+    vec<float, _N> af=cvt_f16_to_f32(a());
+    vec<float, _N> rf=sqrt(af);
     return vec<f16_t, _N>::cvt_from_rep(cvt_f32_to_f16(rf));
 }
 
