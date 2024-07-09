@@ -111,7 +111,7 @@ namespace cftal {
                 halley(_T y, _T x);
 
                 // calculate z = (y -x^3)/x^3;
-                template <typename _T>
+                template <typename _C, typename _T>
                 static
                 _T
                 calc_z(_T x, _T y);
@@ -144,7 +144,7 @@ namespace cftal {
             // helper functions for different reciprocal root3 iteration
             // steps
             struct root_r3 {
-                template <typename _T>
+                template <typename _C, typename _T>
                 // calculate x^3*y - 1.0
                 static
                 _T
@@ -177,7 +177,7 @@ namespace cftal {
             // helper functions for different root12 iteration steps
             struct root_12 {
                 // calculate x^12
-                template <typename _T>
+                template <typename _C, typename _T>
                 static
                 _T
                 pow12(_T x);
@@ -310,7 +310,7 @@ cftal::math::impl::root_r2::calc_z(_T x, _T y)
     // to avoid overflows
     // _HIGH_PREC == false:
     // calculated as z = (x * x) * y - 1.0 without error compensation
-    constexpr const _C minus_one(-1.0);
+    constexpr const _C minus_one=static_cast<_C>(-1.0);
     _T z;
     if constexpr (_HIGH_PREC) {
         using traits_t= d_real_traits<_T>;
@@ -467,7 +467,7 @@ cftal::math::impl::root_3::halley(_T x, _T y)
     return xn;
 }
 
-template <typename _T>
+template <typename _C, typename _T>
 _T
 cftal::math::impl::root_3::calc_z(_T x, _T y)
 {
@@ -481,7 +481,7 @@ _T
 cftal::math::impl::root_3::order3(_T x, _T y)
 {
 #if 1
-    _T z= calc_z(x, y);
+    _T z= calc_z<_C>(x, y);
     _T d= z*horner(z,
                    _C(-1.0/9.0),
                    _C(1.0/3.0));
@@ -500,7 +500,7 @@ _T
 cftal::math::impl::root_3::order4(_T x, _T y)
 {
 #if 1
-    _T z= calc_z(x, y);
+    _T z= calc_z<_C>(x, y);
     _T d= z*horner(z,
                    _C(5.0/81.0),
                    _C(-1.0/9.0),
@@ -518,7 +518,7 @@ template <typename _C, typename _T>
 _T
 cftal::math::impl::root_3::order5(_T x, _T y)
 {
-    _T z= calc_z(x, y);
+    _T z= calc_z<_C>(x, y);
     _T d= z*horner(z,
                    _C(-10.0/243.0),
                    _C(5.0/81.0),
@@ -532,7 +532,7 @@ template <typename _C, typename _T>
 _T
 cftal::math::impl::root_3::order6(_T x, _T y)
 {
-    _T z= calc_z(x, y);
+    _T z= calc_z<_C>(x, y);
     _T d= z*horner(z,
                    _C(22.0/729.0),
                    _C(-10.0/243.0),
@@ -543,7 +543,7 @@ cftal::math::impl::root_3::order6(_T x, _T y)
     return xn;
 }
 
-template <typename _T>
+template <typename _C, typename _T>
 _T
 cftal::math::impl::root_r3::calc_z(_T x, _T y)
 {
@@ -551,7 +551,7 @@ cftal::math::impl::root_r3::calc_z(_T x, _T y)
     // _T z= y*x3 -_C(1.0);
     using traits_t= d_real_traits<_T>;
     using d_ops = d_real_ops<_T, traits_t::fma>;
-    const _T minus_one(-1.0);
+    const _C minus_one=_C(-1.0);
     _T z;
     if constexpr (traits_t::fma) {
         z = y * x3 + minus_one;
@@ -572,7 +572,7 @@ template <typename _C, typename _T>
 _T
 cftal::math::impl::root_r3::order3(_T x, _T y)
 {
-    _T z= calc_z(x, y);
+    _T z= calc_z<_C>(x, y);
     _T d= z*horner(z,
                    _C(2.0/9.0),
                    _C(-1.0/3.0));
@@ -584,7 +584,7 @@ template <typename _C, typename _T>
 _T
 cftal::math::impl::root_r3::order4(_T x, _T y)
 {
-    _T z= calc_z(x, y);
+    _T z= calc_z<_C>(x, y);
     _T d= z*horner(z,
                    _C(-14.0/81.0),
                    _C(2.0/9.0),
@@ -597,7 +597,7 @@ template <typename _C, typename _T>
 _T
 cftal::math::impl::root_r3::order5(_T x, _T y)
 {
-    _T z= calc_z(x, y);
+    _T z= calc_z<_C>(x, y);
     _T d= z*horner(z,
                    _C(35.0/243.0),
                    _C(-14.0/81.0),
@@ -611,7 +611,7 @@ template <typename _C, typename _T>
 _T
 cftal::math::impl::root_r3::order6(_T x, _T y)
 {
-    _T z= calc_z(x, y);
+    _T z= calc_z<_C>(x, y);
     _T d= z*horner(z,
                    _C(-91.0/729.0),
                    _C(35.0/243.0),
@@ -623,7 +623,7 @@ cftal::math::impl::root_r3::order6(_T x, _T y)
 }
 
 
-template <typename _T>
+template <typename _C, typename _T>
 inline
 __attribute__((__always_inline__))
 _T
@@ -655,12 +655,12 @@ cftal::math::impl::root_12::pow12(_T x)
     _T x6h, x6l;
     d_ops::sqr12(x6h, x6l, x3h);
     _T t0=x3l*x3h;
-    x6l = 2.0 * t0 + x6l;
+    x6l = _C(2.0) * t0 + x6l;
     // x^12
     _T x12, x12l;
     d_ops::sqr12(x12, x12l, x6h);
     _T t1=x6l*x6h;
-    x12l= 2.0 * t1 + x12l;
+    x12l= _C(2.0) * t1 + x12l;
     x12 += x12l;
     return x12;
 #endif
@@ -671,7 +671,7 @@ _T
 cftal::math::impl::root_12::nr(_T x, _T y)
 {
 #if 1
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T z= (y-x12)/x12;
     _T d= (z * _C(1.0/12.0));
     _T xn= x + x*d;
@@ -690,7 +690,7 @@ _T
 cftal::math::impl::root_12::halley(_T x, _T y)
 {
     // _T x12=powu<_T, 12>::v(x);
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T num= _C(2.0/11.0) * x * (y - x12);
     _T denom= y + _C(13.0/11.0) *x12;
     _T xn = x + num/denom;
@@ -702,7 +702,7 @@ _T
 cftal::math::impl::root_12::order3(_T x, _T y)
 {
     // _T x12=powu<_T, 12>::v(x);
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T z= (y-x12)/x12;
     _T d= z* horner(z,
                     _C(-11.0/288.0),
@@ -716,7 +716,7 @@ _T
 cftal::math::impl::root_12::order4(_T x, _T y)
 {
     // _T x12=powu<_T, 12>::v(x);
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T z= (y-x12)/x12;
     _T d= z* horner(z,
                     _C(253.0/10368.0),
@@ -731,7 +731,7 @@ _T
 cftal::math::impl::root_12::order5(_T x, _T y)
 {
     // _T x12=powu<_T, 12>::v(x);
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T z = (y-x12)/x12;
     static
     constexpr const _C ci[]= {
@@ -750,7 +750,7 @@ _T
 cftal::math::impl::root_12::order6(_T x, _T y)
 {
     // _T x12=powu<_T, 12>::v(x);
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T z = (y-x12)/x12;
     _T d= z* horner(z,
                     _C(83237.0/5971968.0),
@@ -767,7 +767,7 @@ _T
 cftal::math::impl::root_12::order8(_T x, _T y)
 {
     // _T x12=powu<_T, 12>::v(x);
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T z = (y-x12)/x12;
 
     static
@@ -790,7 +790,7 @@ _T
 cftal::math::impl::root_12::order9(_T x, _T y)
 {
     // _T x12=powu<_T, 12>::v(x);
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T z = (y-x12)/x12;
     _T d= z* horner(z,
                     _C(-4134346117.0/495338913792.0),
@@ -810,7 +810,7 @@ _T
 cftal::math::impl::root_12::order10(_T x, _T y)
 {
     // _T x12=powu<_T, 12>::v(x);
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T z = (y-x12)/x12;
     _T d= z* horner(z,
                     _C(392762881115.0/53496602689536.0),
@@ -841,7 +841,7 @@ cftal::math::impl::root_12::householder3(_T x, _T y)
         _C(+5.7200000000000000000000e+02), // 12
         _C(+1.1000000000000000000000e+02)  // 0
     };
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T r=householder_step(x12, x, y, p, q);
     return r;
 }
@@ -864,7 +864,7 @@ cftal::math::impl::root_12::householder4(_T x, _T y)
         _C(+8.1510000000000000000000e+03), // 12
         _C(+4.9500000000000000000000e+02)  // 0
     };
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T r=householder_step(x12, x, y, p, q);
     return r;
 }
@@ -889,7 +889,7 @@ cftal::math::impl::root_12::householder5(_T x, _T y)
         _C(+1.2584000000000000000000e+04), // 12
         _C(+2.6400000000000000000000e+02)  // 0
     };
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T r=householder_step(x12, x, y, p, q);
     return r;
 }
@@ -914,7 +914,7 @@ cftal::math::impl::root_12::householder6(_T x, _T y)
         _C(+3.2032000000000000000000e+04), // 12
         _C(+2.3100000000000000000000e+02)  // 0
     };
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T r=householder_step(x12, x, y, p, q);
     return r;
 }
@@ -941,7 +941,7 @@ cftal::math::impl::root_12::householder7(_T x, _T y)
         _C(+8.4942000000000000000000e+04), // 12
         _C(+1.9800000000000000000000e+02)  // 0
     };
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T r=householder_step(x12, x, y, p, q);
     return r;
 }
@@ -970,7 +970,7 @@ cftal::math::impl::root_12::householder8(_T x, _T y)
         _C(+8.1224000000000000000000e+04), // 12
         _C(+5.5000000000000000000000e+01)  // 0
     };
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T r=householder_step(x12, x, y, p, q);
     return r;
 }
@@ -1001,7 +1001,7 @@ cftal::math::impl::root_12::householder9(_T x, _T y)
         _C(+1.3053040000000000000000e+06), // 12
         _C(+2.2000000000000000000000e+02)  // 0
     };
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T r=householder_step(x12, x, y, p, q);
     return r;
 }
@@ -1034,7 +1034,7 @@ cftal::math::impl::root_12::householder10(_T x, _T y)
         _C(+9.8026500000000000000000e+05), // 12
         _C(+3.3000000000000000000000e+01)  // 0
     };
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T r=householder_step(x12, x, y, p, q);
     return r;
 }
@@ -1077,7 +1077,7 @@ cftal::math::impl::root_12::householder16(_T x, _T y)
         _C(+7.2953691030000000000000e+09), // 12
         _C(+7.3547100000000000000000e+05)  // 0
     };
-    _T x12=pow12(x);
+    _T x12=pow12<_C>(x);
     _T r=householder_step(x12, x, y, p, q);
     return r;
 }

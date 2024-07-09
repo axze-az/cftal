@@ -43,7 +43,7 @@ int main(int argc, char** argv)
     for (std::size_t i=1; i<10; ++i) {
         using std::nextafter;
         auto di=static_cast<f16_t>(i);
-        auto dih=di-0.5f;
+        auto dih=di-0.5_f16;
         if (std::find(std::begin(def_args), std::end(def_args), di)==
             std::end(def_args)) {
             def_args.push_back(di);

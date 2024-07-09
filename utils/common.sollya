@@ -115,14 +115,14 @@ write_dh_l = proc(c) {
     var dh, dl;
     dh = c;
     dl = dh - halfprecision(c);
-    write_f(dl);
+    write_h(dl);
 };
 
 write_dh_l_hex = proc(c) {
     var dh, dl;
     dh = c;
     dl = dh - halfprecision(c);
-    write_f_hex(dl);
+    write_h_hex(dl);
 };
 
 write_td_h = proc(c) {

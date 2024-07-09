@@ -63,6 +63,14 @@ namespace cftal {
         vec& operator=(const vec& r) = default;
         vec& operator=(vec&& r) = default;
         vec(const f16_t& v) : _v(read_bits(v)) {}
+        explicit
+        vec(float v) : _v(read_bits(static_cast<f16_t>(v))) {}
+        explicit
+        vec(double v) : _v(read_bits(static_cast<f16_t>(v))) {}
+        explicit
+        vec(int16_t v) : _v(read_bits(static_cast<f16_t>(v))) {}
+        explicit
+        vec(int32_t v) : _v(read_bits(static_cast<f16_t>(v))) {}
         const vec<mf_f16_t, 1>& operator()() const { return _v; }
         template <template <class _U> class _OP,
                   class _L, class _R>
@@ -98,6 +106,14 @@ namespace cftal {
         vec& operator=(vec&& r) = default;
 
         vec(f16_t v) : _v(read_bits(v)) {}
+        explicit
+        vec(float v) : _v(read_bits(static_cast<f16_t>(v))) {}
+        explicit
+        vec(double v) : _v(read_bits(static_cast<f16_t>(v))) {}
+        explicit
+        vec(int16_t v) : _v(read_bits(static_cast<f16_t>(v))) {}
+        explicit
+        vec(int32_t v) : _v(read_bits(static_cast<f16_t>(v))) {}
         vec(const half_type& lh, const half_type& hh) :
             _v(lh(), hh()) {}
         vec(std::initializer_list<f16_t> l)
@@ -1378,7 +1394,8 @@ namespace cftal {
             vec<f16_t, 1>
             v(const vec<int16_t, 1>& s) {
                 float f=s();
-                return vec<f16_t, 1>(f);
+                f16_t h=static_cast<f16_t>(f);
+                return vec<f16_t, 1>(h);
             }
         };
 
