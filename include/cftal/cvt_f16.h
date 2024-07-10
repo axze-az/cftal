@@ -44,13 +44,18 @@ namespace cftal {
 
     namespace impl {
 
+#if __cpp_lib_bit_cast>0
         constexpr
+#endif
+        f32_t
+        _cvt_f16_to_f32(mf_f16_t f);
+
+#if __cpp_lib_bit_cast>0
+        constexpr
+#endif
         mf_f16_t
         _cvt_f32_to_f16(f32_t f);
 
-        constexpr
-        f32_t
-        _cvt_f16_to_f32(mf_f16_t f);
 
     }
 }
