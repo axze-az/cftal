@@ -8,8 +8,12 @@ functions.
 Cftal is a c++-20 template based short vector library with specializations
 using intrinsic functions.
 Part of the library are vectorized elementary and some special functions
-(erf, erfc, tgamma, lgamma, j0, y0, j1 and y1) in double, single and half precision.
-The elementary functions should be faithfully rounded.
+(erf, erfc, tgamma, lgamma, j0, y0, j1 and y1) beeing part of the math
+library in double (binary64), single (binary32) and half (binary16) precision.
+The functions are probably faithfully rounded for double and single precision.
+Tests for a  subset of the numbers for single and double precision show faithfully rounding compared to mpfr.
+The elementary functions for half precision are faithfully round
+(if mpfr rounds correctly).
 
 Specializations for x86 processors with instructions set extensions up to AVX2
 are implemented and tested.
