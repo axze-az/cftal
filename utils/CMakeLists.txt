@@ -46,7 +46,7 @@ function(target_add_mpfr_libs arg1)
 endfunction()
 
 function(target_add_test_libs arg1)
-    target_link_libraries(${arg1} cftal-test)
+    target_link_libraries(${arg1} cftal-test-so)
     target_add_mpfr_libs(${arg1})
 endfunction()
 
