@@ -27,7 +27,7 @@ namespace cftal {
 
     // memory format of bfloat16, aka. the highest 16 bits of a
     // binary32
-    using mf_bf16_t = uint16_t;
+    using mf_bf16_t = int16_t;
 
     namespace impl {
 
