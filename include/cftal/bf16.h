@@ -157,6 +157,11 @@ cftal::impl::_rne_f32_to_bf16(const vec<float, _N>& v)
     // infinities are not affected by rounding
     typename vf_type::mask_type is_nan=isnan(v);
     vne = select(is_nan, v, vne);
+    // flush subnormals to zero
+    typename vf_type::mask_type is_subnorm=
+        abs(v) < std::numeric_limits<float>::min();
+    constexpr const float mz=-0.0f;
+    vne = select(is_subnorm, (v & mz), vne);
     return vne;
 }
 
@@ -176,6 +181,11 @@ cftal::impl::_rz_f32_to_bf16(const vec<float, _N>& v)
 {
     // zero the last 16 bits
     auto vne=round_to_zero_last_bits<16>(v);
+    // flush subnormals to zero
+    typename vf_type::mask_type is_subnorm=
+        abs(v) < std::numeric_limits<float>::min();
+    constexpr const float mz=-0.0f;
+    vne = select(is_subnorm, (v & mz), vne);
     return vne;
 }
 
