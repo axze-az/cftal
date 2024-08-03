@@ -91,6 +91,10 @@ namespace cftal {
     float
     round_to_nearest_even_last_bits(const float& v);
 
+    template <std::size_t _BITS>
+    f16_t
+    round_to_nearest_even_last_bits(const f16_t& v);
+
     // round the last _BITS to zero
     template <std::size_t _BITS, typename _T, std::size_t _N>
     vec<_T, _N>
@@ -103,6 +107,10 @@ namespace cftal {
     template <std::size_t _BITS>
     float
     round_to_zero_last_bits(const float& v);
+
+    template <std::size_t _BITS>
+    f16_t
+    round_to_zero_last_bits(const f16_t& v);
 
     void
     split_f64_to_f32pair(const double& s,
@@ -259,24 +267,36 @@ cftal::impl::round_to_nearest_even_last_bits(const _VEC_FLOAT& v)
     using vmi_t = _VEC_INT_MASK;
     using int_type = _INT;
     using vf_type = _VEC_FLOAT;
-    // first bit to round away:
-    constexpr const int_type br= (1LL << (_BITS-1));
     // last bit to keep
     constexpr const int_type bk= (1LL << (_BITS));
+    // first bit to round away:
+    constexpr const int_type br= (1LL << (_BITS-1));
     // mask of the bits to round away:
     constexpr const int_type trailing_mask= bk-1L;
     // mask of the bits to keep
     constexpr const int_type mask=~trailing_mask;
+#if 1
+    // rounding bias
+    constexpr const int_type rnd_bias= br - 1L;
+    vi_t i=as<vi_t>(v);
+    vi_t lbit = i & bk;
+    vmi_t is_lbit_set = lbit == bk;
+    vi_t i_br = i + br;
+    vi_t i_bias= i + rnd_bias;
+    i = select(is_lbit_set, i_br, i_bias);
+    i &= mask;
+#else
     vi_t i=as<vi_t>(v);
     vi_t rbits=i & trailing_mask;
     vi_t lbit= i & bk;
     constexpr const int_type z=0LL;
-    vmi_t sel_zero_offs= (rbits == br) & (lbit==z);
+    vmi_t sel_zero_offs= (rbits == br) & (lbit == z);
     // vi_t offs=select_zero_or_val(sel_zero_offs, v_br);
     // i += offs;
     vi_t i_offs= i + br;
     i = select(sel_zero_offs, i, i_offs);
     i &= mask;
+#endif
     vf_type r=as<vf_type>(i);
     return r;
 }
@@ -352,6 +372,16 @@ cftal::round_to_nearest_even_last_bits(const float& x)
                                                  _BITS>(x);
 }
 
+template <std::size_t _BITS>
+inline
+cftal::f16_t
+cftal::round_to_nearest_even_last_bits(const f16_t& x)
+{
+    return impl::round_to_nearest_even_last_bits<f16_t, f16_t,
+                                                 int16_t, int16_t, bool,
+                                                 _BITS>(x);
+}
+
 template <std::size_t _BITS, typename _T, std::size_t _N>
 cftal::vec<_T, _N>
 cftal::round_to_zero_last_bits(const vec<_T, _N>& v)
@@ -390,6 +420,16 @@ cftal::round_to_zero_last_bits(const float& x)
 {
     return impl::round_to_zero_last_bits<float, float,
                                          int32_t, int32_t,
+                                         _BITS>(x);
+}
+
+template <std::size_t _BITS>
+inline
+cftal::f16_t
+cftal::round_to_zero_last_bits(const float& x)
+{
+    return impl::round_to_zero_last_bits<f16_t, f16_t,
+                                         int16_t, int16_t,
                                          _BITS>(x);
 }
 
