@@ -19,7 +19,7 @@
 #define __CFTAL_BF16_T_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/cvt_f16.h>
+#include <cftal/cvt_bf16.h>
 #include <cftal/constants.h>
 #include <cftal/type_traits.h>
 #define __USE_STDCPP_BFLOAT16_T__ 0
@@ -63,7 +63,7 @@ namespace cftal {
     public:
         constexpr const mf_bf16_t& operator()() const { return _f; }
 
-        constexpr bf16_t(float v) : _f(impl::_cvt_f32_to_f16(v)) {}
+        constexpr bf16_t(float v) : _f(impl::_cvt_f32_to_bf16(v)) {}
         constexpr
         explicit operator float() const { return impl::_cvt_bf16_to_f32(_f); }
         explicit operator short int() const {
@@ -522,7 +522,7 @@ namespace cftal {
 
     // use a user defined operator to avoid overriding f16
     constexpr
-    bf16_t operator ""_f16(long double);
+    bf16_t operator ""_bf16(long double);
 
     bool isnan(const bf16_t& v);
     bool isinf(const bf16_t& v);
@@ -598,7 +598,7 @@ inline
 cftal::bf16_t
 cftal::operator-(const bf16_t& v)
 {
-    mf_bf16_t t=read_bits(v) ^ sign_f16_msk::v.s16();
+    mf_bf16_t t=read_bits(v) ^ sign_f32_msk::v.s16h();
     return bf16_t::cvt_from_rep(t);
 }
 
@@ -1134,12 +1134,12 @@ std::istream& cftal::operator>>(std::istream& s, bf16_t& v)
 
 inline
 constexpr
-cftal::bf16_t cftal::operator ""_f16(long double d)
+cftal::bf16_t cftal::operator ""_bf16(long double d)
 {
 #if __USE_STDCPP_BFLOAT16_T__>0
     return bf16_t(static_cast<float>(d));
 #else
-    return bf16_t::cvt_from_rep(impl::_cvt_f32_to_f16(static_cast<float>(d)));
+    return bf16_t::cvt_from_rep(impl::_cvt_f32_to_bf16(static_cast<float>(d)));
 #endif
 }
 
@@ -1147,23 +1147,23 @@ inline
 bool cftal::isnan(const bf16_t& v)
 {
     const mf_bf16_t& vi= read_bits(v);
-    mf_bf16_t abs_vi= vi & not_sign_f16_msk::v.u16();
-    return abs_vi > exp_f16_msk::v.u16();
+    mf_bf16_t abs_vi= vi & not_sign_f32_msk::v.s16h();
+    return abs_vi > exp_f32_msk::v.s16h();
 }
 
 inline
 bool cftal::isinf(const bf16_t& v)
 {
     const mf_bf16_t& vi= read_bits(v);
-    mf_bf16_t abs_vi= vi & not_sign_f16_msk::v.u16();
-    return abs_vi == exp_f16_msk::v.u16();
+    mf_bf16_t abs_vi= vi & not_sign_f32_msk::v.s16h();
+    return abs_vi == exp_f32_msk::v.s16h();
 }
 
 inline
 cftal::bf16_t cftal::abs(const bf16_t& v)
 {
     const mf_bf16_t& vi= read_bits(v);
-    mf_bf16_t abs_vi= vi & not_sign_f16_msk::v.u16();
+    mf_bf16_t abs_vi= vi & not_sign_f32_msk::v.s16h();
     return as<bf16_t>(abs_vi);
 }
 
@@ -1171,16 +1171,16 @@ inline
 bool cftal::signbit(const bf16_t& v)
 {
     const mf_bf16_t& vi= read_bits(v);
-    return (vi & sign_f16_msk::v.u16()) == sign_f16_msk::v.u16();
+    return (vi & sign_f32_msk::v.s16h()) == sign_f32_msk::v.s16h();
 }
 
 inline
 cftal::bf16_t
 cftal::copysign(bf16_t x, bf16_t y)
 {
-    const uint16_t abs_msk=not_sign_f16_msk::v.u16();
+    const uint16_t abs_msk=not_sign_f32_msk::v.u16h();
     uint16_t abs_x=read_bits(x) & abs_msk;
-    const uint16_t sgn_msk=sign_f16_msk::v.u16();
+    const uint16_t sgn_msk=sign_f32_msk::v.u16h();
     uint16_t sgn_y=read_bits(y) & sgn_msk;
     uint16_t r= abs_x | sgn_y;
     return as<bf16_t>(r);
@@ -1263,15 +1263,15 @@ cftal::nextafter(bf16_t xc, bf16_t yc)
 {
     uint16_t ux=read_bits(xc);
     uint16_t uy=read_bits(yc);
-    uint16_t ax= ux & not_sign_f16_msk::v.u16();
-    uint16_t ay= uy & not_sign_f16_msk::v.u16();
+    uint16_t ax= ux & not_sign_f32_msk::v.u16h();
+    uint16_t ay= uy & not_sign_f32_msk::v.u16h();
     uint16_t ux_inc= ux + 1;
     uint16_t ux_dec= ux - 1;
     // decrement required if ax > ay or (ux^uy & sgn) != 0
     bool opp_sgn=
-        uint16_t((ux^uy) & sign_f16_msk::v.u16()) != uint16_t(0);
+        uint16_t((ux^uy) & sign_f32_msk::v.u16h()) != uint16_t(0);
     uint16_t r= ((ax > ay) | opp_sgn) ? ux_dec : ux_inc;
-    uint16_t r0= ay == 0 ? uy : (uy & sign_f16_msk::v.u16()) | 1;
+    uint16_t r0= ay == 0 ? uy : (uy & sign_f32_msk::v.u16h()) | 1;
     r = ax == 0 ? r0 : r;
     r = ux == uy ? uy : r;
     // bf16_t rf= bf16_t::cvt_from_rep(r);
