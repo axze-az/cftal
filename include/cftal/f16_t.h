@@ -1240,11 +1240,13 @@ namespace std {
         }
         constexpr
         static cftal::f16_t quiet_NaN() {
+            // highest fraction bit set otherwise arbitrary
             return cftal::f16_t::cvt_from_rep(0x7e00);
         }
         constexpr
         static cftal::f16_t signaling_NaN() {
-            return cftal::f16_t::cvt_from_rep(0x7e00);
+            // highest fraction bit not set, at least one other bits set
+            return cftal::f16_t::cvt_from_rep(0x7d00);
         }
         constexpr
         static cftal::f16_t denorm_min() {
