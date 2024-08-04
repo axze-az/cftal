@@ -1315,4 +1315,4 @@ cftal::ilogb(bf16_t x)
 // Local variables:
 // mode: c++
 // end:
-#endif // __CFTAL_F16_T_H__
+#endif // __CFTAL_BF16_T_H__
