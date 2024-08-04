@@ -66,7 +66,7 @@ cftal::f32_t
 cftal::impl::_cvt_bf16_to_f32(mf_bf16_t t)
 {
     int32_t r=t;
-    r <<= 16;   
+    r <<= 16;
     return as<f32_t>(r);
 }
 
@@ -80,24 +80,42 @@ cftal::impl::_cvt_f32_to_bf16(f32_t ff)
     int32_t f=as<int32_t>(ff);
     int32_t af=f & 0x7fff'ffff;
     int32_t sf=f & 0x8000'0000;
+#define BRANCHLESS 1
+
+#if BRANCHLESS
+    // nan result;
+    int32_t r_nan = af;
+    // subnormal result:
+    int32_t r_sn = 0;
+    constexpr const int32_t rnd_bias = 0x7fff;
+    constexpr const int32_t rnd_bias_p1 = 0x8000;
+    // force round nearest even if bit 16 is set
+    int32_t r_def= (af & 0x0001'0000) ? af + rnd_bias_p1 : af + rnd_bias;
+    // select subnormal normal
+    int32_t r_def_sn = (af < 0x0080'0000) ? r_sn : r_def;
+    // select nan or subnormal normal
+    int32_t r = (af > 0x7f80'0000) ? r_nan : r_def_sn;
+#else
     int32_t r;
     if (af > 0x7f80'0000) {
-	// nan
-	r = af;
+        // nan
+        r = af;
     } else if (af < 0x0080'0000) {
-	// subnormal or 0
-	r = 0;
+        // subnormal or 0
+        r = 0;
     } else {
-	constexpr const int32_t rnd_bias = 0x7fff;
-	constexpr const int32_t rnd_bias_p1 = 0x8000;
-	// one could also use a shift here
-	if (af & 0x0001'0000) {
-	    // force round nearest even
-	    r = af + rnd_bias_p1;
-	} else {
-	    r = af + rnd_bias;
-	}
+        constexpr const int32_t rnd_bias = 0x7fff;
+        constexpr const int32_t rnd_bias_p1 = 0x8000;
+        // one could also use a shift here
+        if (af & 0x0001'0000) {
+            // force round nearest even
+            r = af + rnd_bias_p1;
+        } else {
+            r = af + rnd_bias;
+        }
     }
+#endif
+#undef BRANCHLESS
     r |= sf;
     r >>= 16;
     return mf_bf16_t(r);
