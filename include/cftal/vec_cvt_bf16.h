@@ -15,19 +15,18 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
-#if !defined (__CFTAL_BF16_H__)
-#define __CFTAL_BF16_H__ 1
+#if !defined (__CFTAL_VEC_CVT_BF16_H__)
+#define __CFTAL_VEC_CVT_BF16_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/types.h>
 #include <cftal/constants.h>
-#include <cftal/vec.h>
+#include <cftal/cvt_bf16.h>
+#include <cftal/vec_t_n.h>
+#include <cftal/vec_t_1.h>
+#include <cftal/vec_spec.h>
 
 namespace cftal {
-
-    // memory format of bfloat16, aka. the highest 16 bits of a
-    // binary32
-    using mf_bf16_t = int16_t;
 
     namespace impl {
 
