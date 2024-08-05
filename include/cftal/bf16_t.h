@@ -1201,56 +1201,60 @@ namespace std {
         static const float_denorm_style has_denorm = denorm_present;
         static const bool has_denorm_loss = false;
         static const std::float_round_style round_style = std::round_to_nearest;
-        static const bool is_iec559 = false;
+        static const bool is_iec559 =
+            has_infinity &&
+            has_quiet_NaN &&
+            has_denorm == denorm_present;
         static const bool is_bounded = false;
         static const bool is_modulo = false;
-        static const int digits = 11;
-        static const int digits10 = 3;      // according to http://half.sourceforge.net/structstd_1_1numeric__limits_3_01half__float_1_1half_01_4.html
-        static const int max_digits10 = 5;  // according to http://half.sourceforge.net/structstd_1_1numeric__limits_3_01half__float_1_1half_01_4.html
+        static const int digits = 8;
+        static const int digits10 = 2;
+        static const int max_digits10 = 4;
         static const int radix = 2;
-        static const int min_exponent = -13;
-        static const int min_exponent10 = -4;
-        static const int max_exponent = 16;
-        static const int max_exponent10 = 4;
+        static const int min_exponent = -125;
+        static const int min_exponent10 = -37;
+        static const int max_exponent = 128;
+        static const int max_exponent10 = 38;
         static const bool traps = true;
         static const bool tinyness_before = false;
 
         constexpr
         static cftal::bf16_t (min)() {
-            return cftal::bf16_t::cvt_from_rep(0x400);
+            return cftal::bf16_t::cvt_from_rep(0x0800);
         }
         constexpr
         static cftal::bf16_t lowest() {
-            return cftal::bf16_t::cvt_from_rep(0xfbff);
+            return cftal::bf16_t::cvt_from_rep(0xbf7f);
         }
         constexpr
         static cftal::bf16_t (max)() {
-            return cftal::bf16_t::cvt_from_rep(0x7bff);
+            return cftal::bf16_t::cvt_from_rep(0x7f7f);
         }
         constexpr
         static cftal::bf16_t epsilon() {
-            return cftal::bf16_t::cvt_from_rep(0x0800);
+            return cftal::bf16_t::cvt_from_rep(0x3c00);
         }
         static cftal::bf16_t round_error() {
             return cftal::bf16_t(float(0.5));
         }
         constexpr
         static cftal::bf16_t infinity() {
-            return cftal::bf16_t::cvt_from_rep(0x7c00);
+            return cftal::bf16_t::cvt_from_rep(0x7f80);
         }
         constexpr
         static cftal::bf16_t quiet_NaN() {
             // highest fraction bit set otherwise arbitrary
-            return cftal::bf16_t::cvt_from_rep(0x7e00);
+            return cftal::bf16_t::cvt_from_rep(0x7fc0);
         }
         constexpr
         static cftal::bf16_t signaling_NaN() {
-            // highest fraction bit not set, at least one other bits set
-            return cftal::bf16_t::cvt_from_rep(0x7d00);
+            // highest fraction bit not set, at least one other
+            // fraction bit set
+            return cftal::bf16_t::cvt_from_rep(0x7fa0);
         }
         constexpr
         static cftal::bf16_t denorm_min() {
-            return cftal::bf16_t::cvt_from_rep(0x1);
+            return cftal::bf16_t::cvt_from_rep(0x0001);
         }
     };
 }
