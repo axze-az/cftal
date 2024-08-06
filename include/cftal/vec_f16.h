@@ -1612,7 +1612,7 @@ cftal::lgamma(const vec<cftal::f16_t, _N>& v, vec<int16_t, _N>* signp)
 {
     vec<int16_t, _N/2> sl, sh;
     vec<f16_t, _N> r(lgamma(low_half(v), &sl),
-		     lgamma(high_half(v), &sh));
+                     lgamma(high_half(v), &sh));
     if (signp)
         *signp=vec<int16_t, _N>(sl, sh);
     return r;
