@@ -18,7 +18,7 @@
 #if !defined (__CFTAL_VXF16_H__)
 #define __CFTAL_VXF16_H__ 1
 
-#if !defined(__AVX512VL__) || !defined(__AVX512FP16__) ||	\
+#if !defined(__AVX512VL__) || !defined(__AVX512FP16__) ||       \
     (__CFTAL_CFG_ENABLE_AVX512__==0)
 #include <cftal/config.h>
 #include <cftal/vec.h>
