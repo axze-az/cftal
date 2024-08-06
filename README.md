@@ -13,6 +13,7 @@ math library for
 - double (binary64),
 - single (binary32) and
 - half (binary16)
+
 precision arguments and results. The functions are probably faithfully rounded for double,
 single and half precision.
 Tests for a  subset of the numbers for single and double precision show faithfully rounding compared to mpfr.
