@@ -608,7 +608,7 @@ namespace cftal {
         template <size_t _N>
         typename vec<int16_t, _N>::mask_type
         bf16_not_nan_abs(vec<int16_t, _N> v) {
-            return v < (exp_bf16_msk::v.s16()+1);
+            return v < (exp_f32_msk::v.s16h()+1);
         }
 
         template <size_t _N>
@@ -626,13 +626,13 @@ namespace cftal {
         template <size_t _N>
         vec<int16_t, _N>
         bf16_abs(vec<int16_t, _N> v) {
-            return v & not_sign_bf16_msk::v.s16();
+            return v & not_sign_f32_msk::v.s16h();
         }
 
         template <size_t _N>
         vec<int16_t, _N>
         bf16_sgn(vec<int16_t, _N> v) {
-            return v & sign_bf16_msk::v.s16();
+            return v & sign_f32_msk::v.s16h();
         }
 
         template <size_t _N>
@@ -992,7 +992,7 @@ namespace cftal {
             full_type
             v(const full_type& a) {
                 vec<mf_bf16_t, 1> t=a();
-                t ^= sign_bf16_msk::v.u16();
+                t ^= sign_f32_msk::v.s16h();
                 return full_type::cvt_from_rep(t);
             }
         };
@@ -1004,7 +1004,7 @@ namespace cftal {
             full_type
             v(const full_type& a) {
                 vec<mf_bf16_t, _N> t=a();
-                t ^= sign_bf16_msk::v.u16();
+                t ^= sign_f32_msk::v.s16h();
                 return full_type::cvt_from_rep(t);
             }
         };
@@ -1549,7 +1549,7 @@ template <cftal::size_t _N>
 cftal::vec<cftal::bf16_t, _N>
 cftal::abs(const vec<bf16_t, _N>& a)
 {
-    vec<mf_bf16_t, _N> t= a() & not_sign_bf16_msk::v.u16();
+    vec<mf_bf16_t, _N> t= a() & not_sign_f32_msk::v.s16h();
     return vec<bf16_t, _N>::cvt_from_rep(t);
 }
 
@@ -1559,7 +1559,7 @@ cftal::iszero(const vec<bf16_t, _N>& a)
 {
 #if 1
     // to allow common subexpression elimination with isnan/isinf
-    vec<mf_bf16_t, _N> t= a() & not_sign_bf16_msk::v.u16();
+    vec<mf_bf16_t, _N> t= a() & not_sign_f32_msk::v.s16h();
 #else
     vec<mf_bf16_t, _N> t= a();
     t += t;
@@ -1573,8 +1573,8 @@ template <cftal::size_t _N>
 typename cftal::vec<cftal::bf16_t, _N>::mask_type
 cftal::isnan(const vec<bf16_t, _N>& a)
 {
-    vec<mf_bf16_t, _N> aa= a() & not_sign_bf16_msk::v.u16();
-    auto v_is_nan = aa > exp_bf16_msk::v.u16();
+    vec<mf_bf16_t, _N> aa= a() & not_sign_f32_msk::v.s16h();
+    auto v_is_nan = aa > exp_f32_msk::v.s16h();
     using m_t = typename vec<bf16_t, _N>::mask_type;
     return m_t::cvt_from_rep(v_is_nan);
 }
@@ -1583,8 +1583,8 @@ template <cftal::size_t _N>
 typename cftal::vec<cftal::bf16_t, _N>::mask_type
 cftal::isinf(const vec<bf16_t, _N>& a)
 {
-    vec<mf_bf16_t, _N> aa= a() & not_sign_bf16_msk::v.u16();
-    auto v_is_inf = aa == exp_bf16_msk::v.u16();
+    vec<mf_bf16_t, _N> aa= a() & not_sign_f32_msk::v.s16h();
+    auto v_is_inf = aa == exp_f32_msk::v.s16h();
     using m_t = typename vec<bf16_t, _N>::mask_type;
     return m_t::cvt_from_rep(v_is_inf);
 }
@@ -1594,8 +1594,8 @@ template <cftal::size_t _N>
 typename cftal::vec<cftal::bf16_t, _N>::mask_type
 cftal::isfinite(const vec<bf16_t, _N>& a)
 {
-    vec<mf_bf16_t, _N> aa= a() & not_sign_bf16_msk::v.u16();
-    auto v_is_finite = aa < exp_bf16_msk::v.u16();
+    vec<mf_bf16_t, _N> aa= a() & not_sign_f32_msk::v.s16h();
+    auto v_is_finite = aa < exp_f32_msk::v.s16h();
     using m_t = typename vec<bf16_t, _N>::mask_type;
     return m_t::cvt_from_rep(v_is_finite);
 }
@@ -1604,10 +1604,10 @@ template <cftal::size_t _N>
 cftal::vec<cftal::bf16_t, _N>
 cftal::copysign(const vec<bf16_t, _N>& x, const vec<bf16_t, _N>& y)
 {
-    const mf_bf16_t abs_msk=not_sign_bf16_msk::v.u16();
+    const mf_bf16_t abs_msk=not_sign_f32_msk::v.s16h();
     auto xi=x(), yi=y();
     vec<mf_bf16_t, _N> abs_x= xi & abs_msk;
-    const mf_bf16_t sgn_msk=sign_bf16_msk::v.u16();
+    const mf_bf16_t sgn_msk=sign_f32_msk::v.s16h();
     vec<mf_bf16_t, _N> sgn_y= yi & sgn_msk;
     vec<mf_bf16_t, _N> r= abs_x | sgn_y;
     return vec<bf16_t, _N>::cvt_from_rep(r);
@@ -1635,7 +1635,7 @@ cftal::vec<cftal::bf16_t, _N>
 cftal::mulsign(const vec<bf16_t, _N>& x, const vec<bf16_t, _N>& y)
 {
     using v_t = vec<mf_bf16_t, _N>;
-    const mf_bf16_t msk=sign_bf16_msk::v.s16();
+    const mf_bf16_t msk=sign_f32_msk::v.s16h();
     v_t sgn_y = y() & msk;
     v_t r=x() ^ sgn_y;
     return vec<bf16_t, _N>::cvt_from_rep(r);
