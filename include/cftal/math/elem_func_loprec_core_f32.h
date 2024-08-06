@@ -59,10 +59,6 @@ namespace cftal {
             using d_ops=d_real_ops<vf_type,
                                    d_real_traits<vf_type>::fma>;
 
-            using f16_traits= typename _T::vlf_traits;
-            using vlf_type = typename f16_traits::vf_type;
-            using vmlf_type = typename f16_traits::vmf_type;
-
             // as frexp but without checking for 0, inf, nan
             static
             vi_type
