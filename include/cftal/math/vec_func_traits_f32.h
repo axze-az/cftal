@@ -120,7 +120,7 @@ namespace cftal {
             }
             static
             vf_type insert_exp(const vi_type& e) {
-                vi_type ep(e << 23);
+                vi_type ep(e << bits());
                 return as<vf_type>(ep);
             }
 
@@ -129,7 +129,7 @@ namespace cftal {
                 const vf_type msk(exp_f32_msk::v.f32());
                 vf_type m(d & msk);
                 vi_type e= as<vi_type>(m);
-                e >>= 23;
+                e >>= bits();
                 return e;
             }
 
