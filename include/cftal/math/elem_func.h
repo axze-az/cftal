@@ -47,6 +47,16 @@ namespace cftal {
         struct elem_func_loprec_core {
         };
 
+        // rounded mantissa core implementation of elementary and
+        // base functions exports exp_k ....
+        // the exponents of the format are the same as of the
+        // original format
+        // elem_func_rndmant_core<float, _T, 16> may contain an
+        // implementation for bfloat16
+        template <typename _FLOAT_T, size_t _RND_BITS, typename _TRAITS>
+        struct elem_func_rndmant_core {
+        };
+
         // wrapper for core implementation of elementary and base
         // functions, may be specialized to switch elem func_core
         // implementations or only some functions
