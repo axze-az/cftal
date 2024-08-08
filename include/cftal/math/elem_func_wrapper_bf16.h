@@ -20,10 +20,8 @@
 
 #include <cftal/config.h>
 #include <cftal/vec_cvt.h>
-#include <cftal/bf16.h>
-#include <cftal/math/elem_func_core_f32.h>
-#include <cftal/math/func_traits_f32_s32.h>
-#include <cftal/math/impl_d_real_constants_f32.h>
+#include <cftal/bf16_t.h>
+#include <cftal/math/elem_func_rndmant_core_f32_16.h>
 
 namespace cftal {
     namespace math {
