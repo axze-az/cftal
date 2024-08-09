@@ -21,7 +21,7 @@
 #include <cftal/config.h>
 // #include <cftal/d_real.h>
 // #include <cftal/d_real_traits_bf16.h>
-#include <cftal/bf16.h>
+#include <cftal/bf16_t.h>
 #include <cftal/std_types.h>
 #include <cftal/math/func_traits.h>
 #include <limits>

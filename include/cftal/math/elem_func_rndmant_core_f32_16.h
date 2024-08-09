@@ -51,7 +51,6 @@ namespace cftal {
             using vmi_type = typename _T::vmi_type;
             using vdf_type = typename _T::vdf_type;
 
-#if 0
             using d_ops=d_real_ops<vf_type,
                                    d_real_traits<vf_type>::fma>;
             // as frexp but without checking for 0, inf, nan
@@ -282,17 +281,16 @@ namespace cftal {
             static
             vf_type
             hypot_k(arg_t<vf_type> xc, arg_t<vf_type> yc);
-#endif
+
         };
     }
 }
 
-#if 0
 template <typename _T>
 inline
 __attribute__((__always_inline__))
-typename cftal::math::elem_func_loprec_core<float, _T>::vi_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vi_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __frexp_k(vf_type& m , arg_t<vf_type> x)
 {
     constexpr const int32_t neg_bias_p_1=-_T::bias()+1;
@@ -312,8 +310,8 @@ __frexp_k(vf_type& m , arg_t<vf_type> x)
 template <typename _T>
 inline
 __attribute__((__always_inline__))
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 rsqrt_k(arg_t<vf_type> x)
 {
     vf_type y=::cftal::native::rsqrt_11b(x);
@@ -324,8 +322,8 @@ rsqrt_k(arg_t<vf_type> x)
 template <typename _T>
 inline
 __attribute__((__always_inline__))
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 cbrt_k(arg_t<vf_type> xc)
 {
     vf_type xp=abs(xc);
@@ -386,8 +384,8 @@ cbrt_k(arg_t<vf_type> xc)
 template <typename _T>
 inline
 __attribute__((__always_inline__))
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 rcbrt_k(arg_t<vf_type> xc)
 {
     vf_type xp=abs(xc);
@@ -477,8 +475,8 @@ rcbrt_k(arg_t<vf_type> xc)
 template <typename _T>
 inline
 __attribute__((__always_inline__))
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 root12_k(arg_t<vf_type> xc)
 {
     // reduce x into [2^-12, 1.0)
@@ -599,8 +597,8 @@ root12_k(arg_t<vf_type> xc)
 template <typename _T>
 inline
 __attribute__((__always_inline__))
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __mul_two_pow(arg_t<vf_type> y, arg_t<vi_type> k)
 {
     vi_type ep(k << 23);
@@ -612,8 +610,8 @@ __mul_two_pow(arg_t<vf_type> y, arg_t<vi_type> k)
 template <typename _T>
 inline
 __attribute__((__always_inline__))
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __mul_two_pow(arg_t<vf_type> y, arg_t<vf_type> kf)
 {
     vi_type k=_T::cvt_f_to_i(kf);
@@ -623,8 +621,8 @@ __mul_two_pow(arg_t<vf_type> y, arg_t<vf_type> kf)
 template <typename _T>
 template <bool _EXP_M1>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __exp_k(arg_t<vf_type> xrd, arg_t<vf_type> kfd,
         arg_t<vf_type> x)
 {
@@ -667,8 +665,8 @@ __exp_k(arg_t<vf_type> xrd, arg_t<vf_type> kfd,
 }
 
 template <typename _T>
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __exp_tbl_k(arg_t<vf_type> xr, arg_t<vi_type> idx)
 {
 #if defined (__tune_znver2__) || defined(__tune_znver3__) \
@@ -696,8 +694,8 @@ __exp_tbl_k(arg_t<vf_type> xr, arg_t<vi_type> idx)
 }
 
 template <typename _T>
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __exp_tbl_k(arg_t<vf_type> xr, arg_t<vi_type> idx, arg_t<vi_type> ki)
 {
     vf_type yd=__exp_tbl_k(xr, idx);
@@ -706,7 +704,7 @@ __exp_tbl_k(arg_t<vf_type> xr, arg_t<vi_type> idx, arg_t<vi_type> ki)
 
 template <typename _T>
 void
-cftal::math::elem_func_loprec_core<float, _T>::
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __reduce_exp_arg(vf_type& xr, vf_type& kf, arg_t<vf_type> xd)
 {
     using ctbl = impl::d_real_constants<d_real<float>, float>;
@@ -716,7 +714,7 @@ __reduce_exp_arg(vf_type& xr, vf_type& kf, arg_t<vf_type> xd)
 
 template <typename _T>
 void
-cftal::math::elem_func_loprec_core<float, _T>::
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __reduce_exp_arg(vf_type& xr, vi_type& idx, vi_type& k, arg_t<vf_type> xd)
 {
     using ctbl = impl::d_real_constants<d_real<float>, float>;
@@ -738,8 +736,8 @@ __reduce_exp_arg(vf_type& xr, vi_type& idx, vi_type& k, arg_t<vf_type> xd)
 template <typename _T>
 template <bool _EXP_M1>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 exp_k(arg_t<vf_type> xc)
 {
     vf_type yd;
@@ -759,8 +757,8 @@ exp_k(arg_t<vf_type> xc)
 template <typename _T>
 template <bool _EXP2_M1>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 exp2_k(arg_t<vf_type> xc)
 {
     using ctbl = impl::d_real_constants<d_real<float>, float>;
@@ -772,8 +770,8 @@ exp2_k(arg_t<vf_type> xc)
 template <typename _T>
 template <bool _EXP10_M1>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 exp10_k(arg_t<vf_type> xc)
 {
     using ctbl = impl::d_real_constants<d_real<float>, float>;
@@ -783,11 +781,11 @@ exp10_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
-template <enum cftal::math::elem_func_loprec_core<float, _T>::hyperbolic_func _F>
+template <enum cftal::math::elem_func_rndmant_core<float, 16, _T>::hyperbolic_func _F>
 inline
 __attribute__((__always_inline__))
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 sinh_cosh_k(arg_t<vf_type> xc)
 {
     static_assert(_F != hyperbolic_func::c_tanh);
@@ -886,8 +884,8 @@ sinh_cosh_k(arg_t<vf_type> xc)
 template <typename _T>
 inline
 __attribute__((__always_inline__))
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 tanh_k(arg_t<vf_type> xc)
 {
     vf_type xa=abs(xc);
@@ -927,8 +925,8 @@ tanh_k(arg_t<vf_type> xc)
 template <typename _T>
 inline
 __attribute__((__always_inline__))
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 sig_k(arg_t<vf_type> xc)
 {
     vf_type r=1.0f/(1.0f+exp_k<false>(-xc));
@@ -941,8 +939,8 @@ sig_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vi_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vi_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __reduce_log_arg(vf_type& xr, arg_t<vf_type> xc)
 {
     // MSQRT2/2
@@ -960,10 +958,10 @@ __reduce_log_arg(vf_type& xr, arg_t<vf_type> xc)
 
 template <typename _T>
 template <typename
-    cftal::math::elem_func_loprec_core<float, _T>::log_func _LFUNC>
+    cftal::math::elem_func_rndmant_core<float, 16, _T>::log_func _LFUNC>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __log_k(arg_t<vf_type> xc)
 {
     vf_type xr;
@@ -1012,10 +1010,10 @@ __log_k(arg_t<vf_type> xc)
 
 template <typename _T>
 template <typename
-    cftal::math::elem_func_loprec_core<float, _T>::log_func _LFUNC>
+    cftal::math::elem_func_rndmant_core<float, 16, _T>::log_func _LFUNC>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __log1p_k(arg_t<vf_type> xc)
 {
     vf_type xp1=xc + 1.0f;
@@ -1036,10 +1034,10 @@ __log1p_k(arg_t<vf_type> xc)
 
 template <typename _T>
 template <typename
-    cftal::math::elem_func_loprec_core<float, _T>::log_func _LFUNC>
+    cftal::math::elem_func_rndmant_core<float, 16, _T>::log_func _LFUNC>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __log_k12(arg_t<vf_type> xc)
 {
     vf_type xr;
@@ -1097,8 +1095,8 @@ __log_k12(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 pow_k(arg_t<vf_type> x, arg_t<vf_type> y, vf_type* p_ylnx)
 {
     vf_type ylnx=y*__log_k12<log_func::c_log_e>(abs(x));
@@ -1121,8 +1119,8 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y, vf_type* p_ylnx)
 template <typename _T>
 template <bool _CALC_ROOT>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 powi_k(arg_t<vf_type> x, arg_t<vi_type> e, vf_type* p_ylnx)
 {
     vf_type lnx=__log_k12<log_func::c_log_e>(abs(x));
@@ -1151,8 +1149,8 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e, vf_type* p_ylnx)
 
 template <typename _T>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vi_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vi_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __reduce_trig_arg(vf_type& xrh, arg_t<vf_type> x)
 {
     using ctbl=impl::d_real_constants<d_real<float>, float>;
@@ -1191,7 +1189,7 @@ __reduce_trig_arg(vf_type& xrh, arg_t<vf_type> x)
 template <typename _T>
 inline
 void
-cftal::math::elem_func_loprec_core<float, _T>::
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __sin_cos_k(arg_t<vf_type> xr, arg_t<vi_type> q, vf_type* ps, vf_type* pc)
 {
     vf_type xr2= xr*xr;
@@ -1264,7 +1262,7 @@ __sin_cos_k(arg_t<vf_type> xr, arg_t<vi_type> q, vf_type* ps, vf_type* pc)
 template <typename _T>
 inline
 void
-cftal::math::elem_func_loprec_core<float, _T>::
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 sin_cos_k(arg_t<vf_type> x, vf_type* ps, vf_type* pc)
 {
     vf_type xr;
@@ -1273,8 +1271,8 @@ sin_cos_k(arg_t<vf_type> x, vf_type* ps, vf_type* pc)
 }
 
 template <typename _T>
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __tan_k(arg_t<vf_type> xr, arg_t<vi_type> q)
 {
     // [0, 0.785398185253143310546875] : | p - f | <= 2^-22.0703125
@@ -1317,8 +1315,8 @@ __tan_k(arg_t<vf_type> xr, arg_t<vi_type> q)
 }
 
 template <typename _T>
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 tan_k(arg_t<vf_type> x)
 {
     vf_type xr;
@@ -1327,8 +1325,8 @@ tan_k(arg_t<vf_type> x)
 }
 
 template <typename _T>
-typename cftal::math::elem_func_loprec_core<float, _T>::vi_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vi_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __reduce_trigpi_arg(vf_type& xr, arg_t<vf_type> xc)
 {
     vf_type xt2=xc+xc;
@@ -1343,7 +1341,7 @@ __reduce_trigpi_arg(vf_type& xr, arg_t<vf_type> xc)
 
 template <typename _T>
 void
-cftal::math::elem_func_loprec_core<float, _T>::
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
 {
     vf_type xr;
@@ -1353,8 +1351,8 @@ sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
 
 template <typename _T>
 __attribute__((flatten))
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 tanpi_k(arg_t<vf_type> xc)
 {
     vf_type xr;
@@ -1365,8 +1363,8 @@ tanpi_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __atan_0_1_k(arg_t<vf_type> xr)
 {
     vf_type a=0.0f;
@@ -1433,8 +1431,8 @@ __atan_0_1_k(arg_t<vf_type> xr)
 
 template <typename _T>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 atan_k(arg_t<vf_type> xc)
 {
     // atan(1/x) = M_PI/2 - atan(x)
@@ -1462,8 +1460,8 @@ atan_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 atan2_k(arg_t<vf_type> y, arg_t<vf_type> x)
 {
     // atan(1/x) = M_PI_2 -atan(x) if x>0
@@ -1508,8 +1506,8 @@ atan2_k(arg_t<vf_type> y, arg_t<vf_type> x)
 
 template <typename _T>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 asin_k_poly(arg_t<vf_type> x2)
 {
     // [3.4694469519536141888238489627838134765625e-18, 0.5] : | p - f | <= 2^-19.6171875
@@ -1540,8 +1538,8 @@ asin_k_poly(arg_t<vf_type> x2)
 
 template <typename _T>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 asin_k(arg_t<vf_type> xc)
 {
     vf_type x=abs(xc);
@@ -1563,8 +1561,8 @@ asin_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 acos_k(arg_t<vf_type> xc)
 {
     vf_type as=asin_k(xc);
@@ -1575,8 +1573,8 @@ acos_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 asinh_k(arg_t<vf_type> xc)
 {
     vf_type x=abs(xc);
@@ -1665,8 +1663,8 @@ asinh_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 acosh_k(arg_t<vf_type> xc)
 {
     vf_type x=abs(xc);
@@ -1748,8 +1746,8 @@ acosh_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 atanh_k(arg_t<vf_type> xc)
 {
     vf_type x=abs(xc);
@@ -1827,8 +1825,8 @@ atanh_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
-cftal::math::elem_func_loprec_core<float, _T>::
+typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
+cftal::math::elem_func_rndmant_core<float, 16, _T>::
 hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     vf_type x2=x*x;
@@ -1836,6 +1834,5 @@ hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
     vf_type r=sqrt(vf_type(x2+y2));
     return r;
 }
-#endif
 
 #endif // __CFTAL_MATH_ELEM_FUNC_RNDMANT_CORE_F32_16_H__

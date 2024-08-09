@@ -27,12 +27,6 @@ namespace cftal {
     // memory format for IEEE bf16_t types
     using mf_bf16_t = int16_t;
 
-    constexpr
-    inline
-    int16_t read_bits(mf_bf16_t v) {
-        return v;
-    }
-
     // conversion of a f32 to a bf16 value
     mf_bf16_t
     cvt_f32_to_bf16(f32_t f);

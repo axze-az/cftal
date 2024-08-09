@@ -160,7 +160,7 @@ cftal::impl::_rne_f32_to_bf16(const vec<float, _N>& v)
     typename vf_type::mask_type is_subnorm=
         abs(v) < std::numeric_limits<float>::min();
     constexpr const float mz=-0.0f;
-    vne = select(is_subnorm, (v & mz), vne);
+    vne = select(is_subnorm, vf_type(v & mz), vne);
     return vne;
 }
 

@@ -20,7 +20,8 @@
 
 #include <cftal/config.h>
 #include <cftal/vec_cvt.h>
-#include <cftal/bf16_t.h>
+#include <cftal/math/vec_func_traits_bf16.h>
+#include <cftal/math/func_constants_bf16.h>
 #include <cftal/math/elem_func_rndmant_core_f32_16.h>
 
 namespace cftal {
@@ -28,13 +29,11 @@ namespace cftal {
         // specialization of elem_func_wrapper for bf16_t and different
         // traits
         template <typename _T>
-        struct elem_func_wrapper<bf16_t, _T>
-            : public elem_func_core<bf16_t, _T> {
-            using base_type = elem_func_core<bf16_t, _T>;
-            using vf_type = typename base_type::vf_type;
-            using vi_type = typename base_type::vi_type;
-            using vmi_type = typename base_type::vmi_type;
-            using vmf_type = typename base_type::vmf_type;
+        struct elem_func_wrapper<cftal::bf16_t, _T> {
+            using vf_type = typename _T::vf_type;
+            using vi_type = typename _T::vi_type;
+            using vmi_type = typename _T::vmi_type;
+            using vmf_type = typename _T::vmf_type;
 
             using f32_traits = typename _T::vhf_traits;
             using f32_core = elem_func_rndmant_core<float, 16, f32_traits>;
@@ -42,6 +41,36 @@ namespace cftal {
             using vmhf_type = typename f32_traits::vmf_type;
             using vhi_type = typename f32_traits::vi_type;
             using vhmi_type = typename f32_traits::vmi_type;
+
+            // nextafter without nan handling
+            static
+            vf_type
+            nextafter_k(arg_t<vf_type> xc, arg_t<vf_type> yc);
+
+            static
+            vf_type
+            ldexp_k(arg_t<vf_type> vf, arg_t<vi_type> vi);
+
+            static
+            vf_type
+            ldexp(arg_t<vf_type> vf, arg_t<vi_type> vi);
+
+            static
+            vf_type
+            frexp(arg_t<vf_type> vf, vi_type* vi);
+
+            template <int32_t _X>
+            static
+            vi_type
+            __ilogb_plus(arg_t<vf_type> x);
+
+            static
+            vi_type
+            ilogbp1(arg_t<vf_type> x);
+
+            static
+            vi_type
+            ilogb(arg_t<vf_type> vf);
 
             static
             vf_type
@@ -203,6 +232,185 @@ namespace cftal {
         };
     }
 }
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::vf_type
+cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::
+nextafter_k(arg_t<vf_type> xc, arg_t<vf_type> yc)
+{
+    vi_type ux=_T::as_int(xc);
+    vi_type uy=_T::as_int(yc);
+    vi_type ax= ux & not_sign_f32_msk::v.s16h();
+    vi_type ay= uy & not_sign_f32_msk::v.s16h();
+    vi_type ux_inc= ux + 1;
+    vi_type ux_dec= ux - 1;
+    // decrement required if ax > ay or (ux^uy & sgn) != 0
+    vmi_type opp_sgn=
+        vi_type((ux^uy) & sign_f32_msk::v.s16h()) != vi_type(0);
+    vi_type r= _T::sel_vi((ax > ay) | opp_sgn, ux_dec, ux_inc);
+    vi_type r0= _T::sel_vi(ay == 0, uy, (uy & sign_f32_msk::v.s16h()) | 1);
+    r = _T::sel_vi(ax == 0, r0, r);
+    r = _T::sel_vi(ux == uy, uy, r);
+    vf_type rf=_T::as_float(r);
+    return rf;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::vf_type
+cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::
+ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
+{
+    vf_type xs=x;
+    using fc=func_constants<float>;
+    vmf_type is_denom= abs(x) < fc::min_normal();
+
+    // input denormal handling
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p25f), xs);
+    vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
+    vi_type eo= _T::sel_val_or_zero_vi(i_is_denom, vi_type(-25));
+    // mantissa
+    vi_type m=_T::as_int(xs);
+    vi_type xe=((m>>23) & 0xff) + eo;
+
+    // determine the exponent of the result
+    // clamp nn to [-4096, 4096]
+    vi_type nn= min(vi_type(4096), max(n, vi_type(-4096)));
+    vi_type re= xe + nn;
+
+    // 3 cases exist:
+    // 0 < re < 0xff normal result
+    //     re >= 0xff inf result (overflow)
+    //     re <= 0 subnormal or 0 (underflow)
+
+    // clear exponent bits from m
+    m &= vi_type(~0x7f800000);
+
+    // mantissa for normal results:
+    vi_type mn= m | ((re & vi_type(0xff)) << 23);
+    vf_type r= _T::as_float(mn);
+
+    // overflow handling
+    vmi_type i_is_inf = re > vi_type(0xfe);
+    vmf_type f_is_inf = _T::vmi_to_vmf(i_is_inf);
+    vf_type r_inf = copysign(vf_type(_T::pinf()), x);
+    r = _T::sel(f_is_inf, r_inf, r);
+
+    // underflow handling
+    vmi_type i_is_near_z = re < vi_type (1);
+    if (_T::any_of_vmi(i_is_near_z)) {
+        // create m*0x1.0p-126
+        vi_type mu= m | vi_type(1<<23);
+        vf_type r_u= _T::as_float(mu);
+        // create a scaling factor
+        vi_type ue= max(vi_type(re + (_T::bias()-1)), vi_type(1));
+        vf_type s_u= _T::as_float(vi_type(ue << 23));
+        r_u *= s_u;
+        vmf_type f_is_near_z = _T::vmi_to_vmf(i_is_near_z);
+        r = _T::sel(f_is_near_z, r_u, r);
+    }
+    // handle special cases:
+    r = _T::sel(isinf(x) | isnan(x) | (x==vf_type(0.0)), x, r);
+    return r;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::vf_type
+cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::
+ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
+{
+    return ldexp_k(x, n);
+}
+
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::vf_type
+cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::
+frexp(arg_t<vf_type> x, vi_type* ve)
+{
+    vf_type xs=x;
+    using fc=func_constants<float>;
+    vmf_type is_denom= abs(x) < fc::min_normal();
+    // denormal handling
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p25f), xs);
+    const int32_t neg_bias_p_1=-_T::bias()+1;
+    const int32_t neg_bias_p_1_m_25=neg_bias_p_1 - 25;
+    // reinterpret a integer
+    vi_type i=_T::as_int(xs);
+    const int32_t half=0x3f000000;
+    const int32_t clear_exp_msk=0x807fffff;
+    // insert exponent
+    vi_type mi = i & clear_exp_msk;
+    mi |= half;
+    vf_type m= _T::as_float(mi);
+    // inf, nan, zero
+    vmf_type f_inz=isinf(x) | isnan(x) | (x==vf_type(0.0));
+    m = _T::sel(f_inz, x, m);
+    if (ve != nullptr) {
+        vi_type e=_T::sel_vi(_T::vmf_to_vmi(is_denom),
+                             neg_bias_p_1_m_25, neg_bias_p_1);
+        // exponent:
+        e += ((i >> 23) & 0xff);
+        vmi_type i_inz=_T::vmf_to_vmi(f_inz);
+        e = _T::sel_zero_or_val_vi(i_inz, e);
+        *ve=e;
+    }
+    return m;
+}
+
+template <typename _T>
+template <cftal::int32_t _X>
+inline
+typename cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::vi_type
+cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::
+__ilogb_plus(arg_t<vf_type> x)
+{
+    vf_type xs=abs(x);
+    using fc=func_constants<float>;
+    vmf_type is_denom= xs < fc::min_normal();
+    vi_type eo=vi_type(0);
+    // denormal handling
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p25f), xs);
+    vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
+    eo= _T::sel_vi(i_is_denom, vi_type(-25), eo);
+    // reinterpret as integer
+    vi_type i=_T::as_int(xs);
+    // exponent:
+    vi_type e=((i >> 23) /* & 0xff*/ ) + eo - vi_type(_T::bias()-_X);
+    return e;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::vi_type
+cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::
+ilogbp1(arg_t<vf_type> d)
+{
+    return __ilogb_plus<1>(d);
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::vi_type
+cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::
+ilogb(arg_t<vf_type> d)
+{
+    vi_type e(__ilogb_plus<0>(d));
+    vmf_type mf= d == 0.0f;
+    vmi_type mi= _T::vmf_to_vmi(mf);
+    e = _T::sel_vi(mi, vi_type(FP_ILOGB0), e);
+    mf = isinf(d);
+    mi = _T::vmf_to_vmi(mf);
+    e = _T::sel_vi(mi, vi_type(0x7fffffff), e);
+    mf = isnan(d);
+    mi = _T::vmf_to_vmi(mf);
+    e = _T::sel_vi(mi, vi_type(FP_ILOGBNAN), e);
+    return e;
+}
+
 
 template <typename _T>
 inline
@@ -431,8 +639,6 @@ tanh_k(arg_t<vf_type> x)
     y=_T::sel(isnan(x), x, y);
     return y;
 }
-
-#endif
 
 template <typename _T>
 inline
@@ -725,3 +931,4 @@ hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
 }
 
 #endif // __CFTAL_MATH_ELEM_FUNC_WRAPPER_B16_H__
+

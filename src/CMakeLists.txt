@@ -91,6 +91,8 @@ set (CSRCS
     # vec <f16_t, 16>
     v16f16_ef.cc
     v16f16_sf.cc
+    # vec<bf16_t, 1>
+    v1bf16_ef.cc
 )
 
 # only for ides

@@ -243,7 +243,7 @@ cftal::vec<cftal::f32_t, 1>
 cftal::cvt_f16_to_f32(const vec<mf_f16_t, 1>& s)
 {
 #if defined (__F16C__)
-    vec<f32_t, 1> r= _cvtsh_ss(read_bits(s()));
+    vec<f32_t, 1> r= _cvtsh_ss(s());
 #else
     vec<f32_t, 1> r= impl::_cvt_f16_to_f32(s);
 #endif
