@@ -446,6 +446,195 @@ func(f16_t a, int ib, f2fi_t f, std::pair<f16_t, f16_t>* ulp1i)
     return dr;
 }
 
+namespace {
+
+    int
+    bf16_ftz_rounding(cftal::bf16_t v, float f, int mpres)
+    {
+        if (mpres==0)
+            return mpres;
+
+        using namespace cftal;
+        mf_f16_t vi=read_bits(v);
+        mf_f16_t ai=vi & 0x7fff;
+        // mf_f16_t si=vi & 0x8000;
+
+        // constexpr const float rt=std::numeric_limits<float>::denorm_min()*0.5f;
+        if (ai >= 0x0080)
+            return mpres;
+
+        // mpres tells us how f with 7+1 bits was obtained:
+        // >0 f was rounded up
+        // <0 f was rounded down
+        // == 0 exact
+        float vf = static_cast<float>(v);
+        if (vf < f) {
+            // vf was rounded down
+            mpres=-1;
+        } else if (vf > f) {
+            // vf was rounded up
+            mpres= 1;
+        }
+        // vf == f --> no ftz but normal zero, keep mpres
+        return mpres;
+    }
+}
+
+cftal::bf16_t
+cftal::test::call_mpfr::
+func(bf16_t a, f1_t f, std::pair<bf16_t, bf16_t>* ulp1i)
+{
+    mpfr_cache::f1_mpfr_result<bf16_t> c;
+    // auto pf= mpfr_cache::result(a, f, c);
+    auto pf=nullptr;
+    if (pf == nullptr) {
+        bfloat16_emin_emax g;
+        MPFR_DECL_INIT(ai, 8);
+        MPFR_DECL_INIT(r, 8);
+        float fa=cvt_bf16_to_f32(read_bits(a));
+        mpfr_set_flt(ai, fa, MPFR_RNDN);
+        int mpres=f(r, ai, MPFR_RNDN);
+        mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
+        float fdr=mpfr_get_flt(r, MPFR_RNDN);
+        c._res = bf16_t(fdr);
+        c._mpfr_res= bf16_ftz_rounding(c._res, fdr, mpres);
+        // mpfr_cache::update(a, f, c);
+    }
+    bf16_t dr=c._res;
+    int mpres=c._mpfr_res;
+    if (ulp1i != nullptr) {
+        *ulp1i=ulp1_interval(dr, mpres);
+    }
+    return dr;
+}
+
+std::pair<cftal::bf16_t, cftal::bf16_t>
+cftal::test::call_mpfr::
+func(bf16_t a, f1p_t f,
+     std::pair<bf16_t, bf16_t>* ulp1i0,
+     std::pair<bf16_t, bf16_t>* ulp1i1)
+{
+    bfloat16_emin_emax g;
+    MPFR_DECL_INIT(ai, 8);
+    MPFR_DECL_INIT(r0, 8);
+    MPFR_DECL_INIT(r1, 8);
+    float fa=cvt_bf16_to_f32(read_bits(a));
+    mpfr_set_flt(ai, fa, MPFR_RNDN);
+    int i01=f(r0, r1, ai, MPFR_RNDN);
+
+    int i0 = i01 & 3;
+    i0 = i0 > 1 ? -1 : i0;
+    i0=mpfr_subnormalize(r0, i0, MPFR_RNDN);
+    int i1 = (i01 >> 2) & 3;
+    i1 = i1 > 1 ? -1 : i1;
+    i1=mpfr_subnormalize(r1, i1, MPFR_RNDN);
+
+    float fd0, fd1;
+    fd0 = mpfr_get_flt(r0, MPFR_RNDN);
+    fd1 = mpfr_get_flt(r1, MPFR_RNDN);
+    auto d0=static_cast<bf16_t>(fd0);
+    auto d1=static_cast<bf16_t>(fd1);
+
+    i0=bf16_ftz_rounding(d0, fd0, i0);
+    i1=bf16_ftz_rounding(d1, fd1, i1);
+
+
+    if (ulp1i0 != nullptr) {
+        *ulp1i0= ulp1_interval(d0, i0);
+    }
+    if (ulp1i1 != nullptr) {
+        *ulp1i1= ulp1_interval(d1, i1);
+    }
+    return std::make_pair(d0, d1);
+}
+
+cftal::bf16_t
+cftal::test::call_mpfr::
+func(int32_t* ip, bf16_t a, f1i_t f, std::pair<bf16_t, bf16_t>* ulp1i)
+{
+    mpfr_cache::f1i_mpfr_result<std::pair<bf16_t, int32_t> > c;
+    // auto pf= mpfr_cache::result(a, f, c);
+    auto pf=nullptr;
+    if (pf == nullptr) {
+        bfloat16_emin_emax g;
+        MPFR_DECL_INIT(ai, 8);
+        MPFR_DECL_INIT(r, 8);
+        int32_t i;
+        float fa=cvt_bf16_to_f32(read_bits(a));
+        mpfr_set_flt(ai, fa, MPFR_RNDN);
+        int mpres=f(r, &i, ai, MPFR_RNDN);
+        mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
+        float fdr=mpfr_get_flt(r, MPFR_RNDN);
+        auto dr=static_cast<bf16_t>(fdr);
+        c._res = std::make_pair(dr, i);
+        c._mpfr_res= bf16_ftz_rounding(dr, fdr, mpres);
+        // mpfr_cache::update(a, f, c);
+    }
+    if (ip != nullptr) {
+        *ip = c._res.second;
+    }
+    bf16_t dr=c._res.first;
+    int mpres=c._mpfr_res;
+    if (ulp1i != nullptr) {
+        *ulp1i=ulp1_interval(dr, mpres);
+    }
+    return dr;
+}
+
+cftal::bf16_t
+cftal::test::call_mpfr::
+func(bf16_t a, bf16_t b, f2_t f, std::pair<bf16_t, bf16_t>* ulp1i)
+{
+    mpfr_cache::f2_mpfr_result<bf16_t> c;
+    // auto pf= mpfr_cache::result(a, b, f, c);
+    auto pf=nullptr;
+    if (pf == nullptr) {
+        bfloat16_emin_emax g;
+        MPFR_DECL_INIT(ai, 8);
+        MPFR_DECL_INIT(bi, 8);
+        MPFR_DECL_INIT(r, 8);
+        float fa=cvt_bf16_to_f32(read_bits(a));
+        float fb=cvt_bf16_to_f32(read_bits(b));
+        mpfr_set_flt(ai, fa, MPFR_RNDN);
+        mpfr_set_flt(bi, fb, MPFR_RNDN);
+        int mpres=f(r, ai, bi, MPFR_RNDN);
+        mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
+        float fdr=mpfr_get_flt(r, MPFR_RNDN);
+        auto dr=static_cast<bf16_t>(fdr);
+        c._res = dr;
+        c._mpfr_res= bf16_ftz_rounding(dr, fdr, mpres);
+        // mpfr_cache::update(a, b, f, c);
+    }
+    bf16_t dr=c._res;
+    int mpres=c._mpfr_res;
+    if (ulp1i != nullptr) {
+        *ulp1i=ulp1_interval(dr, mpres);
+    }
+    return dr;
+}
+
+cftal::bf16_t
+cftal::test::call_mpfr::
+func(bf16_t a, int ib, f2fi_t f, std::pair<bf16_t, bf16_t>* ulp1i)
+{
+    bfloat16_emin_emax g;
+    MPFR_DECL_INIT(ai, 8);
+    MPFR_DECL_INIT(r, 8);
+    float fa=cvt_bf16_to_f32(read_bits(a));
+    mpfr_set_flt(ai, fa, GMP_RNDN);
+    int mpres=f(r, ai, ib, GMP_RNDN);
+    mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
+    float fdr=mpfr_get_flt(r, GMP_RNDN);
+    auto dr=static_cast<bf16_t>(fdr);
+    mpres= bf16_ftz_rounding(dr, fdr, mpres);
+    if (ulp1i != nullptr) {
+        *ulp1i=ulp1_interval(dr, mpres);
+    }
+    return dr;
+}
+
+
+
 namespace cftal::test::mpfr_ext {
 
     template <typename _F>

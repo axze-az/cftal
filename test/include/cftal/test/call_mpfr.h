@@ -21,6 +21,7 @@
 #include <cftal/config.h>
 #include <cftal/std_types.h>
 #include <cftal/f16_t.h>
+#include <cftal/bf16_t.h>
 #include <cftal/d_real.h>
 #include <cftal/d_real_traits_f32.h>
 #include <cftal/d_real_traits_f64.h>
@@ -151,6 +152,38 @@ namespace cftal {
             func(f16_t a, int ib, f2fi_t f,
                  std::pair<f16_t, f16_t>* ulp1i= nullptr);
 
+            // call f(a), returns also the interval
+            // containing the unrounded result
+            bf16_t
+            func(bf16_t a, f1_t f,
+                 std::pair<bf16_t, bf16_t>* ulp1i= nullptr);
+
+            // call f(a), returns also the intervals
+            // containing the unrounded results
+            std::pair<bf16_t, bf16_t>
+            func(bf16_t a, f1p_t f,
+                 std::pair<bf16_t, bf16_t>* ulp1i0 = nullptr,
+                 std::pair<bf16_t, bf16_t>* ulp1i1 = nullptr);
+
+            // call f(a, i), returns also the interval
+            // containing the unrounded result
+            bf16_t
+            func(int32_t* ip, bf16_t a, f1i_t f,
+                 std::pair<bf16_t, bf16_t>* ulp1i= nullptr);
+
+            // call f(a, b), returns also the interval
+            // containing the unrounded result
+            bf16_t
+            func(bf16_t a, bf16_t b, f2_t f,
+                 std::pair<bf16_t, bf16_t>* ulp1i= nullptr);
+
+            // call f(a), returns also the interval
+            // containing the unrounded result
+            bf16_t
+            func(bf16_t a, int ib, f2fi_t f,
+                 std::pair<bf16_t, bf16_t>* ulp1i= nullptr);
+
+
             // mpfr result to interval conversion:
             // returns [nextafter(res, -inf), res] for mpfr_res > 0
             // returns [res, nextafter(res, +inf)] for mpfr_res < 0
@@ -179,6 +212,11 @@ namespace cftal {
                 static
                 constexpr const mpfr_exp_t half_emax=15+1;
 
+                static
+                constexpr const mpfr_exp_t bfloat16_emin=-126-(24-16-1)+1;
+                static
+                constexpr const mpfr_exp_t bfloat16_emax=127+1;
+
                 set_emin_emax(mpfr_exp_t emin, mpfr_exp_t emax)
                     : _emin(mpfr_get_emin()), _emax(mpfr_get_emax()) {
                     mpfr_set_emin(emin);
@@ -205,6 +243,13 @@ namespace cftal {
             public:
                 half_emin_emax() : set_emin_emax(half_emin, half_emax) {}
             };
+
+            class bfloat16_emin_emax : public set_emin_emax {
+            public:
+                bfloat16_emin_emax()
+                    : set_emin_emax(bfloat16_emin, bfloat16_emax) {}
+            };
+
         }
 
         // wrapper around a mpfr_t
@@ -216,6 +261,7 @@ namespace cftal {
             fpn_handle(double x, std::size_t prec);
             fpn_handle(float x, std::size_t prec);
             fpn_handle(f16_t x, std::size_t prec);
+            fpn_handle(bf16_t x, std::size_t prec);
             fpn_handle(const fpn_handle& r);
             fpn_handle(fpn_handle&& r);
             fpn_handle& operator=(const mpfr_t r);
@@ -230,6 +276,7 @@ namespace cftal {
             explicit operator double() const;
             explicit operator float() const;
             explicit operator f16_t() const;
+            explicit operator bf16_t() const;
             template <std::size_t _N>
             explicit operator fp_expansion<double, _N>() const;
             template <std::size_t _N>
@@ -343,6 +390,7 @@ namespace cftal {
             mpfr_real(double x) : fpn_handle(x, _B) {}
             mpfr_real(float f) : fpn_handle(f, _B) {}
             mpfr_real(f16_t f) : fpn_handle(f, _B) {}
+            mpfr_real(bf16_t f) : fpn_handle(f, _B) {}
             template <class _F>
             mpfr_real(const d_real<_F>& d) : fpn_handle(d, _B) {}
             template <class _F>
@@ -600,6 +648,12 @@ cftal::test::fpn_handle::fpn_handle(f16_t h, std::size_t prec)
 }
 
 inline
+cftal::test::fpn_handle::fpn_handle(bf16_t h, std::size_t prec)
+    : fpn_handle(float(h), prec)
+{
+}
+
+inline
 cftal::test::fpn_handle::fpn_handle(const fpn_handle& r)
     : _v()
 {
@@ -748,6 +802,18 @@ cftal::test::fpn_handle::operator fp_expansion<f16_t, _N>() const
         ri=static_cast<f16_t>(t);
         r[i] = ri;
     }
+    return r;
+}
+
+inline
+cftal::test::fpn_handle::operator bf16_t() const
+{
+    call_mpfr::bfloat16_emin_emax g;
+    MPFR_DECL_INIT(t, 8);
+    int mpres=mpfr_set(t, _v, MPFR_RNDN);
+    mpres=mpfr_subnormalize(t, mpres, MPFR_RNDN);
+    float fr=mpfr_get_flt(t, MPFR_RNDN);
+    bf16_t r=static_cast<bf16_t>(fr);
     return r;
 }
 
