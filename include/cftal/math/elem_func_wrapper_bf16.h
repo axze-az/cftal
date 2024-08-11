@@ -267,7 +267,7 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
     vmf_type is_denom= abs(x) < fc::min_normal();
 
     // input denormal handling
-    xs= _T::sel(is_denom, xs*vf_type(0x1.p25f), xs);
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p25_bf16), xs);
     vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
     vi_type eo= _T::sel_val_or_zero_vi(i_is_denom, vi_type(-25));
     // mantissa
@@ -301,11 +301,11 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
     vmi_type i_is_near_z = re < vi_type (1);
     if (_T::any_of_vmi(i_is_near_z)) {
         // create m*0x1.0p-126
-        vi_type mu= m | vi_type(1<<(23-16);
+        vi_type mu= m | vi_type(1<<(23-16));
         vf_type r_u= _T::as_float(mu);
         // create a scaling factor
         vi_type ue= max(vi_type(re + (_T::bias()-1)), vi_type(1));
-        vf_type s_u= _T::as_float(vi_type(ue << (23-16));
+        vf_type s_u= _T::as_float(vi_type(ue << (23-16)));
         r_u *= s_u;
         vmf_type f_is_near_z = _T::vmi_to_vmf(i_is_near_z);
         r = _T::sel(f_is_near_z, r_u, r);
@@ -332,28 +332,28 @@ cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::
 frexp(arg_t<vf_type> x, vi_type* ve)
 {
     vf_type xs=x;
-    using fc=func_constants<float>;
+    using fc=func_constants<bf16_t>;
     vmf_type is_denom= abs(x) < fc::min_normal();
     // denormal handling
-    xs= _T::sel(is_denom, xs*vf_type(0x1.p25f), xs);
-    const int32_t neg_bias_p_1=-_T::bias()+1;
-    const int32_t neg_bias_p_1_m_25=neg_bias_p_1 - 25;
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p25_bf16), xs);
+    const int16_t neg_bias_p_1=-_T::bias()+1;
+    const int16_t neg_bias_p_1_m_25=neg_bias_p_1 - 25;
     // reinterpret a integer
     vi_type i=_T::as_int(xs);
-    const int32_t half=0x3f000000;
-    const int32_t clear_exp_msk=0x807fffff;
+    const int16_t half=0x3f00;
+    const int16_t clear_exp_msk=0x807f;
     // insert exponent
     vi_type mi = i & clear_exp_msk;
     mi |= half;
     vf_type m= _T::as_float(mi);
     // inf, nan, zero
-    vmf_type f_inz=isinf(x) | isnan(x) | (x==vf_type(0.0));
+    vmf_type f_inz=isinf(x) | isnan(x) | iszero(x);
     m = _T::sel(f_inz, x, m);
     if (ve != nullptr) {
         vi_type e=_T::sel_vi(_T::vmf_to_vmi(is_denom),
                              neg_bias_p_1_m_25, neg_bias_p_1);
         // exponent:
-        e += ((i >> 23) & 0xff);
+        e += ((i >> (23-16)) & 0xff);
         vmi_type i_inz=_T::vmf_to_vmi(f_inz);
         e = _T::sel_zero_or_val_vi(i_inz, e);
         *ve=e;
@@ -369,17 +369,17 @@ cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::
 __ilogb_plus(arg_t<vf_type> x)
 {
     vf_type xs=abs(x);
-    using fc=func_constants<float>;
+    using fc=func_constants<bf16_t>;
     vmf_type is_denom= xs < fc::min_normal();
     vi_type eo=vi_type(0);
     // denormal handling
-    xs= _T::sel(is_denom, xs*vf_type(0x1.p25f), xs);
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p25_bf16), xs);
     vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
     eo= _T::sel_vi(i_is_denom, vi_type(-25), eo);
     // reinterpret as integer
     vi_type i=_T::as_int(xs);
     // exponent:
-    vi_type e=((i >> 23) /* & 0xff*/ ) + eo - vi_type(_T::bias()-_X);
+    vi_type e=((i >> (23-16)) /* & 0xff*/ ) + eo - vi_type(_T::bias()-_X);
     return e;
 }
 
@@ -399,12 +399,12 @@ cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::
 ilogb(arg_t<vf_type> d)
 {
     vi_type e(__ilogb_plus<0>(d));
-    vmf_type mf= d == 0.0f;
+    vmf_type mf= iszero(d);
     vmi_type mi= _T::vmf_to_vmi(mf);
     e = _T::sel_vi(mi, vi_type(FP_ILOGB0), e);
     mf = isinf(d);
     mi = _T::vmf_to_vmi(mf);
-    e = _T::sel_vi(mi, vi_type(0x7fffffff), e);
+    e = _T::sel_vi(mi, vi_type(0x7fff), e);
     mf = isnan(d);
     mi = _T::vmf_to_vmi(mf);
     e = _T::sel_vi(mi, vi_type(FP_ILOGBNAN), e);
