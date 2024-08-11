@@ -263,7 +263,7 @@ cftal::math::elem_func_wrapper<cftal::bf16_t, _T>::
 ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
 {
     vf_type xs=x;
-    using fc=func_constants<float>;
+    using fc=func_constants<bf16_t>;
     vmf_type is_denom= abs(x) < fc::min_normal();
 
     // input denormal handling
@@ -272,7 +272,7 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
     vi_type eo= _T::sel_val_or_zero_vi(i_is_denom, vi_type(-25));
     // mantissa
     vi_type m=_T::as_int(xs);
-    vi_type xe=((m>>23) & 0xff) + eo;
+    vi_type xe=((m>>(23-16)) & 0xff) + eo;
 
     // determine the exponent of the result
     // clamp nn to [-4096, 4096]
@@ -285,10 +285,10 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
     //     re <= 0 subnormal or 0 (underflow)
 
     // clear exponent bits from m
-    m &= vi_type(~0x7f800000);
+    m &= vi_type(~0x7f80);
 
     // mantissa for normal results:
-    vi_type mn= m | ((re & vi_type(0xff)) << 23);
+    vi_type mn= m | ((re & vi_type(0xff)) << (23-16));
     vf_type r= _T::as_float(mn);
 
     // overflow handling
@@ -301,17 +301,17 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
     vmi_type i_is_near_z = re < vi_type (1);
     if (_T::any_of_vmi(i_is_near_z)) {
         // create m*0x1.0p-126
-        vi_type mu= m | vi_type(1<<23);
+        vi_type mu= m | vi_type(1<<(23-16);
         vf_type r_u= _T::as_float(mu);
         // create a scaling factor
         vi_type ue= max(vi_type(re + (_T::bias()-1)), vi_type(1));
-        vf_type s_u= _T::as_float(vi_type(ue << 23));
+        vf_type s_u= _T::as_float(vi_type(ue << (23-16));
         r_u *= s_u;
         vmf_type f_is_near_z = _T::vmi_to_vmf(i_is_near_z);
         r = _T::sel(f_is_near_z, r_u, r);
     }
     // handle special cases:
-    r = _T::sel(isinf(x) | isnan(x) | (x==vf_type(0.0)), x, r);
+    r = _T::sel(isinf(x) | isnan(x) | iszero(x), x, r);
     return r;
 }
 
