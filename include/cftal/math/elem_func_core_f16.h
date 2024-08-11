@@ -854,7 +854,7 @@ cftal::math::elem_func_core<cftal::f16_t, _T>::
 ilogb(arg_t<vf_type> d)
 {
     vi_type e(__ilogb_plus<0>(d));
-    vmf_type mf= d == 0.0_f16;
+    vmf_type mf= iszero(d);
     vmi_type mi= _T::vmf_to_vmi(mf);
     e = _T::sel_vi(mi, vi_type(FP_ILOGB0), e);
     mf = isinf(d);
