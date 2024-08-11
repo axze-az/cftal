@@ -21,6 +21,7 @@
 #include <cftal/config.h>
 #include <cftal/select.h>
 #include <cftal/f16_t.h>
+#include <cftal/bf16_t.h>
 #include <cftal/test/uniform_distribution.h>
 #include <cftal/test/f32_f64.h>
 #include <cftal/type_traits.h>
@@ -110,6 +111,12 @@ namespace cftal {
 
         inline
         f16_t do_div(f16_t u, f16_t v)
+        {
+            return u/v;
+        }
+
+        inline
+        bf16_t do_div(bf16_t u, bf16_t v)
         {
             return u/v;
         }
