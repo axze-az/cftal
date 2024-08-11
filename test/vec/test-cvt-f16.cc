@@ -209,7 +209,7 @@ cftal::test::test_f16_to_f32()
                     << t << " should be "
                     << r << " from "
                     << std::hex
-                    << read_bits(f) << std::endl;
+                    << f << std::endl;
         }
         rc &= c;
     }
@@ -224,8 +224,8 @@ cftal::test::test_f16_to_f32()
 namespace {
     bool f16_eq(cftal::mf_f16_t a, cftal::mf_f16_t b)
     {
-        uint32_t a0= cftal::read_bits(a);
-        uint32_t b0= cftal::read_bits(b);
+        uint32_t a0= a;
+        uint32_t b0= b;
         if (a0 == b0)
             return true;
         if (((a0 & 0x7fff) > 0x7c00) &&
@@ -250,7 +250,7 @@ cftal::test::test_f32_to_f16()
         if (c==false) {
             std::cout << std::setprecision(16)
                       << read_bits(t) << " should be "
-                      << read_bits(r) << " from "
+                      << r << " from "
                       << std::hex << s << std::endl;
         }
         rc &=c;
@@ -373,8 +373,8 @@ bool cftal::test::test_cvt_f32_f16(exec_stats<_M>& st)
             if (f16_eq(ref, rt) == false) {
                 r=false;
                 std::cout << std::hex << a[j] << " --> "
-                          << read_bits(rt) << " should be "
-                          << read_bits(ref) << std::endl;
+                          << rt << " should be "
+                          << ref << std::endl;
                 std::exit(3);
             }
         }
