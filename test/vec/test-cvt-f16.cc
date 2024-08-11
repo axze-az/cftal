@@ -249,7 +249,7 @@ cftal::test::test_f32_to_f16()
         bool c= f16_eq(t, r);
         if (c==false) {
             std::cout << std::setprecision(16)
-                      << read_bits(t) << " should be "
+                      << t << " should be "
                       << r << " from "
                       << std::hex << s << std::endl;
         }

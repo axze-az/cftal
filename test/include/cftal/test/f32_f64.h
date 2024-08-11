@@ -25,6 +25,7 @@
 #include <cftal/select.h>
 #include <cftal/bitops.h>
 #include <cftal/f16_t.h>
+#include <cftal/bf16_t.h>
 #include <cftal/test/spinlock.h>
 #include <iostream>
 #include <sstream>
