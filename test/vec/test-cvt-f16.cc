@@ -200,7 +200,7 @@ cftal::test::test_f16_to_f32()
     bool rc=true;
     for (uint32_t i=0; i<0x10000u; ++i) {
         mf_f16_t f(i);
-        f32_t r=ref_f16_to_f32(read_bits(f));
+        f32_t r=ref_f16_to_f32(f);
         f32_t t=cvt_f16_to_f32(f);
         // bool c = as<uint32_t>(r)==as<uint32_t>(t);
         bool c= (r==t) || (std::isnan(r) && std::isnan(t));
