@@ -796,7 +796,8 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
     bool r = true;
     array_t va;
 
-    if (!std::is_same_v<_T, f16_t> || speed_only==true) {
+    if (!(std::is_same_v<_T, f16_t> || std::is_same_v<_T, bf16_t>) ||
+        speed_only==true) {
         for (auto b=std::begin(tv), e=std::end(tv);
             b!=e; ++b) {
             const auto& ai= *b;
@@ -810,7 +811,8 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
     uniform_real_distribution<_T>
         distrib(domain.first, domain.second);
 
-    if (!std::is_same_v<_T, f16_t> || speed_only==true) {
+    if (!(std::is_same_v<_T, f16_t> || std::is_same_v<_T, bf16_t>) ||
+        speed_only==true) {
         std::cout << "[" << domain.first << ", " << domain.second << ")\n";
     }
     const uint32_t N0=72;
@@ -901,7 +903,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
         }
     };
 
-    if constexpr (std::is_same_v<_T, f16_t>) {
+    if constexpr ((std::is_same_v<_T, f16_t> || std::is_same_v<_T, bf16_t>)) {
         if (speed_only==false) {
             std::cout << "checking all binary16 inputs\n";
             for (uint32_t l=0; l<0x10000; l+= _N*cnt) {
@@ -911,7 +913,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                     v_va.emplace_back(array_t());
                     for (std::size_t k=0; k<_N; ++k, ++j) {
                         uint16_t h=j;
-                        v_va[i][k] =as<f16_t>(h);
+                        v_va[i][k] =as<_T>(h);
                     }
                 }
                 exec_or_queue(r, v_res,
