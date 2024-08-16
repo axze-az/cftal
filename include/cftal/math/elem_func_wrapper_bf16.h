@@ -252,6 +252,17 @@ nextafter_k(arg_t<vf_type> xc, arg_t<vf_type> yc)
     vi_type r0= _T::sel_vi(ay == 0, uy, (uy & sign_f32_msk::v.s16h()) | 1);
     r = _T::sel_vi(ax == 0, r0, r);
     r = _T::sel_vi(ux == uy, uy, r);
+#if __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO>0
+    // assumption: no subnormal inputs in xc
+    // r == max subnormal --> min normal down --> 0
+    r = _T::sel_vi(r==0x007f, 0x0000, r);
+    // r == min subnormal --> zero up --> min normal
+    r = _T::sel_vi(r==0x0001, 0x0080, r);
+    // r == -min subnormal --> zero down --> -min normal
+    r = _T::sel_vi(r==0x8001, 0x8080, r);
+    // r == -max subnormal --> -min normal up --> -0
+    r = _T::sel_vi(r==0x807f, 0x8000, r);
+#endif
     vf_type rf=_T::as_float(r);
     return rf;
 }

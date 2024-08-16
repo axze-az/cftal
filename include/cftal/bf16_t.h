@@ -1279,6 +1279,17 @@ cftal::nextafter(bf16_t xc, bf16_t yc)
     r = ax == 0 ? r0 : r;
     r = ux == uy ? uy : r;
     // bf16_t rf= bf16_t::cvt_from_rep(r);
+#if __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO>0
+    // assumption: no subnormal inputs in xc
+    // r == max subnormal --> min normal down --> 0
+    r = (r==0x007f) ? 0x0000 : r;
+    // r == min subnormal --> zero up --> min normal
+    r = (r==0x0001) ? 0x0080 : r;
+    // r == -min subnormal --> zero down --> -min normal
+    r = (r==0x8001) ? 0x8080 : r;
+    // r == -max subnormal --> -min normal up --> -0
+    r = (r==0x807f) ? 0x8000 : r;
+#endif
     bf16_t rf=as<bf16_t>(r);
     rf = (isnan(xc) || isnan(yc)) ? std::numeric_limits<bf16_t>::quiet_NaN() : rf;
     return rf;
