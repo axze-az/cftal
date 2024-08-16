@@ -35,6 +35,8 @@
 #endif
 #endif
 
+#define __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO 1
+
 #if defined (__ARM_NEON)
 #if !defined (__ARM_NEON__)
 #define __ARM_NEON__ 1
