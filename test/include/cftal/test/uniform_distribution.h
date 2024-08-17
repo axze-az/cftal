@@ -23,6 +23,7 @@
 #include <random>
 #include <cftal/type_traits.h>
 #include <cftal/f16_t.h>
+#include <cftal/bf16_t.h>
 
 namespace cftal {
     namespace test {
@@ -210,6 +211,90 @@ namespace cftal {
                     f16_t t=_f16_range;
                     f16_t rnd= static_cast<f16_t>(std::generate_canonical<
                         float, std::numeric_limits<f16_t>::digits, _G>(g));
+                    t *= rnd;
+                    r = t + _f16_min;
+                }
+                return r;
+            }
+        };
+
+
+        template <>
+        class uniform_real_distribution<bf16_t> {
+
+            using int_type = uint16_t;
+            using bytesx = bytes2;
+
+            std::uniform_int_distribution<int_type> _i_dist;
+            bf16_t _min;
+            bf16_t _max;
+            bf16_t _range;
+            bf16_t _f16_min;
+            // bf16_t _f16_max;
+            bf16_t _f16_range;
+            bool _use_int;
+
+            static
+            bf16_t
+            trunc_max_val(const bf16_t m) {
+                using std::sqrt;
+                const bf16_t _max_val= sqrt(std::numeric_limits<bf16_t>::max());
+                using std::min;
+                return min(m, _max_val);
+            }
+
+            static
+            bf16_t
+            trunc_min_val(bf16_t m) {
+                using std::sqrt;
+                const bf16_t _min_val= -sqrt(std::numeric_limits<bf16_t>::max());
+                using std::max;
+                return max(m, _min_val);
+            }
+
+            static
+            bf16_t
+            make_fp(const bytes2& b) { return b.u16(); }
+
+        public:
+            using result_type = bf16_t;
+            uniform_real_distribution(const bf16_t& amin, const bf16_t& amax)
+                 : _i_dist(),
+                  _min(amin), _max(amax),
+                  _range(_max - _min),
+                  _f16_min(_min), // _f16_max(_max),
+                  _f16_range(_range),
+                  _use_int((trunc_min_val(amin) != amin) ||
+                           (trunc_max_val(amax) != amax))
+            {
+            }
+            // switch off fma to get the same random numbers
+            // on machines with and without fma
+            template <class _G>
+#if defined (__x86_64__) || defined (__i386__)
+            __attribute__((__target__("no-fma,no-fma4")))
+#endif
+            result_type
+            operator()(_G& g) {
+                bf16_t r;
+                if (_use_int) {
+                    while (1) {
+                        int_type i=_i_dist(g);
+                        bytesx t(i);
+                        r = make_fp(t);
+                        using std::isnan;
+                        if (isnan(r))
+                            continue;
+                        if (r>=_max)
+                            continue;
+                        if (r<_min)
+                            continue;
+                        break;
+                    }
+                } else {
+                    bf16_t t=_f16_range;
+                    bf16_t rnd= static_cast<bf16_t>(std::generate_canonical<
+                        float, std::numeric_limits<bf16_t>::digits, _G>(g));
                     t *= rnd;
                     r = t + _f16_min;
                 }
