@@ -905,7 +905,13 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
 
     if constexpr ((std::is_same_v<_T, f16_t> || std::is_same_v<_T, bf16_t>)) {
         if (speed_only==false) {
-            std::cout << "checking all binary16 inputs\n";
+            if constexpr (std::is_same_v<_T, f16_t>) {
+                std::cout << "checking all binary16 inputs\n";
+            } else if constexpr (std::is_same_v<_T, bf16_t>) {
+                std::cout << "checking all bfloat16 inputs\n";
+            } else {
+                std::cout << "checking all of unknown 16 bit type inputs\n";
+            }
             for (uint32_t l=0; l<0x10000; l+= _N*cnt) {
                 std::vector<array_t> v_va(0);
                 uint32_t j=l;
