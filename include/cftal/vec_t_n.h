@@ -1591,27 +1591,49 @@ template <typename _T>
 cftal::vec<_T, 16>
 cftal::combine_zeroeven_odd(const vec<_T, 8>& o)
 {
-    vec<_T, 8> lh= permute<-1, 0, -1, 1, -1, 2, -1, 3>(o);
-    vec<_T, 8> hh= permute<-1, 4, -1, 5, -1, 6, -1, 7>(o);
-    return vec<_T, 16>(lh, hh);
+    vec<_T, 16> r;
+    if (is_vec_specialized<vec<_T, 16> >::value == true) {
+        r=vec<_T, 16>(o, o);
+        r= permute<-1, 0, -1, 1, -1, 2, -1, 3,
+                   -1, 4+8, -1, 5+8, -1, 6+8, -1, 7+8>(r);
+    } else {
+        vec<_T, 8> hh= permute<-1, 4, -1, 5, -1, 6, -1, 7>(o);
+        vec<_T, 8> lh= permute<-1, 0, -1, 1, -1, 2, -1, 3>(o);
+        r = vec<_T, 16>(lh, hh);
+    }
+    return r;
 }
 
 template <typename _T>
 cftal::vec<_T, 8>
 cftal::combine_zeroeven_odd(const vec<_T, 4>& o)
 {
-    vec<_T, 4> lh= permute<-1, 0, -1, 1>(o);
-    vec<_T, 4> hh= permute<-1, 2, -1, 3>(o);
-    return vec<_T, 8>(lh, hh);
+    vec<_T, 8> r;
+    if (is_vec_specialized<vec<_T, 8> >::value == true) {
+        r=vec<_T, 8>(o, o);
+        r=permute<-1, 0, -1, 1, -1, 2+4, -1, 3+4>(r);
+    } else {
+        vec<_T, 4> lh= permute<-1, 0, -1, 1>(o);
+        vec<_T, 4> hh= permute<-1, 2, -1, 3>(o);
+        r= vec<_T, 8>(lh, hh);
+    }
+    return r;
 }
 
 template <typename _T>
 cftal::vec<_T, 4>
 cftal::combine_zeroeven_odd(const vec<_T, 2>& o)
 {
-    vec<_T, 2> lh= permute<-1, 0>(o);
-    vec<_T, 2> hh= permute<-1, 1>(o);
-    return vec<_T, 4>(lh, hh);
+    vec<_T, 4> r;
+    if (is_vec_specialized<vec<_T, 4> >::value == true) {
+        r=vec<_T, 4>(o, o);
+        r=permute<-1, 0, -1, 1+2>(r);
+    } else {
+        vec<_T, 2> lh= permute<-1, 0>(o);
+        vec<_T, 2> hh= permute<-1, 1>(o);
+        r=vec<_T, 4>(lh, hh);
+    }
+    return r;
 }
 
 template <typename _T>
@@ -1633,27 +1655,49 @@ template <typename _T>
 cftal::vec<_T, 16>
 cftal::combine_even_zeroodd(const vec<_T, 8>& e)
 {
-    vec<_T, 8> lh= permute<0, -1, 1, -1, 2, -1, 3, -1>(e);
-    vec<_T, 8> hh= permute<4, -1, 5, -1, 6, -1, 7, -1>(e);
-    return vec<_T, 16>(lh, hh);
+    vec<_T, 16> r;
+    if (is_vec_specialized<vec<_T, 16> >::value == true) {
+        r=vec<_T, 16>(e, e);
+        r=permute<0, -1, 1, -1, 2, -1, 3, -1,
+                  4+8, -1, 5+8, -1, 6+8, -1, 7+8, -1>(r);
+    } else {
+        vec<_T, 8> lh= permute<0, -1, 1, -1, 2, -1, 3, -1>(e);
+        vec<_T, 8> hh= permute<4, -1, 5, -1, 6, -1, 7, -1>(e);
+        r=vec<_T, 16>(lh, hh);
+    }
+    return r;
 }
 
 template <typename _T>
 cftal::vec<_T, 8>
 cftal::combine_even_zeroodd(const vec<_T, 4>& e)
 {
-    vec<_T, 4> lh= permute<0, -1, 1, -1>(e);
-    vec<_T, 4> hh= permute<2, -1, 3, -1>(e);
-    return vec<_T, 8>(lh, hh);
+    vec<_T, 8> r;
+    if (is_vec_specialized<vec<_T, 8> >::value == true) {
+        r=vec<_T, 8>(e, e);
+        r=permute<0, -1, 1, -1, 2+4, -1, 3+4, -1>(r);
+    } else {
+        vec<_T, 4> lh= permute<0, -1, 1, -1>(e);
+        vec<_T, 4> hh= permute<2, -1, 3, -1>(e);
+        r=vec<_T, 8>(lh, hh);
+    }
+    return r;
 }
 
 template <typename _T>
 cftal::vec<_T, 4>
 cftal::combine_even_zeroodd(const vec<_T, 2>& e)
 {
-    vec<_T, 2> lh= permute<0, -1>(e);
-    vec<_T, 2> hh= permute<1, -1>(e);
-    return vec<_T, 4>(lh, hh);
+    vec<_T, 4> r;
+    if (is_vec_specialized<vec<_T, 4> >::value == true) {
+        r=vec<_T, 4>(e, e);
+        r=permute<0, -1, 1+2, -1>(r);
+    } else  {
+        vec<_T, 2> lh= permute<0, -1>(e);
+        vec<_T, 2> hh= permute<1, -1>(e);
+        r=vec<_T, 4>(lh, hh);
+    }
+    return r;
 }
 
 template <typename _T>
