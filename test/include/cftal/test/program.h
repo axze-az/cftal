@@ -92,6 +92,18 @@ namespace cftal {
                 const func_domain<f16_t> (&d)[_M],
                 const int (&count_shift)[_M]);
 
+        // bf16 (bfloat16) test program
+        template <typename _CHECK,
+                  std::size_t _N, int _ULP,
+                  std::size_t _CNT,
+                  std::size_t _M>
+        int
+        program(int argc, char** argv,
+                call_mpfr::f1_t func,
+                const func_domain<bf16_t> (&d)[_M],
+                const int (&count_shift)[_M]);
+
+
     }
 }
 
@@ -230,6 +242,54 @@ cftal::test::program(int argc, char** argv,
     if (ags._speed_only == false) {
         if (ags._use_cache==true) {
             std::cerr << "cache usage not implemented for f16_t\n";
+            // mpfr_cache::use(func, _CHECK::fname(), ftype(0.0));
+        }
+    }
+    auto us=std::make_shared<ulp_stats>();
+    exec_stats<_N> st;
+    for (std::size_t i=0; i<_M; ++i) {
+        std::size_t cnt= ags._cnt;
+        uint32_t sh=std::abs(count_shift[i]);
+        if (count_shift[i] < 0) {
+            cnt >>= sh;
+        } else if (count_shift[i]>0) {
+            cnt <<= sh;
+        }
+        rc &= of_fp_func_up_to<
+            ftype, _N, _CHECK>::v(st, d[i],
+                                  ags._speed_only,
+                                  ags._mt,
+                                  cmp_ulp<ftype>(_ULP, us),
+                                  cnt);
+    }
+    std::cout << "ulps: "
+              << std::fixed << std::setprecision(4) << *us << std::endl;
+    std::cout << st << std::endl;
+    return (rc == true) ? 0 : 1;
+}
+
+template <typename _CHECK,
+          std::size_t _N,
+          int _ULP,
+          std::size_t _CNT,
+          std::size_t _M>
+int
+cftal::test::program(int argc, char** argv,
+                     call_mpfr::f1_t func,
+                     const func_domain<bf16_t> (&d)[_M],
+                     const int (&count_shift)[_M])
+{
+    cpu_times_to_stdout tt;
+    pgm_args ags=parse(argc, argv, _CNT);
+    std::cout << std::setprecision(18) << std::scientific;
+    std::cerr << std::setprecision(18) << std::scientific;
+    std::cout << "bf16 test of " << _CHECK::fname()
+              << ' ' << ags << std::endl;;
+    bool rc=true;
+    using ftype = bf16_t;
+    if (ags._speed_only == false) {
+        if (ags._use_cache==true) {
+            std::cerr << "cache usage not implemented for bf16_t\n";
             // mpfr_cache::use(func, _CHECK::fname(), ftype(0.0));
         }
     }
