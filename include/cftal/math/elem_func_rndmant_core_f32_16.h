@@ -314,8 +314,12 @@ typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
 cftal::math::elem_func_rndmant_core<float, 16, _T>::
 rsqrt_k(arg_t<vf_type> x)
 {
+#if 1
+    vf_type y= 1.0f/sqrt(x);
+#else
     vf_type y=::cftal::native::rsqrt_11b(x);
-    y = impl::root_r2::order2<float, false>(y, x);
+    y = impl::root_r2::order3<float, true>(y, x);
+#endif
     return y;
 }
 
