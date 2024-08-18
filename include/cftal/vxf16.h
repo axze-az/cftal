@@ -44,10 +44,12 @@ namespace cftal {
     class vec<f16_t, 1> {
         vec<mf_f16_t, 1> _v;
         struct cvt_from_rep_tag {};
+        constexpr
         vec(const vec<mf_f16_t, 1>& f, const cvt_from_rep_tag& )
             : _v(f) {}
     public:
         static
+        constexpr
         vec
         cvt_from_rep(const vec<mf_f16_t, 1>& r) {
             return vec(r, cvt_from_rep_tag());
@@ -62,15 +64,16 @@ namespace cftal {
         vec(vec&& r) = default;
         vec& operator=(const vec& r) = default;
         vec& operator=(vec&& r) = default;
+        constexpr
         vec(const f16_t& v) : _v(read_bits(v)) {}
         explicit
-        vec(float v) : _v(read_bits(static_cast<f16_t>(v))) {}
+        vec(const float& v) : _v(read_bits(static_cast<f16_t>(v))) {}
         explicit
-        vec(double v) : _v(read_bits(static_cast<f16_t>(v))) {}
+        vec(const double& v) : _v(read_bits(static_cast<f16_t>(v))) {}
         explicit
-        vec(int16_t v) : _v(read_bits(static_cast<f16_t>(v))) {}
+        vec(const int16_t& v) : _v(read_bits(static_cast<f16_t>(v))) {}
         explicit
-        vec(int32_t v) : _v(read_bits(static_cast<f16_t>(v))) {}
+        vec(const int32_t& v) : _v(read_bits(static_cast<f16_t>(v))) {}
         const vec<mf_f16_t, 1>& operator()() const { return _v; }
         template <template <class _U> class _OP,
                   class _L, class _R>
@@ -84,9 +87,11 @@ namespace cftal {
     class vec<f16_t, _N> {
         vec<mf_f16_t, _N> _v;
         struct cvt_from_rep_tag {};
+        constexpr
         vec(const vec<mf_f16_t, _N>& s, const cvt_from_rep_tag&) : _v(s) {}
     public:
         static
+        constexpr
         vec
         cvt_from_rep(const vec<mf_f16_t, _N>& r) {
             return vec(r, cvt_from_rep_tag());
@@ -105,15 +110,16 @@ namespace cftal {
         vec& operator=(const vec& r) = default;
         vec& operator=(vec&& r) = default;
 
-        vec(f16_t v) : _v(read_bits(v)) {}
+        constexpr
+        vec(const f16_t& v) : _v(read_bits(v)) {}
         explicit
-        vec(float v) : _v(read_bits(static_cast<f16_t>(v))) {}
+        vec(const float& v) : _v(read_bits(static_cast<f16_t>(v))) {}
         explicit
-        vec(double v) : _v(read_bits(static_cast<f16_t>(v))) {}
+        vec(const double& v) : _v(read_bits(static_cast<f16_t>(v))) {}
         explicit
-        vec(int16_t v) : _v(read_bits(static_cast<f16_t>(v))) {}
+        vec(const int16_t& v) : _v(read_bits(static_cast<f16_t>(v))) {}
         explicit
-        vec(int32_t v) : _v(read_bits(static_cast<f16_t>(v))) {}
+        vec(const int32_t& v) : _v(read_bits(static_cast<f16_t>(v))) {}
         vec(const half_type& lh, const half_type& hh) :
             _v(lh(), hh()) {}
         vec(std::initializer_list<f16_t> l)
