@@ -45,6 +45,9 @@ namespace cftal {
         template <typename _T>
         struct elem_func_rndmant_core<float, 16, _T> :
             public elem_func_core<float, _T> {
+
+            using base_type = elem_func_core<float, _T>;
+
             using vf_type = typename _T::vf_type;
             using vi_type = typename _T::vi_type;
             using vmf_type = typename _T::vmf_type;
@@ -293,18 +296,7 @@ typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vi_type
 cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __frexp_k(vf_type& m , arg_t<vf_type> x)
 {
-    constexpr const int32_t neg_bias_p_1=-_T::bias()+1;
-    // reinterpret a integer
-    vi_type i=_T::as_int(x);
-    // exponent:
-    vi_type e = ((i >> 23) & 0xff) + neg_bias_p_1;
-    const int32_t half=0x3f000000;
-    const int32_t clear_exp_msk=0x807fffff;
-    // insert exponent
-    i &= clear_exp_msk;
-    i |= half;
-    m= _T::as_float(i);
-    return e;
+    return base_type::__frexp_k(m, x);
 }
 
 template <typename _T>
