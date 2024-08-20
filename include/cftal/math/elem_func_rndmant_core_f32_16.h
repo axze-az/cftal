@@ -597,10 +597,14 @@ typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
 cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __mul_two_pow(arg_t<vf_type> y, arg_t<vi_type> k)
 {
+#if 1
+    return base_type::__mul_two_pow(y, k);
+#else
     vi_type ep(k << 23);
     vi_type yi=as<vi_type>(y) + ep;
     vf_type ys = as<vf_type>(yi);
     return ys;
+#endif
 }
 
 template <typename _T>
