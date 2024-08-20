@@ -82,7 +82,7 @@ set (TEST_HDRS
     ./include/cftal/test/check_y1.h
 )
 
-find_package(Boost REQUIRED)
+find_package(Boost CONFIG)
 if(${Boost_FOUND})
     #message ("${Boost_FOUND}")
     #message ("${Boost_INCLUDE_DIRS}")
