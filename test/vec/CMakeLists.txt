@@ -211,6 +211,7 @@ test_prog(test-y1-f16)
 
 test_prog(test-sqrt-bf16)
 test_prog(test-rsqrt-bf16)
+test_prog(test-cbrt-bf16)
 
 test_prog(test-permute)
 test_prog(test-compress-expand-elements)
