@@ -1,0 +1,349 @@
+#! /usr/bin/sollya
+execute("common.sollya");
+
+/* implementpoly(p, [-log(2)/512, log(2)/512], 1e-30, DD, "exp_p", "exp.c"); */
+/* printexpansion(p-1.0); */
+verbosity=1!;
+prec=1024!;
+write("\n");
+
+/* exp(x) bf16/f32 using tang's method */
+N = 32;
+f = exp(x);
+f1 = expm1(x);
+g=log(2)/2;
+i=[-g/N, g/N];
+d = guessdegree(f, i, 0x1p-14);
+d;
+// exp_table(N, single);
+b = [||];
+c = [|SG...|];
+// p = fpminimax(f1, b, c, i, relative, floating, x);
+p=x;
+b = [|1|]@b;
+write_approx_prec(p, f1, i);
+write_coeffs(p, "constexpr\n    const float exp_c", "exp", b, c);
+
+/* a simple polynomial for exp bf16/f32 */
+f = exp(x);
+i = [-log(2)/2, log(2)/2];
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|2, ..., 4|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating, 1.0+x);
+b = [|0, 1|]@b;
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float exp_c", "exp", b, c);
+
+/* polynomial for sinh where (e^x-e^x)/2 fails */
+f = sinh(x);
+i = [0x1p-512, log(2)/4];
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|3|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating, x);
+b = [|1|]@b;
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float sinh_c", "sinh", b, c);
+write_coeff(sup(i), "", "constexpr\n    const float sinh_i0_right",
+            single);
+
+/* polynomial for sinh between 0 and 1.0 */
+f = sinh(x);
+i = [0, 1.0];
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|1, 3, 5|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float sinh_c", "sinh", b, c);
+write_coeff(sup(i), "", "constexpr\n    const float sinh_i0_right",
+            single);
+
+/* polynomial for cosh between 0 and 1.0 */
+f = cosh(x);
+i = [0, 1.0];
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|0, 2, 4, 6|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float cosh_c", "cosh", b, c);
+write_coeff(sup(i), "", "constexpr\n    const float cosh_i0_right",
+            single);
+
+/* polynomial for tanh where (e^2x-1)(e^2x+1) fails */
+f = tanh(x);
+i = [0x1p-512, log(2)/32];
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|1|];
+c = [|SG...|];
+// p = fpminimax(f, b, c, i, relative, floating);
+p = x;
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float tanh_c", "tanh", b, c);
+write_coeff(sup(i), "", "constexpr\n    const float tanh_i0_right",
+            single);
+
+/* log1p for log implementation with 15 bits precision */
+f= log1p(x);
+ib=single(sqrt(2)/2);
+printsingle(ib);
+i= [ib-1, (ib*2)-1];
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|2, ..., 5|];
+c = [|SG, SG...|];
+p = fpminimax(f, b, c, i, relative, floating, x);
+b = [|1|]@b;
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float log_c", "log", b, c);
+
+/* log1p for log implementation with 22 bits precision */
+f= log1p(x);
+ib=single(sqrt(2)/2);
+printsingle(ib);
+i= [ib-1, (ib*2)-1];
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|2, ..., 8|];
+c = [|SG, SG...|];
+p = fpminimax(f, b, c, i, relative, floating, x);
+b = [|1|]@b;
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float log_c", "log", b, c);
+
+
+/* cbrt(x) f32, 5 bits precision  */
+i = [2^-3, 1];
+f = (x)^(1/3);
+b= [|0,...,2|];
+c= [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float cbrt_c", "cbrt", b, c);
+
+/* rcbrt(x) f32, 5 bits precision */
+i = [2^-3, 1];
+f = (x)^-(1/3);
+b= [|0,...,4|];
+c= [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float rcbrt_c", "rcbrt", b, c);
+
+/* f32 sin(x) f32 */
+i = [0, pi/4];
+f = sin(x);
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|1,3,5,7|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float sin_c", "sin", b, c);
+// plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+//                       postscriptfile, "sin-bf16");
+
+/* half cos(x) f32 */
+i = [0, pi/4];
+f = cos(x);
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|0,2,4,6|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float cos_c", "cos_c", b, c);
+// plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+//                       postscriptfile, "cos-bf16");
+
+/* half tan(x) f32 */
+f = tan(x);
+i = [0, pi/4];
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|1,3,5,7,9,11|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float tan_c", "tan", b, c);
+// plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+//                       postscriptfile, "tan-bf16");
+
+ph=pi/2;
+bits=7;
+ph0=round(ph, bits, RN);
+ph1=round(ph-ph0, bits, RN);
+ph2=round(ph-ph0-ph1, bits, RN);
+ph3=round(ph-ph0-ph1-ph2, bits, RN);
+ph4=round(ph-ph0-ph1-ph2-ph3, bits, RN);
+ph5=ph-ph0-ph1-ph2-ph3-ph4;
+write_coeff(ph0, "", "constexpr\n    const float pi_2_0", single);
+write_coeff(ph1, "", "constexpr\n    const float pi_2_1", single);
+write_coeff(ph2, "", "constexpr\n    const float pi_2_2", single);
+write_coeff(ph3, "", "constexpr\n    const float pi_2_3", single);
+write_coeff(ph4, "", "constexpr\n    const float pi_2_4", single);
+write_coeff(ph5, "", "constexpr\n    const float pi_2_5", single);
+
+/* atan(x) f32, piecewise polynomial approximations */
+f = atan(x);
+i = [0, 0.375];
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|1, 3, 5|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float atan_i0_c", "atan_0", b, c);
+// plot((p(x)-f(x))/f(x), p(x)-f(x), i, postscriptfile, "atan_i0-bf16");
+il= 0.375;
+ir= 1.0;
+im= dirtyfindzeros(atan(x)-(0.5*(atan(il)+atan(ir))), [il, ir])[0];
+im= round(im, 10, RN);
+i = [il-im, ir-im];
+i;
+im;
+x0= im;
+f = atan(x+x0);
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|0, ..., 5|];
+c = [|SG, SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+// p;
+write_approx_prec_shift(p, f, i, im);
+write_coeffs(p, "constexpr\n    const float atan_i1_c", "atan_i1", b, c);
+write_coeff(il, "", "constexpr\n    const float atan_i1_left", single);
+write_coeff(ir, "", "constexpr\n    const float atan_i1_right", single);
+write_coeff(x0, "", "constexpr\n    const float atan_i1_x0", single);
+// plot((p(x)-f(x))/f(x), i, postscriptfile, "atan_i1-bf16");
+
+/* asin(x) f32 */
+i = [0x1p-58, 0.5];
+f = (asin(x)-x)/(x^3);
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|0, 2, 4, 6|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float asin_c", "asin", b, c);
+// plot((p(x)-f(x))/f(x), p(x)-f(x), i, postscriptfile, "asin-bf16");
+
+/* asinh(x) f32 */
+f = asinh(x);
+i = [0, sqrt(2)/2];
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|1, 3, 5, 7|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float asinh_i0_c", "asinh_i0", b, c);
+// plot((p(x)-f(x))/f(x), i, postscriptfile, "asinh_i0-f32");
+
+il= sqrt(2)/2;
+ir= 3.0;
+im= dirtyfindzeros(asinh(x)-(0.5*(asinh(il)+asinh(ir))), [il, ir])[0];
+im= round(im, 10, RN);
+i = [il-im, ir-im];
+i;
+im;
+x0= im;
+f = asinh(x+x0);
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|0, ..., 6|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+p;
+write_approx_prec_shift(p, f, i, im);
+write_coeffs(p, "constexpr\n    const float asinh_i1_c", "asinh_i1", b, c);
+write_coeff(il, "", "constexpr\n    const float asinh_i1_left", single);
+write_coeff(ir, "", "constexpr\n    const float asinh_i1_right", single);
+write_coeff(x0, "", "constexpr\n    const float asinh_i1_x0", single);
+// plot((p(x)-f(x))/f(x), i, postscriptfile, "asinh_i1-f32");
+
+/* acosh f32 */
+i = [0x1p-30, 1.0];
+f = acosh(1+x)/sqrt(2*x);
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|0, ..., 3|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float acosh_i0_c", "acosh_i0", b, c);
+// plot((p(x)-f(x))/f(x), i, postscriptfile, "acosh_i0-f32");
+
+il= 2.0;
+ir= 3.5;
+im= dirtyfindzeros(acosh(x)-(0.5*(acosh(il)+acosh(ir))), [il, ir])[0];
+im= round(im, 10, RN);
+i = [il-im, ir-im];
+i;
+im;
+x0= im;
+f = acosh(x+x0);
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|0, ..., 5|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+p;
+write_approx_prec_shift(p, f, i, im);
+write_coeffs(p, "constexpr\n    const float acosh_i1_c", "acosh_i1", b, c);
+write_coeff(il, "", "constexpr\n    const float acosh_i1_left", single);
+write_coeff(ir, "", "constexpr\n    const float acosh_i1_right", single);
+write_coeff(x0, "", "constexpr\n    const float acosh_i1_x0", single);
+// plot((p(x)-f(x))/f(x), i, postscriptfile, "acosh_i1-f32");
+
+/* atanh(x) piecewise polynomial approximations */
+i = [0, 0.5];
+f = atanh(x);
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|1, 3, 5, 7|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+p;
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float atanh_i0_c", "atanh_i0", b, c);
+// plot((p(x)-f(x))/f(x), i, postscriptfile, "atanh_i0-f32");
+
+il= 0.5;
+ir= /* sqrt(2)/2*/ 0.75;
+im= dirtyfindzeros(atanh(x)-(0.5*(atanh(il)+atanh(ir))), [il, ir])[0];
+im= round(im, 10, RN);
+i = [il-im, ir-im];
+i;
+im;
+x0= im;
+f = atanh(x+x0);
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|0, ..., 5|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+p;
+write_approx_prec_shift(p, f, i, im);
+write_coeffs(p, "constexpr\n    const float atanh_i1_c", "atanh_i1", b, c);
+write_coeff(il, "", "constexpr\n    const float atanh_i1_left", single);
+write_coeff(x0, "", "constexpr\n    const float atanh_i1_x0", single);
+// plot((p(x)-f(x))/f(x), i, postscriptfile, "atanh_i1-f32");
+
+
+/*
+ * Local variables:
+ * mode: c++
+ * end:
+ */
