@@ -37,7 +37,7 @@ namespace cftal {
 
             // exp(x) == +inf for x >=
             static constexpr float
-            exp_hi_inf() { return 8.872283935546875000000000e+01f; }
+            exp_hi_inf() { return 89.0f /* 8.872283935546875000000000e+01f*/ ; }
             // exp(x) == 0 for x <=
             static constexpr float
             exp_lo_zero() { return -1.039720840454101562500000e+02f; }

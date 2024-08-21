@@ -70,6 +70,19 @@ namespace cftal {
             };
         };
 
+        template <>
+        struct domain_exp<bf16_t> {
+            constexpr static
+            const func_domain<bf16_t> domains[]={
+                std::make_pair(-104.0_bf16, 89.0_bf16)
+            };
+            constexpr static
+            const int shifts[]={
+                0
+            };
+        };
+
+
         template <typename _T>
         struct check_exp {
             template <std::size_t _N>
