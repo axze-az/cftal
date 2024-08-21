@@ -99,6 +99,14 @@ namespace cftal {
             }
         };
 
+        template <>
+        struct check_max_denormal<bf16_t> {
+            bool operator() (bf16_t a) const  {
+                using std::abs;
+                return abs(a) < 0x1p-126_bf16;
+            }
+        };
+
         template <typename _T>
         struct check_atan_eq_x  {
             bool operator() (_T a) const {
@@ -680,23 +688,33 @@ int main(int argc, char** argv)
     bool gen_double=true;
     bool gen_float=true;
     bool gen_f16=true;
+    bool gen_bf16=true;
     if (argc > 1) {
         const std::string argv1=argv[1];
         if (argv1 == "--double") {
             gen_float= false;
             gen_f16=false;
+            gen_bf16=false;
         } else if (argv1 == "--float") {
             gen_double =false;
             gen_f16=false;
+            gen_bf16=false;
         } else if (argv1 == "--f16") {
             gen_double =false;
             gen_float = false;
+            gen_bf16 = false;
+        } else if (argv1 == "--bf16") {
+            gen_double =false;
+            gen_float = false;
+            gen_f16=false;
         } else if (argv1 == "--no-double") {
             gen_double = false;
         } else if (argv1 == "--no-float") {
             gen_float = false;
         } else if (argv1 == "--no-f16") {
             gen_f16 = false;
+        } else if (argv1 == "--no-bf16") {
+            gen_bf16 = false;
         }
     }
 
@@ -1063,6 +1081,94 @@ int main(int argc, char** argv)
                                std::cout,
                                "t_real_constants<_T, f16_t>");
 #endif
+    }
+    if (gen_bf16) {
+        auto dp=std::make_pair(0.0_bf16, 200.0_bf16);
+        gen_constant(dp, "const bf16_t sinh_hi", mpfr_sinh,
+                     check_inf<bf16_t>(), "inf");
+        auto dm=std::make_pair(-200.0_bf16, 0.0_bf16);
+        gen_constant(dm, "const bf16_t sinh_lo", mpfr_sinh,
+                     check_inf<bf16_t>(), "inf");
+        // exp constants
+        gen_constant(dp, "const bf16_t exp_hi", mpfr_exp,
+                     check_inf<bf16_t>(), "inf");
+        gen_constant(dm, "const bf16_t exp_lo", mpfr_exp,
+                     check_zero<bf16_t>(), "m_0");
+        gen_constant(dm, "const bf16_t exp_lo_den", mpfr_exp,
+                     check_max_denormal<bf16_t>(), "nom");
+        // exp1
+        gen_constant(dp, "const bf16_t expm1_hi", mpfr_expm1,
+                     check_inf<bf16_t>(), "inf");
+        gen_constant(dm, "const bf16_t expm1_lo", mpfr_expm1,
+                     check_minus_one<bf16_t>(), "m_1");
+
+        gen_constant(dp, "const bf16_t cosh_hi", mpfr_cosh,
+                     check_inf<bf16_t>(), "inf");
+        gen_constant(dm, "const bf16_t cosh_lo", mpfr_cosh,
+                     check_inf<bf16_t>(), "inf");
+
+        gen_constant(std::make_pair(.0_bf16, 0.001_bf16), "const bf16_t log_lo",
+                     mpfr_log, check_inf<bf16_t>(), "inf");
+
+        dp=std::make_pair(0.0_bf16, 1100.0_bf16);
+        dm=std::make_pair(-1100.0_bf16, 0.0_bf16);
+        gen_constant(dp, "const bf16_t exp2_hi", mpfr_exp2,
+                     check_inf<bf16_t>(), "inf");
+        gen_constant(dm, "const bf16_t exp2_lo", mpfr_exp2,
+                     check_zero<bf16_t>(), "m_0");
+        // exp2m1
+        gen_constant(dp, "const bf16_t exp2m1_hi", mpfr_exp2m1,
+                     check_inf<bf16_t>(), "inf");
+        gen_constant(dm, "const bf16_t exp2m1_lo", mpfr_exp2m1,
+                     check_minus_one<bf16_t>(), "m_1");
+
+        // exp10
+        gen_constant(dp, "const bf16_t exp10_hi", mpfr_exp10,
+                     check_inf<bf16_t>(), "inf");
+        gen_constant(dm, "const bf16_t exp10_lo", mpfr_exp10,
+                     check_zero<bf16_t>(), "m_0");
+
+        // exp10m1
+        gen_constant(dp, "const bf16_t exp10m1_hi", mpfr_exp10m1,
+                     check_inf<bf16_t>(), "inf");
+        gen_constant(dm, "const bf16_t exp10m1_lo", mpfr_exp10m1,
+                     check_minus_one<bf16_t>(), "m_1");
+
+        gen_constant(dp, "const bf16_t erf_lt_one", mpfr_erf,
+                     check_one<bf16_t>(), "1");
+        gen_constant(dp, "const bf16_t erfc_gt_zero", mpfr_erfc,
+                     check_zero<bf16_t>(), "zzz");
+        gen_constant(dp, "const bf16_t erfc_lo_den", mpfr_erfc,
+                     check_max_denormal<bf16_t>(), "nom");
+        // tgamma
+        auto gm=std::make_pair(10.0_bf16, 200.0_bf16);
+        gen_constant(gm, "const bf16_t tgamma_hi", mpfr_gamma,
+                     check_inf<bf16_t>(), "inf");
+
+        dp=std::make_pair(1.0_bf16, std::numeric_limits<bf16_t>::max());
+        gen_constant(dp, "const bf16_t rqsrt_", mpfr_rec_sqrt,
+                     check_zero<bf16_t>(), "zero");
+
+        // lgamma
+        auto lngp=std::make_pair(174.0_bf16, std::numeric_limits<bf16_t>::max());
+        gen_constant(lngp, "const bf16_t lgamma_hi", mpfr_lngamma,
+                     check_inf<bf16_t>(), "inf");
+
+        dp=std::make_pair(1.0_bf16, std::numeric_limits<bf16_t>::max());
+        gen_constant(dp, "const double atan_pi_2", mpfr_atan,
+                     check_pi_half<bf16_t>(), "equal");
+
+        gen_constant(std::make_pair(1.0_bf16, 80.0_bf16), "const bf16_t tanh",
+                     mpfr_tanh, check_one<bf16_t>(), "one");
+
+        gen_constant(std::make_pair(1.0_bf16, 1024.0_bf16), "const bf16_t sig",
+                     mpfr_ext::sig, check_one<bf16_t>(), "one");
+
+        gen_constant(std::make_pair(-1024.0_bf16, -1.0_bf16), "const bf16_t sig",
+                     mpfr_ext::sig, check_zero<bf16_t>(), "zero");
+
+        std::cout << "const bf16_t max_denormal= "
+                  <<  sig_f32_msk::v.f32() << ";\n\n";
     }
 
     return 0;
