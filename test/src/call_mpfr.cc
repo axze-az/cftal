@@ -451,9 +451,9 @@ namespace {
     int
     bf16_ftz_rounding(cftal::bf16_t v, float f, int mpres)
     {
+#if __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO > 0
         if (mpres==0)
             return mpres;
-
         using namespace cftal;
         mf_f16_t vi=read_bits(v);
         mf_f16_t ai=vi & 0x7fff;
@@ -476,6 +476,7 @@ namespace {
             mpres= 1;
         }
         // vf == f --> no ftz but normal zero, keep mpres
+#endif
         return mpres;
     }
 }
