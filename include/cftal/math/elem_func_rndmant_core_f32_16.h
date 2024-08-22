@@ -656,7 +656,7 @@ __exp_k(arg_t<vf_type> xrd, arg_t<vf_type> kfd,
     yd=__mul_two_pow(yd, kfd);
     if (_EXP_M1 == true) {
         yd -= exp_c0;
-        yd= _T::sel(abs(x) < 0x1.0p-11f, x, yd);
+        yd= _T::sel(abs(x) < 0x1.0p-8f, x, yd);
         // to reduce the number of differences to 910 at the cost of
         // assymmetric deviations:
         // yd= _T::sel(abs(x) < 0x1.68p-11f, x, yd);
