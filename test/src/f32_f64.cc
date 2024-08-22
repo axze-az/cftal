@@ -457,6 +457,16 @@ cftal::test::distance(bf16_t a, bf16_t b)
         else
             d=-2;
     }
+#if __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO >0
+    if (ai == 0x0000 && bi == 0x0080)
+        d=1;
+    if (ai == 0x0080 && bi == 0x0000)
+        d=-1;
+    if (ai == 0x8000 && bi == 0x8080)
+        d=-1;
+    if (ai == 0x8080 && bi == 0x8000)
+        d=1;
+#endif
     // +-Inf gives +-max-2
     if ((sgn_a != sgn_b) && ((abs_ai|abs_bi) == 0x7F80)) {
         if (sgn_a)
