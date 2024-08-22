@@ -79,13 +79,13 @@ cftal::impl::_cvt_f32_to_bf16(f32_t ff)
 #if BRANCHLESS
     // nan result;
     int32_t r_nan = af;
-    // subnormal result:
-    int32_t r_sn = 0;
     constexpr const int32_t rnd_bias = 0x7fff;
     constexpr const int32_t rnd_bias_p1 = 0x8000;
     // force round nearest even if bit 16 is set
     int32_t r_def= (af & 0x0001'0000) ? af + rnd_bias_p1 : af + rnd_bias;
 #if __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO > 0
+    // subnormal result:
+    int32_t r_sn = 0;
     // select subnormal normal
     int32_t r_def_sn = (af < 0x0080'0000) ? r_sn : r_def;
 #else
