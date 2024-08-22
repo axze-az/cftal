@@ -215,6 +215,7 @@ test_prog(test-cbrt-bf16)
 test_prog(test-rcbrt-bf16)
 test_prog(test-root12-bf16)
 test_prog(test-exp-bf16)
+test_prog(test-expm1-bf16)
 
 test_prog(test-permute)
 test_prog(test-compress-expand-elements)
