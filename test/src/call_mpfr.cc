@@ -634,7 +634,26 @@ func(bf16_t a, int ib, f2fi_t f, std::pair<bf16_t, bf16_t>* ulp1i)
     return dr;
 }
 
-
+std::pair<cftal::bf16_t, cftal::bf16_t>
+cftal::test::call_mpfr::ulp1_interval(bf16_t res, int mpres)
+{
+#if __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO >0
+    uint16_t ir=as<uint16_t>(res);
+    if ((ir == 0x0000) && (mpres <= 0)) {
+        return std::make_pair(res, as<bf16_t>(uint16_t(0x0080)));
+    }
+    if ((ir == 0x0080) && (mpres >= 0)) {
+        return std::make_pair(as<bf16_t>(uint16_t(0x0000)), res);
+    }
+    if ((ir == 0x8000) && (mpres >= 0)) {
+        return std::make_pair( as<bf16_t>(uint16_t(0x8080)), res);
+    }
+    if ((ir == 0x8080) && (mpres <= 0)) {
+        return std::make_pair(res, as<bf16_t>(uint16_t(0x8000)));
+    }
+#endif
+    return impl::ulp1_interval(res, mpres);
+}
 
 namespace cftal::test::mpfr_ext {
 

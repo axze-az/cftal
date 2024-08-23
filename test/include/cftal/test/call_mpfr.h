@@ -184,6 +184,18 @@ namespace cftal {
                  std::pair<bf16_t, bf16_t>* ulp1i= nullptr);
 
 
+            namespace impl {
+
+                // mpfr result to interval conversion:
+                // returns [nextafter(res, -inf), res] for mpfr_res > 0
+                // returns [res, nextafter(res, +inf)] for mpfr_res < 0
+                // returns [res, res] for mpfr_res=0
+                template <class _T>
+                std::pair<_T, _T>
+                ulp1_interval(_T res, int mpfr_res);
+
+            }
+
             // mpfr result to interval conversion:
             // returns [nextafter(res, -inf), res] for mpfr_res > 0
             // returns [res, nextafter(res, +inf)] for mpfr_res < 0
@@ -192,6 +204,12 @@ namespace cftal {
             std::pair<_T, _T>
             ulp1_interval(_T res, int mpfr_res);
 
+            // mpfr result to interval conversion:
+            // returns [nextafter(res, -inf), res] for mpfr_res > 0
+            // returns [res, nextafter(res, +inf)] for mpfr_res < 0
+            // returns [res, res] for mpfr_res=0
+            std::pair<bf16_t, bf16_t>
+            ulp1_interval(bf16_t res, int mpfr_res);
 
             class set_emin_emax {
                 mpfr_exp_t _emin;
@@ -587,7 +605,7 @@ namespace cftal {
 
 template <class _T>
 std::pair<_T, _T>
-cftal::test::call_mpfr::ulp1_interval(_T res, int mpres)
+cftal::test::call_mpfr::impl::ulp1_interval(_T res, int mpres)
 {
     std::pair<_T, _T> pr(res, res);
     const _T up=std::numeric_limits<_T>::infinity();
@@ -608,6 +626,13 @@ cftal::test::call_mpfr::ulp1_interval(_T res, int mpres)
         pr.first = pr.second= res;
     }
     return pr;
+}
+
+template <class _T>
+std::pair<_T, _T>
+cftal::test::call_mpfr::ulp1_interval(_T res, int mpres)
+{
+    return impl::ulp1_interval(res, mpres);
 }
 
 inline
