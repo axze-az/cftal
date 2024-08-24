@@ -61,7 +61,7 @@ namespace cftal {
             exp2m1_hi_inf() { return 1.280000000000000000000000e+02_bf16; }
             // exp2m1(x) == -1 for x <=
             static constexpr bf16_t
-            exp2m1_lo_minus_one() { return -2.500000000000000000000000e+01_bf16; }
+            exp2m1_lo_minus_one() { return -9.000000000000000000000000e+00_bf16; }
 
             // exp10(x) == +inf for x >=
             static constexpr bf16_t
