@@ -72,10 +72,10 @@ namespace cftal {
 
             // exp10m1(x) == +inf for x >= 0
             static constexpr bf16_t
-            exp10m1_hi_inf() { return 3.853184127807617187500000e+01_bf16; }
+            exp10m1_hi_inf() { return 3.875000000000000000000000e+01_bf16; }
             // exp10m1(x) == -1 for x <=
             static constexpr bf16_t
-            exp10m1_lo_minus_one() { return -7.525750160217285156250000e+00_bf16; }
+            exp10m1_lo_minus_one() { return -2.718750000000000000000000e+00_bf16; }
 
             // cosh(x) == +inf for abs(x) >=
             static constexpr bf16_t

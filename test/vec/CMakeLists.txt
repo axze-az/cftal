@@ -219,6 +219,7 @@ test_prog(test-expm1-bf16)
 test_prog(test-exp2-bf16)
 test_prog(test-exp2m1-bf16)
 test_prog(test-exp10-bf16)
+test_prog(test-exp10m1-bf16)
 
 test_prog(test-permute)
 test_prog(test-compress-expand-elements)
