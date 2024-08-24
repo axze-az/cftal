@@ -452,15 +452,13 @@ namespace {
     bf16_ftz_rounding(cftal::bf16_t v, float f, int mpres)
     {
 #if __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO > 0
-        if (mpres==0)
-            return mpres;
         using namespace cftal;
         mf_f16_t vi=read_bits(v);
         mf_f16_t ai=vi & 0x7fff;
         // mf_f16_t si=vi & 0x8000;
 
         // constexpr const float rt=std::numeric_limits<float>::denorm_min()*0.5f;
-        if (ai >= 0x0080)
+        if (ai > 0x0080)
             return mpres;
 
         // mpres tells us how f with 7+1 bits was obtained:
@@ -474,6 +472,11 @@ namespace {
         } else if (vf > f) {
             // vf was rounded up
             mpres= 1;
+        } else {
+            if (vi & 0x8000)
+                mpres=-1;
+            else
+                mpres=+1;
         }
         // vf == f --> no ftz but normal zero, keep mpres
 #endif
@@ -639,16 +642,16 @@ cftal::test::call_mpfr::ulp1_interval(bf16_t res, int mpres)
 {
 #if __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO >0
     uint16_t ir=as<uint16_t>(res);
-    if ((ir == 0x0000) && (mpres <= 0)) {
+    if ((ir == 0x0000) && (mpres < 0)) {
         return std::make_pair(res, as<bf16_t>(uint16_t(0x0080)));
     }
-    if ((ir == 0x0080) && (mpres >= 0)) {
+    if ((ir == 0x0080) && (mpres > 0)) {
         return std::make_pair(as<bf16_t>(uint16_t(0x0000)), res);
     }
-    if ((ir == 0x8000) && (mpres >= 0)) {
+    if ((ir == 0x8000) && (mpres > 0)) {
         return std::make_pair( as<bf16_t>(uint16_t(0x8080)), res);
     }
-    if ((ir == 0x8080) && (mpres <= 0)) {
+    if ((ir == 0x8080) && (mpres < 0)) {
         return std::make_pair(res, as<bf16_t>(uint16_t(0x8000)));
     }
 #endif

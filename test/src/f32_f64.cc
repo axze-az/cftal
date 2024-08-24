@@ -458,13 +458,13 @@ cftal::test::distance(bf16_t a, bf16_t b)
             d=-2;
     }
 #if __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO >0
-    if (ai == 0x0000 && bi == 0x0080)
+    if (uint16_t(ai) == 0x0000u && uint16_t(bi) == 0x0080u)
         d=1;
-    if (ai == 0x0080 && bi == 0x0000)
+    if (uint16_t(ai) == 0x0080u && uint16_t(bi) == 0x0000u)
         d=-1;
-    if (ai == 0x8000 && bi == 0x8080)
+    if (uint16_t(ai) == 0x8000u && uint16_t(bi) == 0x8080u)
         d=-1;
-    if (ai == 0x8080 && bi == 0x8000)
+    if (uint16_t(ai) == 0x8080u && uint16_t(bi) == 0x8000u)
         d=1;
 #endif
     // +-Inf gives +-max-2
