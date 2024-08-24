@@ -71,6 +71,17 @@ namespace cftal {
             };
         };
 
+        template <>
+        struct domain_exp10<bf16_t> {
+            constexpr static
+            const func_domain<bf16_t> domains[]={
+                std::make_pair(-46.0_bf16, 39.0_bf16)
+            };
+            constexpr static
+            const int shifts[]={
+                0
+            };
+        };
 
         template <typename _T>
         struct check_exp10 {
@@ -88,6 +99,7 @@ namespace cftal {
                 return std::make_tuple(v, i.first, i.second);
                 // return call_mpfr::func(a, mpfr_exp10);
             }
+	    
             static
             _T
             s(const _T& a) {
@@ -113,6 +125,12 @@ namespace cftal {
             }
 
             static
+            bf16_t
+            __exp10(const bf16_t& a) {
+                return static_cast<bf16_t>(::exp10f(static_cast<float>(a)));
+            }
+	    
+            static    
             const char* fname() { return "exp10"; }
         };
     }

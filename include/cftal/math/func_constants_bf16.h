@@ -65,10 +65,10 @@ namespace cftal {
 
             // exp10(x) == +inf for x >=
             static constexpr bf16_t
-            exp10_hi_inf() { return 3.853184127807617187500000e+01_bf16; }
+            exp10_hi_inf() { return 3.875000000000000000000000e+01_bf16; }
             // exp10(x) == 0 for x <=
             static constexpr bf16_t
-            exp10_lo_zero() { return -4.515450286865234375000000e+01_bf16; }
+            exp10_lo_zero() { return -3.800000000000000000000000e+01_bf16; }
 
             // exp10m1(x) == +inf for x >= 0
             static constexpr bf16_t
