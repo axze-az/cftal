@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
     using cftal::f16_t;
-    int r=program<check_log10p1<f16_t>, 1, 1, 0x4000>(
+    int r=program<check_log10p1<f16_t>, 32, 1, 0x4000>(
         argc,
         argv,
         mpfr_log10p1,
