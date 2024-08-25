@@ -252,11 +252,11 @@ if(${Boost_FOUND})
     set (BOOST_LORENZ_SRC boost_lorenz.cc)
     add_executable(boost_lorenz ${BOOST_LORENZ_SRC})
     target_link_libraries(boost_lorenz cftal-so)
-endif()
 
-install (TARGETS boost_lorenz
-  DESTINATION bin
-  COMPONENT tools)
+    install (TARGETS boost_lorenz
+      DESTINATION bin
+      COMPONENT tools)
+endif()
 
 enable_testing()
 
