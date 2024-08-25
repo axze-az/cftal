@@ -943,17 +943,7 @@ typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vi_type
 cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __reduce_log_arg(vf_type& xr, arg_t<vf_type> xc)
 {
-    // MSQRT2/2
-    constexpr
-    const bytes4 offs=0x3f3504f3;
-    vi_type hx = _T::as_int(xc);
-    /* reduce x into [sqrt(2)/2, sqrt(2)] */
-    constexpr const int32_t delta=0x3f800000 - offs.s32();
-    hx += delta;
-    vi_type k=(hx>>23) - _T::bias();
-    hx = (hx&0x007fffff) + offs.s32();
-    xr = _T::as_float(hx);
-    return k;
+    return base_type::__reduce_log_arg(xr, xc);
 }
 
 template <typename _T>
