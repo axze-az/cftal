@@ -79,42 +79,42 @@ namespace cftal {
 
             // cosh(x) == +inf for abs(x) >=
             static constexpr bf16_t
-            cosh_hi_inf() { return 8.941599273681640625000000e+01_bf16; }
+            cosh_hi_inf() { return 8.950000000000000000000000e+01_bf16; }
 
             // sinh(x) == +inf for x >=
             static constexpr bf16_t
             sinh_hi_inf() { return 8.941599273681640625000000e+01_bf16; }
             // sinh(x) == -inf for x <=
             static constexpr bf16_t
-            sinh_lo_inf() { return -8.941599273681640625000000e+01_bf16; }
+            sinh_lo_inf() { return -8.950000000000000000000000e+01_bf16; }
 
             // tanh(x) == 1 for abs(x) >=
             static constexpr bf16_t
-            tanh_one() { return 9.010913848876953125000000e+00_bf16; }
+            tanh_one() { return 3.468750000000000000000000e+00_bf16; }
 
             static constexpr bf16_t
-            log_lo_fin() { return 1.401298464324817070923730e-45_bf16; }
+            log_lo_fin() { return 1.203044999669684871436754e-38_bf16; }
             static constexpr bf16_t
-            log_lo_val() { return -1.032789306640625000000000e+02_bf16; }
+            log_lo_val() { return -8.750000000000000000000000e+01_bf16; }
 
             static constexpr bf16_t
-            erf_lt_one_fin() { return 3.919205665588378906250000e+00_bf16; }
+            erf_lt_one_fin() { return 2.187500000000000000000000e+00_bf16; }
 
             static constexpr bf16_t
-            erfc_gt_zero_fin() { return 1.005419445037841796875000e+01_bf16; }
+            erfc_gt_zero_fin() { return 2.187500000000000000000000e+00_bf16; }
 
             static constexpr bf16_t
-            tgamma_hi_inf() { return 3.504010009765625000000000e+01_bf16; }
+            tgamma_hi_inf() { return 3.525000000000000000000000e+01_bf16; }
 
             // tgamma(x) == +- 0 for x<
             static constexpr bf16_t
             tgamma_lo_zero() { return -42.0_bf16; }
 
             static constexpr bf16_t
-            lgamma_hi_inf() { return 4.085003425410169132208425e+36_bf16; }
+            lgamma_hi_inf() { return 4.091529924525444171282031e+36_bf16; }
 
             static constexpr bf16_t
-            atan_equal_pi_2() { return 6.291977600000000000000000e+07_bf16; }
+            atan_equal_pi_2() { return 2.280000000000000000000000e+02_bf16; }
 
             static constexpr bf16_t
             sig_hi_one() {
