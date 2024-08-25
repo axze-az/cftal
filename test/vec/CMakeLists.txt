@@ -226,7 +226,7 @@ test_prog(test-tanh-bf16)
 test_prog(test-log-bf16)
 test_prog(test-log2-bf16)
 test_prog(test-log10-bf16)
-#test_prog(test-log1p-bf16)
+test_prog(test-log1p-bf16)
 #test_prog(test-log2p1-bf16)
 #test_prog(test-log10p1-bf16)
 
