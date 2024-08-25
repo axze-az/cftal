@@ -57,19 +57,27 @@ namespace cftal {
 
         template <>
         struct domain_tanh<f16_t> {
-            static
-            const func_domain<f16_t> domains[];
+            constexpr static
+            const func_domain<f16_t> domains[]={
+                std::make_pair(-4.6_f16, 4.6_f16)
+            };
             constexpr static
             const int shifts[]={
                 0
             };
         };
 
-        const func_domain<f16_t>
-        domain_tanh<f16_t>::domains[]= {
-            std::make_pair(-4.6_f16, 4.6_f16)
+        template <>
+        struct domain_tanh<bf16_t> {
+            constexpr static
+            const func_domain<bf16_t> domains[]={
+                std::make_pair(-3.6_bf16, 3.6_bf16)
+            };
+            constexpr static
+            const int shifts[]={
+                0
+            };
         };
-
 
         template <typename _T>
         struct check_tanh {

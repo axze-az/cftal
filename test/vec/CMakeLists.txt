@@ -222,7 +222,7 @@ test_prog(test-exp10-bf16)
 test_prog(test-exp10m1-bf16)
 test_prog(test-sinh-bf16)
 test_prog(test-cosh-bf16)
-#test_prog(test-tanh-bf16)
+test_prog(test-tanh-bf16)
 
 test_prog(test-permute)
 test_prog(test-compress-expand-elements)
