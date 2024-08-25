@@ -51,7 +51,10 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                using _TT = select_t<std::is_same_v<_T, f16_t>, float, _T>;
+                using _TT = select_t<std::is_same_v<_T, f16_t> ||
+                                     std::is_same_v<_T, bf16_t>,
+                                     float,
+                                     _T>;
                 using ctbl=math::impl::d_real_constants<d_real<_TT>, _TT>;
                 using std::log1p;
                 return _T(log1p(a)*ctbl::m_1_ln2[0]);
