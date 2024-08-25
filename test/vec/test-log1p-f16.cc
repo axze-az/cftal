@@ -19,27 +19,6 @@
 #include "cftal/test/check_log1p.h"
 #include "cftal/vec_f16.h"
 
-namespace cftal {
-    namespace test {
-        template <>
-        struct domain_logx1p<f16_t> {
-            static
-            const func_domain<f16_t> domains[];
-
-            constexpr static
-            const int shifts[]={
-                0
-            };
-        };
-    }
-}
-
-const cftal::test::func_domain<cftal::f16_t>
-cftal::test::domain_logx1p<cftal::f16_t>::domains[]={
-    std::make_pair(-1.0_f16, std::numeric_limits<f16_t>::max())
-};
-
-
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
