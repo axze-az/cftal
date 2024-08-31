@@ -1254,7 +1254,11 @@ namespace std {
         }
         constexpr
         static cftal::bf16_t denorm_min() {
+#if __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO>0
+            return min();
+#else
             return cftal::bf16_t::cvt_from_rep(0x0001);
+#endif
         }
     };
 }
