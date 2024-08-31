@@ -1089,7 +1089,8 @@ typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
 cftal::math::elem_func_rndmant_core<float, 16, _T>::
 pow_k(arg_t<vf_type> x, arg_t<vf_type> y, vf_type* p_ylnx)
 {
-    vf_type ylnx=y*__log_k12<log_func::c_log_e>(abs(x));
+    vf_type abs_x=abs(x);
+    vf_type ylnx=y*__log_k12<log_func::c_log_e>(abs_x);
     if (p_ylnx != nullptr) {
         *p_ylnx = ylnx;
     }
@@ -1097,13 +1098,31 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y, vf_type* p_ylnx)
     vi_type idx, ki;
     vf_type xr;
     __reduce_exp_arg(xr, idx, ki, ylnx);
-    vf_type r=__exp_tbl_k(xr, idx, ki);
+    vf_type res=__exp_tbl_k(xr, idx, ki);
 #else
     vf_type xr, kf;
     __reduce_exp_arg(xr, kf, ylnx);
-    vf_type r=__exp_k<false>(xr, kf, ylnx);
+    vf_type res=__exp_k<false>(xr, kf, ylnx);
 #endif
-    return r;
+    using fc=func_constants<float>;
+    const vf_type& dh = ylnx;
+    constexpr
+    const float exp_lo_zero= fc::exp_lo_zero();
+    res = _T::sel_zero_or_val((dh <= exp_lo_zero), res);
+    constexpr
+    const float exp_hi_inf= fc::exp_hi_inf();
+    res = _T::sel((dh >= exp_hi_inf), _T::pinf(), res);
+    // guess the result if the calculation failed
+    vmf_type rnan=isnan(dh);
+    vmf_type abs_x_lt_1 = abs_x < 1.0f;
+    vmf_type y_gt_1 = y > 1.0f;
+    res = _T::sel(rnan, _T::pinf(), res);
+    res = _T::sel_zero_or_val(rnan &
+                              ((abs_x_lt_1 & y_gt_1) |
+                               ((~abs_x_lt_1) & (~y_gt_1))),
+                              res);
+
+    return res;
 }
 
 template <typename _T>

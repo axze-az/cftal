@@ -747,6 +747,7 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     vhf_type ylnx;
     vhf_type rd=f32_core::pow_k(xd, yd, &ylnx);
     vf_type r=cvt<vf_type>(rd);
+#if 0
     using fc=func_constants<bf16_t>;
     const vf_type d= cvt<vf_type>(ylnx);
     constexpr
@@ -755,6 +756,7 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     const bf16_t exp_lo_zero= fc::exp_lo_zero();
     r = _T::sel_zero_or_val(d <= exp_lo_zero, r);
     r = _T::sel(d > exp_hi_inf, _T::pinf(), r);
+#endif
     return r;
 }
 

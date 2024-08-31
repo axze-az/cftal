@@ -21,6 +21,7 @@
 #include <cftal/config.h>
 #include <cftal/test/func_domain.h>
 #include <cftal/f16_t.h>
+#include <cftal/bf16_t.h>
 #include <limits>
 
 namespace cftal {
