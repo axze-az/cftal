@@ -285,7 +285,7 @@ namespace cftal {
 #if __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO>0
                         // do not produce subnormal outputs
                         uint16_t ui=i & 0x7fff;
-                        if (ui > 0 && ui < 0x7f80)
+                        if (ui > 0 && ui < 0x0080)
                             continue;
 #endif
                         using std::isnan;
