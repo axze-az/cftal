@@ -744,19 +744,8 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     vhf_type xd=cvt<vhf_type>(x);
     vhf_type yd=cvt<vhf_type>(y);
-    vhf_type ylnx;
-    vhf_type rd=f32_core::pow_k(xd, yd, &ylnx);
+    vhf_type rd=f32_core::pow_k(xd, yd);
     vf_type r=cvt<vf_type>(rd);
-#if 0
-    using fc=func_constants<bf16_t>;
-    const vf_type d= cvt<vf_type>(ylnx);
-    constexpr
-    const bf16_t exp_hi_inf= fc::exp_hi_inf();
-    constexpr
-    const bf16_t exp_lo_zero= fc::exp_lo_zero();
-    r = _T::sel_zero_or_val(d <= exp_lo_zero, r);
-    r = _T::sel(d > exp_hi_inf, _T::pinf(), r);
-#endif
     return r;
 }
 
@@ -769,17 +758,8 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
 {
     vhf_type xd=cvt<vhf_type>(x);
     vhi_type ed=cvt<vhi_type>(e);
-    vhf_type ylnx;
-    vhf_type rd=f32_core::template powi_k<_CALC_ROOT>(xd, ed, &ylnx);
+    vhf_type rd=f32_core::template powi_k<_CALC_ROOT>(xd, ed);
     vf_type r=cvt<vf_type>(rd);
-    using fc=func_constants<bf16_t>;
-    const vf_type d= cvt<vf_type>(ylnx);
-    constexpr
-    const bf16_t exp_hi_inf= fc::exp_hi_inf();
-    constexpr
-    const bf16_t exp_lo_zero= fc::exp_lo_zero();
-    r = _T::sel_zero_or_val(d <= exp_lo_zero, r);
-    r = _T::sel(d > exp_hi_inf, _T::pinf(), r);
     return r;
 }
 

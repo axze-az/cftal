@@ -230,6 +230,8 @@ test_prog(test-log1p-bf16)
 test_prog(test-log2p1-bf16)
 test_prog(test-log10p1-bf16)
 test_prog(test-pow-bf16)
+test_prog(test-powi-bf16)
+test_prog(test-rootn-bf16)
 
 test_prog(test-permute)
 test_prog(test-compress-expand-elements)
