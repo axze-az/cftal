@@ -1163,37 +1163,8 @@ typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vi_type
 cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __reduce_trig_arg(vf_type& xrh, arg_t<vf_type> x)
 {
-    using ctbl=impl::d_real_constants<d_real<float>, float>;
-    vf_type fn= rint(vf_type(x*ctbl::m_2_pi[0]));
-    // conversion to double vectors does not make the code faster
-    // seven bit chunks of %pi/2
-    // x^ : +0xc.ap-3f
-    constexpr
-    const float pi_2_0=+1.5781250000e+00f;
-    // x^ : -0xfp-11f
-    constexpr
-    const float pi_2_1=-7.3242187500e-03f;
-    // x^ : -0x9.6p-21f
-    constexpr
-    const float pi_2_2=-4.4703483582e-06f;
-    // x^ : +0x8.8p-29f
-    constexpr
-    const float pi_2_3=+1.5832483768e-08f;
-    // x^ : +0x8.6p-37f
-    constexpr
-    const float pi_2_4=+6.0936145019e-11f;
-    // x^ : -0xb.9ee5ap-46f
-    constexpr
-    const float pi_2_5=-1.6513995575e-13f;
-
-    xrh = x + fn * -pi_2_0;
-    xrh = xrh + fn * -pi_2_1;
-    xrh = xrh + fn * -pi_2_2;
-    xrh = xrh + fn * -pi_2_3;
-    xrh = xrh + fn * -pi_2_4;
-    xrh = xrh + fn * -pi_2_5;
-    vi_type q=_T::cvt_f_to_i(fn);
-    return q;
+    vf_type xrl;
+    return base_type::__reduce_trig_arg(xrh, xrl, x);
 }
 
 template <typename _T>
@@ -1339,14 +1310,8 @@ typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vi_type
 cftal::math::elem_func_rndmant_core<float, 16, _T>::
 __reduce_trigpi_arg(vf_type& xr, arg_t<vf_type> xc)
 {
-    vf_type xt2=xc+xc;
-    vf_type fh= rint(xt2);
-    vf_type s = xc - 0.5f * fh;
-    // no need for fmod<4>(fh) here because |int(fh)| < |max integer|
-    using ctbl=impl::d_real_constants<d_real<float>, float>;
-    xr= s * ctbl::m_pi[0];
-    vi_type q= _T::cvt_f_to_i(xt2);
-    return q;
+    vf_type xrl;
+    return base_type::__reduce_trigpi_arg(xr, xrl, xc);
 }
 
 template <typename _T>
