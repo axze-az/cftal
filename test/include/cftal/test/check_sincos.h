@@ -74,6 +74,14 @@ namespace cftal {
             }
 
             static
+            std::pair<bf16_t, bf16_t>
+            __sincos(bf16_t a) {
+                float s, c;
+                ::sincosf(float(a), &s, &c);
+                return std::make_pair(bf16_t(s), bf16_t(c));
+            }
+
+            static
             std::pair<_T, _T>
             s(const _T& a) {
                 return __sincos(a);

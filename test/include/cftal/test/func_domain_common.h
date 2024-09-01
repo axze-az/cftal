@@ -87,6 +87,14 @@ namespace cftal {
             };
         };
 
+        template <>
+        struct domain_sin_cos_tan<bf16_t> : public domain_full_x_axis<bf16_t> {
+            constexpr static
+            const func_domain<bf16_t> domains2[]={
+                std::make_pair(-0x1p18_bf16, 0x1p18_bf16)
+            };
+        };
+
         template <typename _T>
         struct domain_sinh_cosh {};
 
