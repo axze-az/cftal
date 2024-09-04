@@ -919,6 +919,15 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                     v_va.emplace_back(array_t());
                     for (std::size_t k=0; k<_N; ++k, ++j) {
                         uint16_t h=j;
+#if __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO>0
+                        if (std::is_same_v<_T, bf16_t>) {
+                            // flush to zero
+                            uint16_t uh=h & 0x7fff;
+                            if (uh > 0 && uh < 0x0080)
+                                h= h & 0x8000;
+                        }
+#endif
+
                         v_va[i][k] =as<_T>(h);
                     }
                 }
