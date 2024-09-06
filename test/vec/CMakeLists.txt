@@ -238,7 +238,7 @@ test_prog(test-tan-bf16)
 test_prog(test-sincos-bf16)
 test_prog(test-sinpi-bf16)
 test_prog(test-cospi-bf16)
-#test_prog(test-sinpicospi-bf16)
+test_prog(test-sinpicospi-bf16)
 test_prog(test-tanpi-bf16)
 
 test_prog(test-permute)
