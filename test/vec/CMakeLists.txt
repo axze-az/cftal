@@ -244,9 +244,9 @@ test_prog(test-asin-bf16)
 test_prog(test-acos-bf16)
 test_prog(test-atan-bf16)
 test_prog(test-atan2-bf16)
-#test_prog(test-asinh-bf16)
-#test_prog(test-acosh-bf16)
-#test_prog(test-atanh-bf16)
+test_prog(test-asinh-bf16)
+test_prog(test-acosh-bf16)
+test_prog(test-atanh-bf16)
 
 #test_prog(test-hypot-bf16)
 
