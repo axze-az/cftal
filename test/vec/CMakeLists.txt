@@ -256,7 +256,7 @@ test_prog(test-atanh-bf16)
 #test_prog(test-exp2_px2-bf16)
 #test_prog(test-exp10_mx2-bf16)
 #test_prog(test-exp10_px2-bf16)
-#test_prog(test-sig-bf16)
+test_prog(test-sig-bf16)
 
 test_prog(test-permute)
 test_prog(test-compress-expand-elements)
