@@ -159,11 +159,15 @@ gen_bf16_tbl(test::call_mpfr::f1_t f,
             break;
         using std::nextafter;
         // nextafter(-0.0, infinity) is not +0.0, but min subnormal instead
-        if (cur == -0.0_bf16 && idx==-1) {
-            cur = 0.0_bf16;
-        } else {
-            cur = nextafter(cur, e);
-        }
+        int16_t ci=as<int16_t>(cur);
+        if (uint16_t(ci) == 0x8000)
+            ci = 0;
+        else if (ci < 0)
+            --ci;
+        else
+            ++ci;
+        cur=as<bf16_t>(ci);
+        // cur = nextafter(cur, e);
     }
     return r;
 }
@@ -202,7 +206,9 @@ gen_bf16_tbl(test::call_mpfr::f1_t f,
 	}
 	if (mb0 != mb) {
             if (idx != last_idx+1) {
-                std::cerr << "idx " << idx << " last idx " << last_idx << '\n';
+                std::cerr << class_name
+                          << " idx " << idx << " last idx "
+                          << last_idx << '\n';
                 // throw std::runtime_error(tblname+" generation failed, oops");
             }
         }
@@ -270,11 +276,14 @@ gen_bf16_tbl(test::call_mpfr::f1i_t f,
             break;
         using std::nextafter;
         // nextafter(-0.0, infinity) is not +0.0, but min subnormal instead
-        if (cur == -0.0_bf16 && idx==-1) {
-            cur = 0.0_bf16;
-        } else {
-            cur = nextafter(cur, e);
-        }
+        int16_t ci=as<int16_t>(cur);
+        if (uint16_t(ci) == 0x8000)
+            ci = 0;
+        else if (ci < 0)
+            --ci;
+        else
+            ++ci;
+        cur=as<bf16_t>(ci);
     }
     return r;
 }
@@ -315,7 +324,9 @@ gen_bf16_tbl(test::call_mpfr::f1i_t f,
 	}
 	if (mb0 != mb) {
             if (idx != last_idx+1) {
-                std::cerr << "idx " << idx << " last idx " << last_idx << '\n';
+                std::cerr << tblname
+                          << " idx " << idx
+                          << " last idx " << last_idx << '\n';
                 // throw std::runtime_error(tblname+" generation failed, oops");
             }
         }
