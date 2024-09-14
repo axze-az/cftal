@@ -75,6 +75,9 @@ target_add_test_libs(gen-j01y01-data)
 add_executable(gen-f16-tables gen-f16-tables.cc)
 target_add_test_libs(gen-f16-tables)
 
+add_executable(gen-bf16-tables gen-bf16-tables.cc)
+target_add_test_libs(gen-bf16-tables)
+
 #add_custom_target(sollya-scripts ALL)
 
 function(add_script script)
