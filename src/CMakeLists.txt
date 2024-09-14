@@ -91,6 +91,15 @@ set (CSRCS
     # vec <f16_t, 16>
     v16f16_ef.cc
     v16f16_sf.cc
+    # bf16 data
+    bf16_erf_data.cc
+    bf16_erfc_data.cc
+    bf16_tgamma_data.cc
+    bf16_lgamma_data.cc
+    bf16_j0_data.cc
+    bf16_j1_data.cc
+    bf16_y0_data.cc
+    bf16_y1_data.cc
     # vec<bf16_t, 1>
     v1bf16_ef.cc
     # vec<bf16_t, 2>
