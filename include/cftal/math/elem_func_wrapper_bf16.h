@@ -542,7 +542,7 @@ exp2_mx2_k(arg_t<vf_type> x)
     vhf_type yd=f32_core::template exp2_k<false>(x2d);
     vf_type y=cvt<vf_type>(yd);
     using fc_t = math::func_constants<bf16_t>;
-    y= _T::sel_zero_or_val(x2h <= fc_t::exp2_lo_zero(), y);
+    y= _T::sel_zero_or_val(x2h < fc_t::exp2_lo_zero(), y);
     return y;
 }
 
@@ -558,7 +558,7 @@ exp2_px2_k(arg_t<vf_type> x)
     vf_type x2h=cvt<vf_type>(x2d);
     vf_type y=cvt<vf_type>(yd);
     using fc_t = math::func_constants<bf16_t>;
-    y= _T::sel(x2h >= fc_t::exp2_hi_inf(), _T::pinf(), y);
+    y= _T::sel(x2h > fc_t::exp2_hi_inf(), _T::pinf(), y);
     return y;
 }
 
@@ -587,7 +587,7 @@ exp10_mx2_k(arg_t<vf_type> x)
     vhf_type yd=f32_core::template exp10_k<false>(x2d);
     vf_type y=cvt<vf_type>(yd);
     using fc_t = math::func_constants<bf16_t>;
-    y= _T::sel_zero_or_val(x2h <= fc_t::exp10_lo_zero(), y);
+    y= _T::sel_zero_or_val(x2h < fc_t::exp10_lo_zero(), y);
     return y;
 }
 
