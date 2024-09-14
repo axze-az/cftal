@@ -21,6 +21,7 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/math/func_constants.h>
+#include <cftal/math/func_constants_bf16.h>
 #include <cftal/math/func_constants_f16.h>
 #include <cftal/math/func_constants_f32.h>
 #include <cftal/math/func_constants_f64.h>
@@ -70,6 +71,17 @@ namespace cftal {
             };
         };
 
+        template <>
+        struct domain_exp_mx2<bf16_t> {
+            constexpr static
+            const func_domain<bf16_t> domains[]={
+                std::make_pair(0.0_bf16, 10.2_bf16)
+            };
+            constexpr static
+            const int shifts[]={
+                0
+            };
+        };
 
         template <typename _T>
         struct check_exp_mx2 {
@@ -100,6 +112,15 @@ namespace cftal {
                 using std::exp;
                 float rf=exp(-af*af);
                 return f16_t(rf);
+            }
+
+            static
+            bf16_t
+            __exp_mx2(bf16_t a) {
+                auto af=static_cast<float>(a);
+                using std::exp;
+                float rf=exp(-af*af);
+                return bf16_t(rf);
             }
 
             static
