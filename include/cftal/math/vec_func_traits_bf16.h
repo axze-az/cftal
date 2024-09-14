@@ -37,8 +37,8 @@ namespace cftal {
             using vi_type = vec<int16_t, _N>;
             using vu_type = vec<uint16_t, _N>;
             using vmi_type = typename vi_type::mask_type;
-            // using vli_type = vec<int32_t, _N>;
-            // using v2i_type = vec<int16_t, 2*_N>;
+            using vli_type = vec<int32_t, _N>;
+            using v2i_type = vec<int16_t, 2*_N>;
 
             // using vdf_type = d_real<vf_type>;
 

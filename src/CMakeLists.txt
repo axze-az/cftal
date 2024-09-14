@@ -102,14 +102,19 @@ set (CSRCS
     bf16_y1_data.cc
     # vec<bf16_t, 1>
     v1bf16_ef.cc
+    v1bf16_sf.cc
     # vec<bf16_t, 2>
     v2bf16_ef.cc
+    v2bf16_sf.cc
     # vec<bf16_t, 4>
     v4bf16_ef.cc
+    v4bf16_sf.cc
     # vec<bf16_t, 8>
     v8bf16_ef.cc
+    v8bf16_sf.cc
     # vec<bf16_t, 16>
     v16bf16_ef.cc
+    v16bf16_sf.cc
 )
 
 # only for ides

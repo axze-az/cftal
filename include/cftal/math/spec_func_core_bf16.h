@@ -41,9 +41,6 @@ namespace cftal {
             using vi_type = typename _T::vi_type;
             using vmf_type = typename _T::vmf_type;
             using vmi_type = typename _T::vmi_type;
-            using vdf_type = typename _T::vdf_type;
-
-            using d_ops= typename base_type::d_ops;
 
             template <typename _TBL>
             static
