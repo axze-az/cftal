@@ -192,7 +192,6 @@ cftal::math::spec_func_core<cftal::f16_t, _T>::
 y1_k(arg_t<vf_type> xc)
 {
     vf_type y=base_type:: template lookup_from<f16_y1_data>(xc);
-    y= _T::sel(signbit(xc), _T::nan(), y);
     // zero and nan and negative xc handled in y1
     return y;
 }
