@@ -248,7 +248,7 @@ test_prog(test-asinh-bf16)
 test_prog(test-acosh-bf16)
 test_prog(test-atanh-bf16)
 
-#test_prog(test-hypot-bf16)
+test_prog(test-hypot-bf16)
 
 test_prog(test-exp_mx2-bf16)
 test_prog(test-exp_px2-bf16)

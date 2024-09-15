@@ -1817,9 +1817,29 @@ typename cftal::math::elem_func_rndmant_core<float, 16, _T>::vf_type
 cftal::math::elem_func_rndmant_core<float, 16, _T>::
 hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
-    vf_type x2=x*x;
-    vf_type y2=y*y;
-    vf_type r=sqrt(vf_type(x2+y2));
+    vf_type xa=abs(x);
+    vf_type ya=abs(y);
+    vf_type ma=max(xa, ya);
+    vf_type mi=min(xa, ya);
+
+    vf_type scale=1.0f;
+    vf_type factor=1.0f;
+    // avoid underflows
+    vmf_type ma_small= ma < 0x1p-60f;
+    scale = _T::sel(ma_small, 0x1p-80f, scale);
+    factor= _T::sel(ma_small, 0x1p80f, factor);
+    // avoid overflows
+    vmf_type ma_large= ma > 0x1p60f;
+    scale = _T::sel(ma_large, 0x1p80f, scale);
+    factor= _T::sel(ma_large, 0x1p-80f, factor);
+    ma *= factor;
+    mi *= factor;
+
+    vf_type sma=ma*ma;
+    vf_type smi=mi*mi;
+    vf_type s=sma + smi;
+    vf_type r=sqrt(s);
+    r *= scale;
     return r;
 }
 
