@@ -406,8 +406,10 @@ gen_bf16_tbls()
     const bf16_t tgamma_hi_inf=nextafter(
         math::func_constants<bf16_t>::tgamma_hi_inf(),
         std::numeric_limits<bf16_t>::infinity());
+    const bf16_t tgamma_lo_zero=
+        math::func_constants<bf16_t>::tgamma_lo_zero();
     gen_bf16_tbl(mpfr_gamma, "bf16_tgamma", h,
-                -12.5_bf16,
+                tgamma_lo_zero,
                 tgamma_hi_inf);
 
     const bf16_t lgamma_hi_inf=nextafter(

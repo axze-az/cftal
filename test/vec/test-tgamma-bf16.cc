@@ -17,13 +17,13 @@
 //
 #include "cftal/test/program.h"
 #include "cftal/test/check_tgamma.h"
-#include "cftal/vec_f16.h"
+#include "cftal/vec_bf16.h"
 
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    using cftal::f16_t;
-    using cftal::operator""_f16;
+    using cftal::bf16_t;
+    using cftal::operator""_bf16;
     cpu_times_to_stdout tt;
 
     pgm_args ags=parse(argc, argv, 0x4000);
@@ -34,17 +34,17 @@ int main(int argc, char** argv)
     const int _N=32;
     bool rc=true;
 
-    func_domain<f16_t> d=std::make_pair(-20.0_f16, +10.0_f16);
+    func_domain<bf16_t> d=std::make_pair(-45.0_bf16, +35.5_bf16);
     std::cout << "testing tgamma" << std::endl;
     auto us=std::make_shared<ulp_stats>();
     exec_stats<_N> st;
 
     // test also some integral and integral-1/2 values
-    std::vector<f16_t> def_args=default_arguments<f16_t>::values;
+    std::vector<bf16_t> def_args=default_arguments<bf16_t>::values;
     for (std::size_t i=1; i<10; ++i) {
         using std::nextafter;
-        auto di=static_cast<f16_t>(i);
-        auto dih=di-0.5_f16;
+        auto di=static_cast<bf16_t>(i);
+        auto dih=di-0.5_bf16;
         if (std::find(std::begin(def_args), std::end(def_args), di)==
             std::end(def_args)) {
             def_args.push_back(di);
@@ -53,8 +53,8 @@ int main(int argc, char** argv)
             std::end(def_args)) {
             def_args.push_back(dih);
         }
-        auto dip=nextafter(di, std::numeric_limits<f16_t>::infinity());
-        auto dihp=nextafter(dih, std::numeric_limits<f16_t>::infinity());
+        auto dip=nextafter(di, std::numeric_limits<bf16_t>::infinity());
+        auto dihp=nextafter(dih, std::numeric_limits<bf16_t>::infinity());
         if (std::find(std::begin(def_args), std::end(def_args), dip)==
             std::end(def_args)) {
             def_args.push_back(dip);
@@ -63,8 +63,8 @@ int main(int argc, char** argv)
             std::end(def_args)) {
             def_args.push_back(dihp);
         }
-        auto dim=nextafter(di, -std::numeric_limits<f16_t>::infinity());
-        auto dihm=nextafter(dih, -std::numeric_limits<f16_t>::infinity());
+        auto dim=nextafter(di, -std::numeric_limits<bf16_t>::infinity());
+        auto dihm=nextafter(dih, -std::numeric_limits<bf16_t>::infinity());
         if (std::find(std::begin(def_args), std::end(def_args), dim)==
             std::end(def_args)) {
             def_args.push_back(dim);
@@ -76,10 +76,10 @@ int main(int argc, char** argv)
     }
 
     rc &= of_fp_func_up_to<
-        f16_t, _N, check_tgamma<f16_t> >::v(st, d,
+        bf16_t, _N, check_tgamma<bf16_t> >::v(st, d,
                                             ags._speed_only,
                                             ags._mt,
-                                            cmp_ulp<f16_t>(ulp, us),
+                                            cmp_ulp<bf16_t>(ulp, us),
                                             ags._cnt,
                                             def_args);
     std::cout << "ulps: "
