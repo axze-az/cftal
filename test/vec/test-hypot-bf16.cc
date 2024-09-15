@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 
     const int ulp2=1;
     const int ulp=1;
-    const int _N=16;
+    const int _N=32;
     bool rc=true;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
