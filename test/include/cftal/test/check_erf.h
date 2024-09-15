@@ -61,6 +61,15 @@ namespace cftal {
             const int shifts[]={0};
         };
 
+        template <>
+        struct domain_erf<bf16_t> {
+            constexpr static
+            const func_domain<bf16_t> domains[]={
+                std::make_pair(-2.2_bf16, 2.2_bf16)
+            };
+            constexpr static
+            const int shifts[]={0};
+        };
 
         template <typename _T>
         struct check_erf {
