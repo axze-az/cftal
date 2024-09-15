@@ -923,5 +923,5 @@ hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
     return r;
 }
 
-#endif // __CFTAL_MATH_ELEM_FUNC_WRAPPER_B16_H__
+#endif // __CFTAL_MATH_ELEM_FUNC_WRAPPER_BF16_H__
 
