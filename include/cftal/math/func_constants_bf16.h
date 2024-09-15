@@ -101,7 +101,7 @@ namespace cftal {
             erf_lt_one_fin() { return 2.187500000000000000000000e+00_bf16; }
 
             static constexpr bf16_t
-            erfc_gt_zero_fin() { return 2.187500000000000000000000e+00_bf16; }
+            erfc_gt_zero_fin() { return 9.187500000000000000000000e+00_bf16; }
 
             static constexpr bf16_t
             tgamma_hi_inf() { return 3.525000000000000000000000e+01_bf16; }

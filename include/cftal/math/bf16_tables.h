@@ -116,10 +116,10 @@ namespace cftal {
         };
 
         struct bf16_erfc_data {
-            static constexpr const uint32_t zero_offset=16399;
-            static constexpr const int16_t min_offset=-16399;
-            static constexpr const int32_t max_offset=16398;
-            alignas(64) static const uint16_t _tbl[32797+2];
+            static constexpr const uint32_t zero_offset=16662;
+            static constexpr const int16_t min_offset=-16662;
+            static constexpr const int32_t max_offset=16661;
+            alignas(64) static const uint16_t _tbl[33323+2];
 
             static const bf16_t* tbl() {
                 return reinterpret_cast<const bf16_t*>(_tbl);
