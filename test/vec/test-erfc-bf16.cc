@@ -17,17 +17,17 @@
 //
 #include "cftal/test/program.h"
 #include "cftal/test/check_erfc.h"
-#include "cftal/vec_f16.h"
+#include "cftal/vec_bf16.h"
 
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    using cftal::f16_t;
-    int r=program<check_erfc<f16_t>, 32, 1, 0x4000>(
+    using cftal::bf16_t;
+    int r=program<check_erfc<bf16_t>, 32, 1, 0x4000>(
         argc,
         argv,
         mpfr_erfc,
-        domain_erfc<f16_t>::domains,
-        domain_erfc<f16_t>::shifts);
+        domain_erfc<bf16_t>::domains,
+        domain_erfc<bf16_t>::shifts);
     return r;
 }

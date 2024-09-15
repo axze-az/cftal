@@ -259,7 +259,7 @@ test_prog(test-exp10_px2-bf16)
 test_prog(test-sig-bf16)
 
 test_prog(test-erf-bf16)
-#test_prog(test-erfc-bf16)
+test_prog(test-erfc-bf16)
 #test_prog(test-tgamma-bf16)
 #test_prog(test-lgamma-bf16)
 #test_prog(test-j0-bf16)
