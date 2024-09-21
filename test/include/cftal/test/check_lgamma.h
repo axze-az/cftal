@@ -70,6 +70,13 @@ namespace cftal {
             }
 
             static
+            bf16_t
+            __lgamma(const bf16_t& a, int32_t* sgn) {
+                auto af=static_cast<float>(a);
+                return static_cast<bf16_t>(__lgamma(af, sgn));
+            }
+
+            static
             auto
             s(const _T& a) {
                 int32_t sgn;
