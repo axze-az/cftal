@@ -1,13 +1,18 @@
 #! /usr/bin/sollya
 execute("common.sollya");
 
+/*
+ * approximations for f16 and bfloat16 using single precision
+ * implementations
+ */
+
 /* implementpoly(p, [-log(2)/512, log(2)/512], 1e-30, DD, "exp_p", "exp.c"); */
 /* printexpansion(p-1.0); */
 verbosity=1!;
 prec=1024!;
 write("\n");
 
-/* exp(x) bf16/f32 using tang's method */
+/* exp(x) f16/f32 using tang's method */
 N = 32;
 f = exp(x);
 f1 = expm1(x);
@@ -24,7 +29,7 @@ b = [|1|]@b;
 write_approx_prec(p, f1, i);
 write_coeffs(p, "constexpr\n    const float exp_c", "exp", b, c);
 
-/* a simple polynomial for exp bf16/f32 */
+/* a simple polynomial for exp f16/f32 */
 f = exp(x);
 i = [-log(2)/2, log(2)/2];
 d = guessdegree(f, i, 0x1p-14);
@@ -149,7 +154,7 @@ p = fpminimax(f, b, c, i,
 write_approx_prec(p, f, i);
 write_coeffs(p, "constexpr\n    const float sin_c", "sin", b, c);
 // plot((p(x)-f(x))/f(x), p(x)-f(x), i,
-//                       postscriptfile, "sin-bf16");
+//                       postscriptfile, "sin-f16");
 
 /* half cos(x) f32 */
 i = [0, pi/4];
@@ -162,7 +167,7 @@ p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
 write_coeffs(p, "constexpr\n    const float cos_c", "cos_c", b, c);
 // plot((p(x)-f(x))/f(x), p(x)-f(x), i,
-//                       postscriptfile, "cos-bf16");
+//                       postscriptfile, "cos-f16");
 
 /* half tan(x) f32 */
 f = tan(x);
@@ -176,7 +181,7 @@ p = fpminimax(f, b, c, i,
 write_approx_prec(p, f, i);
 write_coeffs(p, "constexpr\n    const float tan_c", "tan", b, c);
 // plot((p(x)-f(x))/f(x), p(x)-f(x), i,
-//                       postscriptfile, "tan-bf16");
+//                       postscriptfile, "tan-f16");
 
 ph=pi/2;
 bits=7;
@@ -204,7 +209,7 @@ p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
 write_coeffs(p, "constexpr\n    const float atan_i0_c", "atan_0", b, c);
-// plot((p(x)-f(x))/f(x), p(x)-f(x), i, postscriptfile, "atan_i0-bf16");
+// plot((p(x)-f(x))/f(x), p(x)-f(x), i, postscriptfile, "atan_i0-f16");
 il= 0.375;
 ir= 1.0;
 im= dirtyfindzeros(atan(x)-(0.5*(atan(il)+atan(ir))), [il, ir])[0];
@@ -225,7 +230,7 @@ write_coeffs(p, "constexpr\n    const float atan_i1_c", "atan_i1", b, c);
 write_coeff(il, "", "constexpr\n    const float atan_i1_left", single);
 write_coeff(ir, "", "constexpr\n    const float atan_i1_right", single);
 write_coeff(x0, "", "constexpr\n    const float atan_i1_x0", single);
-// plot((p(x)-f(x))/f(x), i, postscriptfile, "atan_i1-bf16");
+// plot((p(x)-f(x))/f(x), i, postscriptfile, "atan_i1-f16");
 
 /* asin(x) f32 */
 i = [0x1p-58, 0.5];
@@ -237,7 +242,7 @@ c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
 write_coeffs(p, "constexpr\n    const float asin_c", "asin", b, c);
-// plot((p(x)-f(x))/f(x), p(x)-f(x), i, postscriptfile, "asin-bf16");
+// plot((p(x)-f(x))/f(x), p(x)-f(x), i, postscriptfile, "asin-f16");
 
 /* asinh(x) f32 */
 f = asinh(x);
