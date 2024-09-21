@@ -1,24 +1,26 @@
 # cftal
 
-A c++-20 template based short vector library with faithfully rounded elementary
-functions.
+A c++-20 template based short vector library with faithfully rounded
+vectorized elementary functions.
 
 ## Description
 
 Cftal is a c++-20 template based short vector library with specializations
 using intrinsic functions.
 The library contains vectorized elementary and some special functions
-(erf, erfc, tgamma, lgamma, j0, y0, j1 and y1) which are part of the standard c++
-math library for
+(erf, erfc, tgamma, lgamma, j0, y0, j1 and y1) which are part of the standard
+c++ math library for
 - double (binary64),
-- single (binary32) and
-- half (binary16)
+- single (binary32),
+- half (binary16) and
+- bfloat16 (brain floating point)
 
-precision arguments and results. The functions are probably faithfully rounded for double,
-single and half precision.
-Tests for a  subset of the numbers for single and double precision show faithfully rounding compared to mpfr.
-The elementary functions for half precision with one argument are faithfully
-rounded (if mpfr rounds correctly).
+precision arguments and results. The functions are probably faithfully rounded
+for double, single and half precision and bfloat16.
+The elementary functions for half precision and bfloat16 with one argument are
+faithfully rounded (if mpfr rounds correctly).
+Tests for a  subset of the numbers for single and double precision show
+faithfully rounding compared to mpfr.
 
 Specializations for x86 processors with instructions set extensions up to AVX2
 are implemented and tested.
@@ -48,11 +50,11 @@ build
 
 1. mkdir build
 2. cd build
-3. CC=clang-16 CXX=clang++-16 cmake -DCMAKE_BUILD_TYPE=release ..
+3. CC=clang-17 CXX=clang++-17 cmake -DCMAKE_BUILD_TYPE=release ..
 
 You may also use gcc instead of clang:
 
-3. CC=gcc-13 CXX=g++-13 cmake -DCMAKE_BUILD_TYPE=release ..
+3. CC=gcc-13 CXX=g++-14 cmake -DCMAKE_BUILD_TYPE=release ..
 
 If you want to use vectors of double's for the calculation of some elementary
 float functions, use -DCFTAL_CONFIG_USE_VF64_FOR_VF32=1 as an additional
