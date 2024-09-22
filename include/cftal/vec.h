@@ -33,6 +33,7 @@
 #include <cftal/vec_load_strided.h>
 #include <cftal/vec_t_1.h>
 #include <cftal/vec_spec.h>
+#include <cftal/vec_compress_expand_elements.h>
 #include <cftal/vec_f64.h>
 #include <cftal/vec_f32.h>
 #include <cftal/vec_math_funcs.h>

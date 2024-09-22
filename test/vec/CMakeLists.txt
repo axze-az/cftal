@@ -268,6 +268,7 @@ test_prog(test-y0-bf16)
 test_prog(test-y1-bf16)
 
 test_prog(test-permute)
+test_prog(test-compress-expand-elements)
 test_prog(test-v2)
 
 if (CFTAL_FULL_TEST)
