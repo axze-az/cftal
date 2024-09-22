@@ -34,11 +34,6 @@ namespace cftal {
 
     namespace test {
 
-        std::pair<cftal::vec<float, 4>, cftal::size_t>
-        compress_elements(arg_t<vec<float, 4>> src,
-                          arg_t<typename vec<float, 4>::mask_type> m);
-
-
 	// test for type T and vector size _N
         template <typename _T, size_t _N>
         bool
@@ -162,13 +157,6 @@ cftal::test::compress_expand_elements_size()
     r &= compress_expand_elements_vec<double, _N>();
     r &= compress_expand_elements_vec<float, _N>();
     return r;
-}
-
-std::pair<cftal::vec<float, 4>, cftal::size_t>
-cftal::test::compress_elements(arg_t<vec<float, 4>> src,
-                               arg_t<typename vec<float, 4>::mask_type> m)
-{
-    return cftal::compress_elements(src, m);
 }
 
 int main()
