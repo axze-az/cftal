@@ -492,7 +492,7 @@ inline
 cftal::vec<uint8_t, 8>
 cftal::high_half(const vec<uint8_t, 16>& v)
 {
-    auto t=x86::extract_u64<0>(v());
+    auto t=x86::extract_u64<1>(v());
     return as<vec<uint8_t, 8> >(t);
 }
 
