@@ -249,6 +249,7 @@ int main()
     using namespace cftal;
     bool r=true;
 
+    std::cout << "length 2:\n";
     r &= test::perm_v2<uint8_t, int8_t>();
     r &= test::perm_v2<int8_t, int8_t>();
     r &= test::perm_v2<uint16_t, int16_t>();
@@ -260,6 +261,7 @@ int main()
     r &= test::perm_v2<float, int32_t>();
     r &= test::perm_v2<double, int64_t>();
 
+    std::cout << "\nlength 4:\n";
     r &= test::perm_v4<uint8_t, int8_t>();
     r &= test::perm_v4<int8_t, int8_t>();
     r &= test::perm_v4<uint16_t, int16_t>();
@@ -271,6 +273,7 @@ int main()
     r &= test::perm_v4<float, int32_t>();
     r &= test::perm_v4<double, int64_t>();
 
+    std::cout << "\nlength 8:\n";
     r &= test::perm_v8<uint8_t, int8_t>();
     r &= test::perm_v8<int8_t, int8_t>();
     r &= test::perm_v8<uint16_t, int16_t>();
@@ -282,6 +285,7 @@ int main()
     r &= test::perm_v8<float, int32_t>();
     r &= test::perm_v8<double, int64_t>();
 
+    std::cout << "\nlength 16:\n";
     r &= test::perm_vn<uint8_t, int8_t, 16>();
     r &= test::perm_vn<int8_t, int8_t, 16>();
     r &= test::perm_vn<uint16_t, int16_t, 16>();
@@ -293,6 +297,7 @@ int main()
     r &= test::perm_vn<float, int32_t, 16>();
     r &= test::perm_vn<double, int64_t, 16>();
 
+    std::cout << "\nlength 32:\n";
     r &= test::perm_vn<uint8_t, int8_t, 32>();
     r &= test::perm_vn<int8_t, int8_t, 32>();
     r &= test::perm_vn<uint16_t, int16_t, 32>();
