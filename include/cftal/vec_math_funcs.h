@@ -426,7 +426,7 @@ cftal::round_to_zero_last_bits(const float& x)
 template <std::size_t _BITS>
 inline
 cftal::f16_t
-cftal::round_to_zero_last_bits(const float& x)
+cftal::round_to_zero_last_bits(const f16_t& x)
 {
     return impl::round_to_zero_last_bits<f16_t, f16_t,
                                          int16_t, int16_t,
