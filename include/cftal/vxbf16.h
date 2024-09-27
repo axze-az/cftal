@@ -64,7 +64,7 @@ namespace cftal {
         vec(vec&& r) = default;
         vec& operator=(const vec& r) = default;
         vec& operator=(vec&& r) = default;
-        constexpr
+
         vec(const bf16_t& v) : _v(read_bits(v)) {}
         explicit
         vec(const float& v) : _v(read_bits(static_cast<bf16_t>(v))) {}
@@ -74,6 +74,8 @@ namespace cftal {
         vec(const int16_t& v) : _v(read_bits(static_cast<bf16_t>(v))) {}
         explicit
         vec(const int32_t& v) : _v(read_bits(static_cast<bf16_t>(v))) {}
+
+        constexpr
         const vec<mf_bf16_t, 1>& operator()() const { return _v; }
         template <template <class _U> class _OP,
                   class _L, class _R>
