@@ -1364,14 +1364,18 @@ __two_pow(arg_t<vi_type> ki)
         (is_vec_specialized<vi2_type>::value == false)) {
         vi_type kia= ki>>1;
         vi_type kib= ki - kia;
-        rh= _T::insert_exp(_T::bias()+kia);
-        rl= _T::insert_exp(_T::bias()+kib);
+        kia += _T::bias();
+        kib += _T::bias();
+        rh= _T::insert_exp(kia);
+        rl= _T::insert_exp(kib);
     } else {
         vi2_type ki2= _T::vi_to_vi2(ki);
         vi2_type kia= ki2>>1;
         vi2_type kib= ki2 - kia;
-        rh= _T::insert_exp_vi2(_T::bias()+kia);
-        rl= _T::insert_exp_vi2(_T::bias()+kib);
+        kia += _T::bias();
+        kib += _T::bias();
+        rh= _T::insert_exp_vi2(kia);
+        rl= _T::insert_exp_vi2(kib);
     }
     return scale_result(rh, rl);
 }

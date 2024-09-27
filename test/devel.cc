@@ -23,10 +23,17 @@ int main(int argc, char** argv)
 {
     using namespace cftal;
 
-    v4f64 x=0x1p-1;
-    v4f64 fx=erfc(x);
+    v4f64 x4=0x1p-1;
+    v4f64 fx4=erfc(x4);
     std::cout << std::hexfloat;
-    std::cout << "x:\t" << x << std::endl
-	      << "fx:\t" << fx << std::endl;
+    std::cout << "x:\t" << x4 << std::endl
+	      << "fx:\t" << fx4 << std::endl;
+
+
+    v2f64 x2=0x1p-1;
+    v2f64 fx2=erfc(x2);
+    std::cout << std::hexfloat;
+    std::cout << "x:\t" << x2 << std::endl
+	      << "fx:\t" << fx2 << std::endl;
     return 0;
 }
