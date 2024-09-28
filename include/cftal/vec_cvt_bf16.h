@@ -31,7 +31,7 @@ namespace cftal {
     namespace impl {
 
         // round f32 to bf16 using round to nearest even rounding
-        template <std::size_t _N>
+        template <bool _FLUSH_SUBNORMALS_TO_ZERO, std::size_t _N>
         vec<float, _N>
         _rne_f32_to_bf16(const vec<float, _N>& v);
 
@@ -42,7 +42,7 @@ namespace cftal {
         _cvt_f32_to_bf16(const vec<float, _N>& v);
 
         // round f32 to bf16 using round to zero rounding
-        template <std::size_t _N>
+        template <bool _FLUSH_SUBNORMALS_TO_ZERO, std::size_t _N>
         vec<float, _N>
         _rz_f32_to_bf16(const vec<float, _N>& v);
 
@@ -147,7 +147,7 @@ namespace cftal {
     cvt_bf16_to_f32(const vec<mf_bf16_t, 16>& v);
 }
 
-template <std::size_t _N>
+template <bool _FLUSH_SUBNORMALS_TO_ZERO, std::size_t _N>
 cftal::vec<float, _N>
 cftal::impl::_rne_f32_to_bf16(const vec<float, _N>& v)
 {
@@ -156,13 +156,13 @@ cftal::impl::_rne_f32_to_bf16(const vec<float, _N>& v)
     // infinities are not affected by rounding
     typename vf_type::mask_type is_nan=isnan(v);
     vne = select(is_nan, v, vne);
-#if __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO > 0
-    // flush subnormals to zero
-    typename vf_type::mask_type is_subnorm=
-        abs(v) < std::numeric_limits<float>::min();
-    constexpr const float mz=-0.0f;
-    vne = select(is_subnorm, vf_type(v & mz), vne);
-#endif
+    if constexpr (_FLUSH_SUBNORMALS_TO_ZERO==true) {
+        // flush subnormals to zero
+        typename vf_type::mask_type is_subnorm=
+            abs(v) < std::numeric_limits<float>::min();
+        constexpr const float mz=-0.0f;
+        vne = select(is_subnorm, vf_type(v & mz), vne);
+    }
     return vne;
 }
 
@@ -170,25 +170,41 @@ template <std::size_t _N>
 cftal::vec<cftal::mf_bf16_t, _N>
 cftal::impl::_cvt_f32_to_bf16(const vec<float, _N>& v)
 {
-    auto vne = _rne_f32_to_bf16(v);
+#if 1
+    constexpr bool ftz = __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO > 0;
+    auto vne = _rne_f32_to_bf16<ftz>(v);
     auto t=as<vec<cftal::mf_bf16_t, 2*_N> >(vne);
     auto r=odd_elements(t);
+#else
+    auto vne = _rne_f32_to_bf16<false>(v);
+    auto t=as<vec<cftal::mf_bf16_t, 2*_N> >(vne);
+    using vi_type = vec<cftal::mf_bf16_t,_N>;
+    vi_type r=odd_elements(t);
+#if __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO > 0
+    vi_type ra=r & int16_t(0x7fff);
+    typename vi_type::mask_type is_subnorm= ra < int16_t(0x0080);
+    vi_type rsn= r & int16_t(0x8000);
+    r=select(is_subnorm, rsn, r);
+#endif
+#endif
     return r;
 }
 
-template <std::size_t _N>
+template <bool _FLUSH_SUBNORMALS_TO_ZERO, std::size_t _N>
 cftal::vec<float, _N>
 cftal::impl::_rz_f32_to_bf16(const vec<float, _N>& v)
 {
-    // zero the last 16 bits
-    auto vne=round_to_zero_last_bits<16>(v);
-#if __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO > 0
-    // flush subnormals to zero
-    typename vec<float, _N>::mask_type is_subnorm=
-        abs(v) < std::numeric_limits<float>::min();
-    constexpr const float mz=-0.0f;
-    vne = select(is_subnorm, (v & mz), vne);
-#endif
+    // do not zero the last 16 bits
+    // auto vne=round_to_zero_last_bits<16>(v);
+    auto vne = v;
+    if constexpr (_FLUSH_SUBNORMALS_TO_ZERO==true) {
+        using vf_type = vec<float, _N>;
+        // flush subnormals to zero
+        typename vf_type::mask_type is_subnorm=
+            abs(v) < std::numeric_limits<float>::min();
+        constexpr const float mz=-0.0f;
+        vne = select(is_subnorm, vf_type(v & mz), vne);
+    }
     return vne;
 }
 
@@ -196,8 +212,9 @@ template <std::size_t _N>
 cftal::vec<cftal::mf_bf16_t, _N>
 cftal::impl::_cvt_f32_to_bf16_rz(const vec<float, _N>& v)
 {
-    // no masking of the trailing 16 bits is required
-    auto t=as<vec<cftal::mf_bf16_t, 2*_N> >(v);
+    constexpr bool ftz = __CFTAL_CFG_FLUSH_BFLOAT16_TO_ZERO > 0;
+    auto vne = _rz_f32_to_bf16<ftz>(v);
+    auto t=as<vec<cftal::mf_bf16_t, 2*_N> >(vne);
     auto r=odd_elements(t);
     return r;
 }
