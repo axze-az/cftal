@@ -164,22 +164,22 @@ namespace cftal {
         uint32_t compress_mask_u64(__m256i m);
 #endif
 
-    __m128 expand_mask_v4f32(uint32_t msk4);
-    __m128d expand_mask_v2f64(uint32_t msk2);
-    __m128i expand_mask_v16u8(uint32_t msk16);
-    __m128i expand_mask_v8u16(uint32_t msk8);
-    __m128i expand_mask_v4u32(uint32_t msk4);
-    __m128i expand_mask_v2u64(uint32_t msk2);
+        __m128 expand_mask_v4f32(uint32_t msk4);
+        __m128d expand_mask_v2f64(uint32_t msk2);
+        __m128i expand_mask_v16u8(uint32_t msk16);
+        __m128i expand_mask_v8u16(uint32_t msk8);
+        __m128i expand_mask_v4u32(uint32_t msk4);
+        __m128i expand_mask_v2u64(uint32_t msk2);
 
 #if defined (__AVX__)
-    __m256 expand_mask_v8f32(uint32_t msk8);
-    __m256d expand_mask_v4f64(uint32_t msk4);
+        __m256 expand_mask_v8f32(uint32_t msk8);
+        __m256d expand_mask_v4f64(uint32_t msk4);
 #endif
 #if defined (__AVX2__)
-    __m256i expand_mask_v32u8(uint32_t msk32);
-    __m256i expand_mask_v16u16(uint32_t msk16);
-    __m256i expand_mask_v8u32(uint32_t msk8);
-    __m256i expand_mask_v4u64(uint32_t msk4);
+        __m256i expand_mask_v32u8(uint32_t msk32);
+        __m256i expand_mask_v16u16(uint32_t msk16);
+        __m256i expand_mask_v8u32(uint32_t msk8);
+        __m256i expand_mask_v4u64(uint32_t msk4);
 #endif
         // read the sign bits of all elements into a bit mask
         uint32_t read_signs_f32(__m128 i);
@@ -450,9 +450,9 @@ inline
 cftal::uint32_t
 cftal::x86::compress_mask_u16(__m256i m)
 {
-#if defined (__BMI2__) && \
-    !defined(__tune_bdver4__) && \
-    !defined(__tune_znver1__) && \
+#if defined (__BMI2__) &&                       \
+    !defined(__tune_bdver4__) &&                \
+    !defined(__tune_znver1__) &&                \
     !defined(__tune_znver2__)
     uint32_t r=_mm256_movemask_epi8(m);
     constexpr const uint32_t mm=0xAAAA'AAAA;
@@ -460,12 +460,12 @@ cftal::x86::compress_mask_u16(__m256i m)
 #else
     const __m256i m0= const_v32u8<  1,   3,   5,  7,
                                     9,  11,  13, 15,
-                                  255, 255, 255, 255,
-                                  255, 255, 255, 255,
+                                    255, 255, 255, 255,
+                                    255, 255, 255, 255,
                                     1,   3,   5,   7,
                                     9,  11,  13,  15,
-                                  255, 255, 255, 255,
-                                  255, 255, 255, 255>::iv();
+                                    255, 255, 255, 255,
+                                    255, 255, 255, 255>::iv();
     __m256i as= _mm256_shuffle_epi8(m, m0);
     // and use vpermq concentrate the values in the low half
     const int p=shuffle4<0, 2, 1, 3>::val;
