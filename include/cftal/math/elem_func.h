@@ -320,8 +320,8 @@ rsqrt(arg_t<vf_type> x)
     vf_type y= base_type::rsqrt_k(x);
     // y=_T::sel(x == _T::pinf(), vf_type(0), y);
     y=_T::sel_val_or_zero(x != _T::pinf(), y);
+    y=_T::sel(signbit(x) | isnan(x), _T::nan(), y);
     y=_T::sel(iszero(x), _T::pinf(), y);
-    y=_T::sel((x < _FLOAT_T(0.0)) | isnan(x), _T::nan(), y);
     return y;
 }
 
@@ -556,7 +556,7 @@ log(arg_t<vf_type> d)
     // x = _T::sel(isinf(d), pinf, x);
     x = _T::sel(d == pinf, pinf, x);
     // if ((d < 0)|isnan(d)) x = NAN;
-    x = _T::sel((d < _FLOAT_T(0.0))|isnan(d), _T::nan(), x);
+    x = _T::sel(signbit(d)|isnan(d), _T::nan(), x);
     // if (d == 0) x = -INFINITY;
     x = _T::sel(iszero(d), ninf, x);
 #endif
@@ -603,7 +603,7 @@ log10(arg_t<vf_type> d)
     const _FLOAT_T ninf=_T::ninf();
     x = _T::sel(d==pinf, pinf, x);
     // if ((d < 0)|isnan(d)) x = NAN;
-    x = _T::sel((d < _FLOAT_T(0.0))|isnan(d), vf_type(_T::nan()), x);
+    x = _T::sel(signbit(d)|isnan(d), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
     x = _T::sel(iszero(d), ninf, x);
     return x;
@@ -647,7 +647,7 @@ log2(arg_t<vf_type> d)
     const _FLOAT_T ninf=_T::ninf();
     x = _T::sel(d==pinf, pinf, x);
     // if ((d < 0)|isnan(d)) x = NAN;
-    x = _T::sel((d < _FLOAT_T(0.0))|isnan(d), vf_type(_T::nan()), x);
+    x = _T::sel(signbit(d)|isnan(d), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
     x = _T::sel(iszero(d), ninf, x);
     return x;
@@ -825,7 +825,7 @@ sincos(arg_t<vf_type> d, vf_type* psin, vf_type* pcos)
     if ((psin!=nullptr) || (pcos!=nullptr)) {
         base_type::sin_cos_k(d, psin, pcos);
         if (psin!=nullptr) {
-            *psin = _TRAITS_T::sel(d==_FLOAT_T(0), d, *psin);
+            *psin = _TRAITS_T::sel(iszero(d), d, *psin);
         }
     }
 }
