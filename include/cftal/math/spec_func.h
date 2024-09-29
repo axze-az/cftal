@@ -239,7 +239,7 @@ y0(arg_t<vf_type> xc)
     vf_type y=base_type::y0_k(xc);
     y = _TRAITS_T::sel(isnan(xc), xc, y);
     y = _TRAITS_T::sel_zero_or_val(isinf(xc), y);
-    y = _TRAITS_T::sel(xc < 0, _TRAITS_T::nan(), y);
+    y = _TRAITS_T::sel(signbit(xc), _TRAITS_T::nan(), y);
     y = _TRAITS_T::sel(iszero(xc), -_TRAITS_T::pinf(), y);
 #endif
     return y;
@@ -253,7 +253,7 @@ y1(arg_t<vf_type> xc)
     vf_type y=base_type::y1_k(xc);
     y = _TRAITS_T::sel(isnan(xc), xc, y);
     y = _TRAITS_T::sel_zero_or_val(isinf(xc), y);
-    y = _TRAITS_T::sel(xc < 0, _TRAITS_T::nan(), y);
+    y = _TRAITS_T::sel(signbit(xc), _TRAITS_T::nan(), y);
     y = _TRAITS_T::sel(iszero(xc), -_TRAITS_T::pinf(), y);
     return y;
 }
