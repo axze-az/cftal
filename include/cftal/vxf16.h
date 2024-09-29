@@ -1432,7 +1432,7 @@ namespace cftal {
         };
     }
 
-    // vector math functions for vxf16
+    // inlined vector math functions for vxf16
     template <size_t _N>
     vec<f16_t, _N>
     rint(const vec<f16_t, _N>& x);
@@ -1596,7 +1596,6 @@ cftal::isinf(const vec<f16_t, _N>& a)
     using m_t = typename vec<f16_t, _N>::mask_type;
     return m_t::cvt_from_rep(v_is_inf);
 }
-
 
 template <cftal::size_t _N>
 typename cftal::vec<cftal::f16_t, _N>::mask_type

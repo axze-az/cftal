@@ -1432,7 +1432,7 @@ namespace cftal {
         };
     }
 
-    // vector math functions for vxbf16
+    // inlined vector math functions for vxbf16
     template <size_t _N>
     vec<bf16_t, _N>
     rint(const vec<bf16_t, _N>& x);
