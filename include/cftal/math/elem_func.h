@@ -806,7 +806,7 @@ rootn(arg_t<vf_type> x, arg_t<vi_type> e)
     res = _T::sel(x_zero, copysign(_T::pinf(), x), res);
     res = _T::sel(x_zero & e_is_even, _T::pinf(), res);
     res = _T::sel(x_zero & e_is_pos, x, res);
-    res = _T::sel(x_zero & e_is_pos & e_is_even, _FLOAT_T(0.0), res);
+    res = _T::sel_zero_or_val(x_zero & e_is_pos & e_is_even, res);
 
     vmf_type x_inf=isinf(x);
     res = _T::sel(x_inf, copysign(vf_type(_FLOAT_T(0.0)), x), res);
@@ -891,7 +891,7 @@ sinpicospi(arg_t<vf_type> xc, vf_type* psin, vf_type* pcos)
             vf_type c=*pcos;
             vf_type xc2=xc+xc;
             vmf_type is_half=(xci != xc) & (rint(xc2)==xc2);
-            c=_TRAITS_T::sel(is_half, _FLOAT_T(0.0), c);
+            c=_TRAITS_T::sel_zero_or_val(is_half, c);
             vf_type xc05=_FLOAT_T(0.5)*xc;
             vmf_type _is_even=rint(xc05)==xc05;
             vf_type pm1=_TRAITS_T::sel(_is_even, _FLOAT_T(1), _FLOAT_T(-1));
