@@ -937,7 +937,7 @@ tanpi(arg_t<vf_type> xc)
     vf_type xn05=_FLOAT_T(0.5)*xn;
     vmf_type is_even_xn=(rint(xn05)==xn05) & (rint(xn)==xn);
     t = _TRAITS_T::sel((rint(xc2)==xc2) & (xc != rint(xc)),
-		        _TRAITS_T::sel(is_even_xn,
+                        _TRAITS_T::sel(is_even_xn,
                                        _TRAITS_T::pinf(),
                                        -_TRAITS_T::pinf()),
                        t);
@@ -1024,7 +1024,7 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
         //  atan2(+Inf, -Inf) = 3Pi/4
         r = _T::sel(y_p_inf & x_n_inf, _FLOAT_T((3*M_PI)/4), r);
         //  atan2(-Inf, -Inf) = -3Pi/4
-	r = _T::sel(y_n_inf & x_n_inf, _FLOAT_T(-(3*M_PI)/4), r);
+        r = _T::sel(y_n_inf & x_n_inf, _FLOAT_T(-(3*M_PI)/4), r);
         //  atan2(y, NaN) = NaN
         //  atan2(NaN, x) = NaN
         r = _T::sel(x_nan | y_nan, _T::nan(), r);
@@ -1174,7 +1174,7 @@ sig(arg_t<vf_type> x)
     using fc= func_constants<_FLOAT_T>;
     vf_type r=base_type::sig_k(x);
     constexpr const _FLOAT_T neg_exp_hi_inf= -fc::exp_hi_inf();
-    r = _TRAITS_T::sel(x<= neg_exp_hi_inf, _FLOAT_T(0.0), r);
+    r = _TRAITS_T::sel_zero_or_val(x<= neg_exp_hi_inf, r);
     r = _TRAITS_T::sel(isnan(x), x, r);
     return r;
 }
