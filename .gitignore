@@ -2,6 +2,7 @@ gcc*
 clang*
 build*
 distcc*
+debug*
 .kdev4*
 *~
 *.bin
