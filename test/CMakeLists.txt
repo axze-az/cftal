@@ -117,6 +117,7 @@ function(test_prog arg1)
 endfunction()
 
 add_subdirectory(vec)
+add_subdirectory(vsvec)
 
 test_prog(test-tools)
 

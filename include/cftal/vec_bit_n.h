@@ -87,12 +87,16 @@ namespace cftal {
         constexpr vec(const vec<bit, _N/2>& l, const vec<bit, _N/2>& h)
             : _v((utype(l())) |
                  ((utype(h()) << (_N/2)))) {}
-        constexpr vec(utype v) : _v( v & mask) {}
+        constexpr vec(const utype& v) : _v( v & mask) {}
         const utype& operator()() const { return _v; }
     private:
         utype _v;
     };
 
+    template <>
+    struct is_vec_specialized<vec<bit, 256> > : public std::true_type {};
+    template <>
+    struct is_vec_specialized<vec<bit, 128> > : public std::true_type {};
     template <>
     struct is_vec_specialized<vec<bit, 64> > : public std::true_type {};
     template <>
@@ -101,6 +105,10 @@ namespace cftal {
     struct is_vec_specialized<vec<bit, 16> > : public std::true_type {};
     template <>
     struct is_vec_specialized<vec<bit, 8> > : public std::true_type {};
+    template <>
+    struct is_vec_specialized<vec<bit, 4> > : public std::true_type {};
+    template <>
+    struct is_vec_specialized<vec<bit, 2> > : public std::true_type {};
 
     // full specialization for length 1 required because vec<_T, 1>
     // and vec<bit, _N> are equal qualified for instantiation of
@@ -120,8 +128,8 @@ namespace cftal {
         vec& operator=(const vec&) = default;
         vec& operator=(vec&&) = default;
         constexpr vec(const bit& v) : _v( v()!=0 ? 1 : 0) {}
-        constexpr vec(utype v) : _v( v & mask) {}
-        utype operator()() const { return _v; }
+        constexpr vec(const utype& v) : _v( v & mask) {}
+        const utype& operator()() const { return _v; }
     private:
         utype _v;
     };
