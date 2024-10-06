@@ -486,6 +486,17 @@ template <typename _T, typename _A>
 bool
 cftal::test::of_vsvec<_T, _A>::execute()
 {
+    auto make_val=[](const _T& v) ->auto {
+        if constexpr (is_floating_point_v<_T>) {
+            return v;
+        } else if constexpr (is_signed_v<_T>) {
+            return int64_t(v);
+        } else {
+            return uint64_t(v);
+        }
+    };
+
+
     using v_t = vsvec<_T, _A>;
     using vm_t = typename v_t::mask_type;
     v_t x0(_T(42.0), LVEC_LEN);
@@ -502,7 +513,8 @@ cftal::test::of_vsvec<_T, _A>::execute()
         exec_stats<33> st_neg;
         const std::string msg_neg="operator-(x)";
         std::cout << "testing " << msg_neg
-                <<  " in range ["  << d_full.first << ", "  << d_full.second << "]\n";
+                <<  " in range ["  << make_val(d_full.first)
+                << ", "  << make_val(d_full.second) << "]\n";
         r &= f1(st_neg, d_full, msg_neg,
                 [](const v_t& x)->v_t {
                     return -x;
@@ -516,7 +528,8 @@ cftal::test::of_vsvec<_T, _A>::execute()
     exec_stats<33> st_add;
     const std::string msg_add="operator+";
     std::cout << "testing " << msg_add
-              <<  " in range ["  << d_full.first << ", "  << d_full.second << "]\n";
+              <<  " in range ["  << make_val(d_full.first)
+              << ", "  << make_val(d_full.second) << "]\n";
     r &= f2(st_add, d_full, d_full, msg_add,
             [](const v_t& x,
                const v_t& y)->v_t {
@@ -530,7 +543,8 @@ cftal::test::of_vsvec<_T, _A>::execute()
     exec_stats<33> st_sub;
     const std::string msg_sub="operator-";
     std::cout << "testing " << msg_sub
-              <<  " in range ["  << d_full.first << ", "  << d_full.second << "]\n";
+              <<  " in range ["  << make_val(d_full.first)
+              << ", "  << make_val(d_full.second) << "]\n";
     r &= f2(st_sub, d_full, d_full, msg_sub,
             [](const v_t& x,
                const v_t& y)->v_t {
@@ -544,7 +558,8 @@ cftal::test::of_vsvec<_T, _A>::execute()
     exec_stats<33> st_mul;
     const std::string msg_mul="operator*";
     std::cout << "testing " << msg_mul
-              <<  " in range ["  << d_full.first << ", "  << d_full.second << "]\n";
+              <<  " in range ["  << make_val(d_full.first)
+              << ", "  << make_val(d_full.second) << "]\n";
     r &= f2(st_mul, d_full, d_full, msg_mul,
             [](const v_t& x,
                const v_t& y)->v_t {
@@ -558,7 +573,8 @@ cftal::test::of_vsvec<_T, _A>::execute()
     exec_stats<33> st_div;
     const std::string msg_div="operator/";
     std::cout << "testing " << msg_div
-              <<  " in range ["  << d_full.first << ", "  << d_full.second << "]\n";
+              <<  " in range ["  << make_val(d_full.first)
+              << ", "  << make_val(d_full.second) << "]\n";
     r &= f2(st_div, d_full, d_full, msg_div,
             [](const v_t& x,
                const v_t& y)->v_t {
@@ -573,7 +589,8 @@ cftal::test::of_vsvec<_T, _A>::execute()
         exec_stats<33> st_abs;
         const std::string msg_abs="abs";
         std::cout << "testing " << msg_abs
-                  <<  " in range ["  << d_full.first << ", "  << d_full.second << "]\n";
+                  <<  " in range ["  << make_val(d_full.first)
+                  << ", "  << make_val(d_full.second) << "]\n";
         r &= f1(st_abs, d_full, msg_abs,
                 [](const v_t& x)->v_t {
                     return abs(x);
