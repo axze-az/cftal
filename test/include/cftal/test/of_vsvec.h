@@ -585,6 +585,68 @@ cftal::test::of_vsvec<_T, _A>::execute()
             });
     std::cout << vsvec_exec_stats<33>(st_div, LVEC_LEN) << std::endl;
 
+    if constexpr (is_floating_point_v<_T> == false) {
+        exec_stats<33> st_and;
+        const std::string msg_and="operator&";
+        std::cout << "testing " << msg_and
+                <<  " in range ["  << make_val(d_full.first)
+                << ", "  << make_val(d_full.second) << "]\n";
+        r &= f2(st_and, d_full, d_full, msg_and,
+                [](const v_t& x,
+                const v_t& y)->v_t {
+                    return x&y;
+                },
+                [](const auto& x, const auto& y)->auto {
+                    return x&y;
+                });
+        std::cout << vsvec_exec_stats<33>(st_and, LVEC_LEN) << std::endl;
+
+        exec_stats<33> st_or;
+        const std::string msg_or="operator|";
+        std::cout << "testing " << msg_or
+                <<  " in range ["  << make_val(d_full.first)
+                << ", "  << make_val(d_full.second) << "]\n";
+        r &= f2(st_or, d_full, d_full, msg_or,
+                [](const v_t& x,
+                const v_t& y)->v_t {
+                    return x|y;
+                },
+                [](const auto& x, const auto& y)->auto {
+                    return x|y;
+                });
+        std::cout << vsvec_exec_stats<33>(st_or, LVEC_LEN) << std::endl;
+
+        exec_stats<33> st_xor;
+        const std::string msg_xor="operator^";
+        std::cout << "testing " << msg_xor
+                <<  " in range ["  << make_val(d_full.first)
+                << ", "  << make_val(d_full.second) << "]\n";
+        r &= f2(st_xor, d_full, d_full, msg_xor,
+                [](const v_t& x,
+                const v_t& y)->v_t {
+                    return x^y;
+                },
+                [](const auto& x, const auto& y)->auto {
+                    return x^y;
+                });
+        std::cout << vsvec_exec_stats<33>(st_xor, LVEC_LEN) << std::endl;
+
+        exec_stats<33> st_not;
+        const std::string msg_not="operator~(x)";
+        std::cout << "testing " << msg_not
+                <<  " in range ["  << make_val(d_full.first)
+                << ", "  << make_val(d_full.second) << "]\n";
+        r &= f1(st_not, d_full, msg_not,
+                [](const v_t& x)->v_t {
+                    return ~x;
+                },
+                [](const auto& x)->auto {
+                    return ~x;
+                });
+        std::cout << vsvec_exec_stats<33>(st_not, LVEC_LEN) << std::endl;
+
+    }
+
     if constexpr (is_signed_v<_T>) {
         exec_stats<33> st_abs;
         const std::string msg_abs="abs";
