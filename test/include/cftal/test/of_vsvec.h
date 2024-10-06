@@ -53,7 +53,7 @@ namespace cftal {
 
             constexpr
             static
-            const size_t LVEC_LEN=(1024<<1)-1;
+            const size_t LVEC_LEN=((1024<<1)*8)/(sizeof(_T))-1;
 
             template <size_t _N>
             static
@@ -169,7 +169,7 @@ equal(const _T* pr, const vec<_T, _N>& vr)
 {
     vec<_T, _N> v=mem<vec<_T, _N> >::load(pr, _N);
     typename vec<_T, _N>::mask_type c=v==vr;
-    if (cftal::is_floating_point<_T>::value == true) {
+    if constexpr (cftal::is_floating_point<_T>::value == true) {
         c = c | (isnan(v) & isnan(vr));
     }
     return all_of(c);
@@ -321,7 +321,7 @@ cftal::test::of_vsvec<_T, _A>::f1(exec_stats<_N>& st,
 #else
     const uint32_t N0=72;
     const uint32_t N1=4;
-    const uint32_t NN=256*8;
+    const uint32_t NN=(2047*2048)/(LVEC_LEN);
 #endif
     bool r=true;
     vsvec<_T, _A> x(_T(0), LVEC_LEN);
@@ -459,7 +459,7 @@ cftal::test::of_vsvec<_T, _A>::f2(exec_stats<_N>& st,
 #else
     const uint32_t N0=72;
     const uint32_t N1=4;
-    const uint32_t NN=256*8;
+    const uint32_t NN=(2047*2048)/(LVEC_LEN);
 #endif
     bool r=true;
     vsvec<_T> x(_T(0), LVEC_LEN);
@@ -498,21 +498,25 @@ cftal::test::of_vsvec<_T, _A>::execute()
 
     bool r = true;
 
-    exec_stats<33> st_neg;
-    const std::string msg_neg="operator-(x)";
-    std::cout << "testing " << msg_neg << '\n';
-    r &= f1(st_neg, d_full, msg_neg,
-            [](const v_t& x)->v_t {
-                return -x;
-            },
-            [](const auto& x)->auto {
-                return -x;
-            });
-    std::cout << vsvec_exec_stats<33>(st_neg, LVEC_LEN) << std::endl;
+    if constexpr (is_signed_v<_T>) {
+        exec_stats<33> st_neg;
+        const std::string msg_neg="operator-(x)";
+        std::cout << "testing " << msg_neg
+                <<  " in range ["  << d_full.first << ", "  << d_full.second << "]\n";
+        r &= f1(st_neg, d_full, msg_neg,
+                [](const v_t& x)->v_t {
+                    return -x;
+                },
+                [](const auto& x)->auto {
+                    return -x;
+                });
+        std::cout << vsvec_exec_stats<33>(st_neg, LVEC_LEN) << std::endl;
+    }
 
     exec_stats<33> st_add;
     const std::string msg_add="operator+";
-    std::cout << "testing " << msg_add << '\n';
+    std::cout << "testing " << msg_add
+              <<  " in range ["  << d_full.first << ", "  << d_full.second << "]\n";
     r &= f2(st_add, d_full, d_full, msg_add,
             [](const v_t& x,
                const v_t& y)->v_t {
@@ -525,7 +529,8 @@ cftal::test::of_vsvec<_T, _A>::execute()
 
     exec_stats<33> st_sub;
     const std::string msg_sub="operator-";
-    std::cout << "testing " << msg_sub << '\n';
+    std::cout << "testing " << msg_sub
+              <<  " in range ["  << d_full.first << ", "  << d_full.second << "]\n";
     r &= f2(st_sub, d_full, d_full, msg_sub,
             [](const v_t& x,
                const v_t& y)->v_t {
@@ -538,7 +543,8 @@ cftal::test::of_vsvec<_T, _A>::execute()
 
     exec_stats<33> st_mul;
     const std::string msg_mul="operator*";
-    std::cout << "testing " << msg_mul << '\n';
+    std::cout << "testing " << msg_mul
+              <<  " in range ["  << d_full.first << ", "  << d_full.second << "]\n";
     r &= f2(st_mul, d_full, d_full, msg_mul,
             [](const v_t& x,
                const v_t& y)->v_t {
@@ -551,7 +557,8 @@ cftal::test::of_vsvec<_T, _A>::execute()
 
     exec_stats<33> st_div;
     const std::string msg_div="operator/";
-    std::cout << "testing " << msg_div << '\n';
+    std::cout << "testing " << msg_div
+              <<  " in range ["  << d_full.first << ", "  << d_full.second << "]\n";
     r &= f2(st_div, d_full, d_full, msg_div,
             [](const v_t& x,
                const v_t& y)->v_t {
@@ -562,111 +569,128 @@ cftal::test::of_vsvec<_T, _A>::execute()
             });
     std::cout << vsvec_exec_stats<33>(st_div, LVEC_LEN) << std::endl;
 
-    exec_stats<33> st_pow;
-    const std::string msg_pow="pow";
-    std::cout << "testing " << msg_pow << '\n';
-    r &= f2(st_pow, d_full, d_full, msg_pow,
-            [](const v_t& x,
-               const v_t& y)->v_t {
-                return pow(x,y);
-            },
-            [](const auto& x, const auto& y)->auto {
-                return pow(x, y);
-            });
-    std::cout << vsvec_exec_stats<33>(st_pow, LVEC_LEN) << std::endl;
+    if constexpr (is_signed_v<_T>) {
+        exec_stats<33> st_abs;
+        const std::string msg_abs="abs";
+        std::cout << "testing " << msg_abs
+                  <<  " in range ["  << d_full.first << ", "  << d_full.second << "]\n";
+        r &= f1(st_abs, d_full, msg_abs,
+                [](const v_t& x)->v_t {
+                    return abs(x);
+                },
+                [](const auto& x)->auto {
+                    return abs(x);
+                });
+        std::cout << vsvec_exec_stats<33>(st_abs, LVEC_LEN) << std::endl;
+    }
 
-    exec_stats<33> st_exp;
-    const func_domain<_T>& d_exp=domain_exp<_T>::domains[0];
-    const std::string msg_exp="exp";
-    std::cout << "testing " << msg_exp << '\n';
-    r &= f1(st_exp, d_exp, msg_exp,
-            [](const v_t& x)->v_t {
-                return exp(x);
-            },
-            [](const auto& x)->auto {
-                return exp(x);
-            });
-    std::cout << vsvec_exec_stats<33>(st_exp, LVEC_LEN) << std::endl;
+    if constexpr (is_floating_point_v<_T>) {
+        exec_stats<33> st_pow;
+        const std::string msg_pow="pow";
+        std::cout << "testing " << msg_pow << '\n';
+        r &= f2(st_pow, d_full, d_full, msg_pow,
+                [](const v_t& x,
+                const v_t& y)->v_t {
+                    return pow(x,y);
+                },
+                [](const auto& x, const auto& y)->auto {
+                    return pow(x, y);
+                });
+        std::cout << vsvec_exec_stats<33>(st_pow, LVEC_LEN) << std::endl;
 
-    exec_stats<33> st_expm1;
-    const func_domain<_T>& d_expm1=domain_expm1<_T>::domains[0];
-    const std::string msg_expm1="expm1";
-    std::cout << "testing " << msg_expm1 << '\n';
-    r &= f1(st_expm1, d_expm1, msg_expm1,
-            [](const v_t& x)->v_t {
-                return expm1(x);
-            },
-            [](const auto& x)->auto {
-                return expm1(x);
-            });
-    std::cout << vsvec_exec_stats<33>(st_expm1, LVEC_LEN) << std::endl;
+        exec_stats<33> st_exp;
+        const func_domain<_T>& d_exp=domain_exp<_T>::domains[0];
+        const std::string msg_exp="exp";
+        std::cout << "testing " << msg_exp << '\n';
+        r &= f1(st_exp, d_exp, msg_exp,
+                [](const v_t& x)->v_t {
+                    return exp(x);
+                },
+                [](const auto& x)->auto {
+                    return exp(x);
+                });
+        std::cout << vsvec_exec_stats<33>(st_exp, LVEC_LEN) << std::endl;
 
-    exec_stats<33> st_log;
-    const func_domain<_T>& d_log=domain_log<_T>::domains[0];
-    const std::string msg_log="log";
-    std::cout << "testing " << msg_log << '\n';
-    r &= f1(st_log, d_log, msg_log,
-            [](const v_t& x)->v_t {
-                return log(x);
-            },
-            [](const auto& x)->auto {
-                return log(x);
-            });
-    std::cout << vsvec_exec_stats<33>(st_log, LVEC_LEN) << std::endl;
+        exec_stats<33> st_expm1;
+        const func_domain<_T>& d_expm1=domain_expm1<_T>::domains[0];
+        const std::string msg_expm1="expm1";
+        std::cout << "testing " << msg_expm1 << '\n';
+        r &= f1(st_expm1, d_expm1, msg_expm1,
+                [](const v_t& x)->v_t {
+                    return expm1(x);
+                },
+                [](const auto& x)->auto {
+                    return expm1(x);
+                });
+        std::cout << vsvec_exec_stats<33>(st_expm1, LVEC_LEN) << std::endl;
 
-    exec_stats<33> st_log1p;
-    const func_domain<_T>& d_log1p=domain_log1p<_T>::domains[0];
-    const std::string msg_log1p="log1p";
-    std::cout << "testing " << msg_log1p << '\n';
-    r &= f1(st_log1p, d_log1p, msg_log1p,
-            [](const v_t& x)->v_t {
-                return log1p(x);
-            },
-            [](const auto& x)->auto {
-                return log1p(x);
-            });
-    std::cout << vsvec_exec_stats<33>(st_log1p, LVEC_LEN) << std::endl;
+        exec_stats<33> st_log;
+        const func_domain<_T>& d_log=domain_log<_T>::domains[0];
+        const std::string msg_log="log";
+        std::cout << "testing " << msg_log << '\n';
+        r &= f1(st_log, d_log, msg_log,
+                [](const v_t& x)->v_t {
+                    return log(x);
+                },
+                [](const auto& x)->auto {
+                    return log(x);
+                });
+        std::cout << vsvec_exec_stats<33>(st_log, LVEC_LEN) << std::endl;
 
-    exec_stats<33> st_erf;
-    const func_domain<_T>& d_erf=domain_erf<_T>::domains[0];
-    const std::string msg_erf="erf";
-    std::cout << "testing " << msg_erf << '\n';
-    f1(st_erf, d_erf, msg_erf,
-       [](const v_t& x)->v_t {
-           return erf(x);
-       },
-       [](const auto& x)->auto {
-           return erf(x);
-       });
-    std::cout << vsvec_exec_stats<33>(st_erf, LVEC_LEN) << std::endl;
+        exec_stats<33> st_log1p;
+        const func_domain<_T>& d_log1p=domain_log1p<_T>::domains[0];
+        const std::string msg_log1p="log1p";
+        std::cout << "testing " << msg_log1p << '\n';
+        r &= f1(st_log1p, d_log1p, msg_log1p,
+                [](const v_t& x)->v_t {
+                    return log1p(x);
+                },
+                [](const auto& x)->auto {
+                    return log1p(x);
+                });
+        std::cout << vsvec_exec_stats<33>(st_log1p, LVEC_LEN) << std::endl;
 
-    exec_stats<33> st_erfc;
-    const func_domain<_T>& d_erfc=domain_erfc<_T>::domains[0];
-    const std::string msg_erfc="erfc";
-    std::cout << "testing " << msg_erfc << '\n';
-    r &= f1(st_erfc, d_erfc, msg_erfc,
-            [](const v_t& x)->v_t {
-                return erfc(x);
-            },
-            [](const auto& x)->auto {
-                return erfc(x);
-            });
-    std::cout << vsvec_exec_stats<33>(st_erfc, LVEC_LEN) << std::endl;
+        exec_stats<33> st_erf;
+        const func_domain<_T>& d_erf=domain_erf<_T>::domains[0];
+        const std::string msg_erf="erf";
+        std::cout << "testing " << msg_erf << '\n';
+        f1(st_erf, d_erf, msg_erf,
+        [](const v_t& x)->v_t {
+            return erf(x);
+        },
+        [](const auto& x)->auto {
+            return erf(x);
+        });
+        std::cout << vsvec_exec_stats<33>(st_erf, LVEC_LEN) << std::endl;
+
+        exec_stats<33> st_erfc;
+        const func_domain<_T>& d_erfc=domain_erfc<_T>::domains[0];
+        const std::string msg_erfc="erfc";
+        std::cout << "testing " << msg_erfc << '\n';
+        r &= f1(st_erfc, d_erfc, msg_erfc,
+                [](const v_t& x)->v_t {
+                    return erfc(x);
+                },
+                [](const auto& x)->auto {
+                    return erfc(x);
+                });
+        std::cout << vsvec_exec_stats<33>(st_erfc, LVEC_LEN) << std::endl;
 
 #if 0
-    exec_stats<33> st_tgamma;
-    const func_domain<_T>& d_tgamma=domain_tgamma<_T>::domains[0];
-    const std::string msg_tgamma="tgamma";
-    std::cout << "testing " << msg_tgamma << '\n';
-    r &= f1(st_tgamma, d_tgamma, msg_tgamma,
-            [](const v_t& x)->v_t {
-                return tgamma(x);
-            },
-            [](const auto& x)->auto {
-                return tgamma(x);
-            });
-    std::cout << vsvec_exec_stats<33>(st_tgamma, LVEC_LEN) << std::endl;
+        exec_stats<33> st_tgamma;
+        const func_domain<_T>& d_tgamma=domain_tgamma<_T>::domains[0];
+        const std::string msg_tgamma="tgamma";
+        std::cout << "testing " << msg_tgamma << '\n';
+        r &= f1(st_tgamma, d_tgamma, msg_tgamma,
+                [](const v_t& x)->v_t {
+                    return tgamma(x);
+                },
+                [](const auto& x)->auto {
+                    return tgamma(x);
+                });
+        std::cout << vsvec_exec_stats<33>(st_tgamma, LVEC_LEN) << std::endl;
 #endif
+    }
     return r;
 }
 
