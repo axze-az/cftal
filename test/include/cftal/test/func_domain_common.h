@@ -31,8 +31,10 @@ namespace cftal {
         struct domain_full_x_axis {
             constexpr static
             const func_domain<_T> domains[]{
-                std::make_pair(-std::numeric_limits<_T>::max(),
-                                std::numeric_limits<_T>::max())
+                std::make_pair(is_floating_point_v<_T> ?
+                                   -std::numeric_limits<_T>::max() :
+                                   std::numeric_limits<_T>::min(),
+                               std::numeric_limits<_T>::max())
             };
             constexpr static
             const int shifts[]={0};
