@@ -308,7 +308,11 @@ cftal::test::of_vsvec<_T, _A>::f1(exec_stats<_N>& st,
                                   _LF vsvec_f, _SF scal_f)
 {
     std::mt19937_64 rnd;
-    uniform_real_distribution<_T> distrib(d.first, d.second);
+
+    using distribution_t = select_t<is_floating_point_v<_T>,
+                                    uniform_real_distribution<_T>,
+                                    std::uniform_int_distribution<_T> >;
+    distribution_t distrib(d.first, d.second);
 
 #if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
     const uint32_t N0=72;
@@ -442,8 +446,11 @@ cftal::test::of_vsvec<_T, _A>::f2(exec_stats<_N>& st,
                                   _LF vsvec_f, _SF scal_f)
 {
     std::mt19937_64 rnd;
-    uniform_real_distribution<_T> distrib_x(dx.first, dx.second);
-    uniform_real_distribution<_T> distrib_y(dy.first, dy.second);
+    using distribution_t = select_t<is_floating_point_v<_T>,
+                                    uniform_real_distribution<_T>,
+                                    std::uniform_int_distribution<_T> >;
+    distribution_t distrib_x(dx.first, dx.second);
+    distribution_t distrib_y(dy.first, dy.second);
 
 #if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
     const uint32_t N0=72;
