@@ -50,7 +50,7 @@ build
 
 1. mkdir build
 2. cd build
-3. CC=clang-17 CXX=clang++-17 cmake -DCMAKE_BUILD_TYPE=release ..
+3. CC=clang-18 CXX=clang++-18 cmake -DCMAKE_BUILD_TYPE=release ..
 
 You may also use gcc instead of clang:
 
