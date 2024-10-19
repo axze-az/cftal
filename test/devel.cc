@@ -19,6 +19,16 @@
 #include <iomanip>
 #include <cftal/vec.h>
 
+using namespace cftal;
+
+vec<int32_t, 8>
+insert_exp(arg_t<vec<int32_t, 4> > v)
+{
+    vec<int32_t, 4> vs= v  << 20;
+    vec<int32_t, 8> r=combine_zeroeven_odd(vs);
+    return r;
+}
+
 int main(int argc, char** argv)
 {
     using namespace cftal;
