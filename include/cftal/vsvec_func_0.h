@@ -15,8 +15,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
-#if !defined (__CFTAL_LVEC_FUNC_0_H__)
-#define __CFTAL_LVEC_FUNC_0_H__ 1
+#if !defined (__CFTAL_VSVEC_FUNC_0_H__)
+#define __CFTAL_VSVEC_FUNC_0_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/vsvec_op.h>
@@ -933,7 +933,7 @@ namespace cftal {
     FUNC_A1(rcbrt, double, func::f_rcbrt)
     FUNC_A1(rcbrt, f16_t, func::f_rcbrt)
     FUNC_A1(rcbrt, bf16_t, func::f_rcbrt)
-    
+
     FUNC_A1(root12, float, func::f_root12)
     FUNC_A1(root12, double, func::f_root12)
     FUNC_A1(root12, f16_t, func::f_root12)
