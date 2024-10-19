@@ -78,16 +78,16 @@ __m128i cftal::x86::div_u32::lh(__m128i x, __m128i y, __m128i* rem)
 
 #define USE_RCP_PS 1
 
-template <unsigned pos>
+template <unsigned _POS>
 __m128i cftal::x86::div_u8::pos(__m128i x, __m128i y)
 {
     const __m128i msk4=const_v4u32<0xff, 0xff, 0xff, 0xff>::iv();
     __m128i xi=x, yi=y;
-    if (pos > 0) {
-        xi=_mm_srli_epi32(xi, 8*pos);
-        yi=_mm_srli_epi32(yi, 8*pos);
+    if (_POS > 0) {
+        xi=_mm_srli_epi32(xi, 8*_POS);
+        yi=_mm_srli_epi32(yi, 8*_POS);
     }
-    if (pos < 3) {
+    if (_POS < 3) {
         xi= _mm_and_si128(xi, msk4);
         yi= _mm_and_si128(yi, msk4);
     }
@@ -102,11 +102,11 @@ __m128i cftal::x86::div_u8::pos(__m128i x, __m128i y)
     __m128 qfi=_mm_div_ps(xfi, yfi);
 #endif
     __m128i qi=_mm_cvttps_epi32(qfi);
-    if (pos < 3) {
+    if (_POS < 3) {
         qi=_mm_and_si128(qi, msk4);
     }
-    if (pos > 0) {
-        qi=_mm_slli_epi32(qi, 8*pos);
+    if (_POS > 0) {
+        qi=_mm_slli_epi32(qi, 8*_POS);
     }
     return qi;
 }
@@ -132,17 +132,17 @@ __m128i cftal::x86::div_u8::v(__m128i x, __m128i y, __m128i* rem)
 }
 
 #if defined (__AVX2__)
-template <unsigned pos>
+template <unsigned _POS>
 __m256i cftal::x86::div_u8::pos(__m256i x, __m256i y)
 {
     const __m256i msk4=const_v8u32<0xff, 0xff, 0xff, 0xff,
                                    0xff, 0xff, 0xff, 0xff>::iv();
     __m256i xi=x, yi=y;
-    if (pos > 0) {
-        xi=_mm256_srli_epi32(xi, 8*pos);
-        yi=_mm256_srli_epi32(yi, 8*pos);
+    if (_POS > 0) {
+        xi=_mm256_srli_epi32(xi, 8*_POS);
+        yi=_mm256_srli_epi32(yi, 8*_POS);
     }
-    if (pos < 3) {
+    if (_POS < 3) {
         xi= _mm256_and_si256(xi, msk4);
         yi= _mm256_and_si256(yi, msk4);
     }
@@ -157,11 +157,11 @@ __m256i cftal::x86::div_u8::pos(__m256i x, __m256i y)
     __m256 qfi=_mm_div_ps(xfi, yfi);
 #endif
     __m256i qi=_mm256_cvttps_epi32(qfi);
-    if (pos < 3) {
+    if (_POS < 3) {
         qi=_mm256_and_si256(qi, msk4);
     }
-    if (pos > 0) {
-        qi=_mm256_slli_epi32(qi, 8*pos);
+    if (_POS > 0) {
+        qi=_mm256_slli_epi32(qi, 8*_POS);
     }
     return qi;
 }
@@ -189,13 +189,13 @@ cftal::x86::div_u8::v(__m256i x, __m256i y, __m256i* rem)
 
 #endif
 
-template <unsigned pos>
+template <unsigned _POS>
 __m128i cftal::x86::div_s8::pos(__m128i x, __m128i y)
 {
     __m128i xi=x, yi=y;
-    if (pos < 3) {
-        xi=_mm_slli_epi32(xi, 8*(3-pos));
-        yi=_mm_slli_epi32(yi, 8*(3-pos));
+    if (_POS < 3) {
+        xi=_mm_slli_epi32(xi, 8*(3-_POS));
+        yi=_mm_slli_epi32(yi, 8*(3-_POS));
     }
     xi=_mm_srai_epi32(xi, 8*3);
     yi=_mm_srai_epi32(yi, 8*3);
@@ -211,12 +211,12 @@ __m128i cftal::x86::div_s8::pos(__m128i x, __m128i y)
     __m128 qfi=_mm_div_ps(xfi, yfi);
 #endif
     __m128i qi=_mm_cvttps_epi32(qfi);
-    if (pos < 3) {
+    if (_POS < 3) {
         const __m128i msk4=const_v4u32<0xff, 0xff, 0xff, 0xff>::iv();
         qi=_mm_and_si128(qi, msk4);
     }
-    if (pos > 0) {
-        qi=_mm_slli_epi32(qi, 8*pos);
+    if (_POS > 0) {
+        qi=_mm_slli_epi32(qi, 8*_POS);
     }
     return qi;
 }
@@ -243,13 +243,13 @@ __m128i cftal::x86::div_s8::v(__m128i x, __m128i y, __m128i* rem)
 
 
 #if defined (__AVX2__)
-template <unsigned pos>
+template <unsigned _POS>
 __m256i cftal::x86::div_s8::pos(__m256i x, __m256i y)
 {
     __m256i xi=x, yi=y;
-    if (pos < 3) {
-        xi=_mm256_slli_epi32(xi, 8*(3-pos));
-        yi=_mm256_slli_epi32(yi, 8*(3-pos));
+    if (_POS < 3) {
+        xi=_mm256_slli_epi32(xi, 8*(3-_POS));
+        yi=_mm256_slli_epi32(yi, 8*(3-_POS));
     }
     xi=_mm256_srai_epi32(xi, 8*3);
     yi=_mm256_srai_epi32(yi, 8*3);
@@ -265,13 +265,13 @@ __m256i cftal::x86::div_s8::pos(__m256i x, __m256i y)
     __m256 qfi=_mm256_div_ps(xfi, yfi);
 #endif
     __m256i qi=_mm256_cvttps_epi32(qfi);
-    if (pos < 3) {
+    if (_POS < 3) {
         const __m256i msk4=const_v8u32<0xff, 0xff, 0xff, 0xff,
                                        0xff, 0xff, 0xff, 0xff>::iv();
         qi=_mm256_and_si256(qi, msk4);
     }
-    if (pos > 0) {
-        qi=_mm256_slli_epi32(qi, 8*pos);
+    if (_POS > 0) {
+        qi=_mm256_slli_epi32(qi, 8*_POS);
     }
     return qi;
 }

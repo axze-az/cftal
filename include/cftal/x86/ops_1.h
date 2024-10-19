@@ -38,14 +38,14 @@ namespace cftal {
 
         struct div_u8 : public div_ref<uint8_t, 16> {
         private:
-            template <unsigned pos>
+            template <unsigned _POS>
             static __m128i pos(__m128i x, __m128i y);
         public:
             static __m128i v(__m128i a, __m128i b,
                              __m128i* rem=nullptr);
 #if defined (__AVX2__)
         private:
-            template <unsigned pos>
+            template <unsigned _POS>
             static __m256i pos(__m256i x, __m256i y);
         public:
             static __m256i v(__m256i a, __m256i b,
@@ -55,14 +55,14 @@ namespace cftal {
 
         struct div_s8 : public div_ref<int8_t, 16> {
         private:
-            template <unsigned pos>
+            template <unsigned _POS>
             static __m128i pos(__m128i x, __m128i y);
         public:
             static __m128i v(__m128i a, __m128i b,
                              __m128i* rem=nullptr);
 #if defined (__AVX2__)
         private:
-            template <unsigned pos>
+            template <unsigned _POS>
             static __m256i pos(__m256i x, __m256i y);
         public:
             static __m256i v(__m256i a, __m256i b,

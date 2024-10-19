@@ -97,7 +97,7 @@ namespace cftal {
         template <typename _T, typename _C>
         struct xxx_of {
             constexpr static const unsigned shift= (sizeof(_T)*8-1);
-            constexpr static const _T msk = _T(1) << shift;
+            constexpr static const make_unsigned_t<_T> msk = _T(1) << shift;
             static
             bool
             any(const vec<_T, 1>& v) {
