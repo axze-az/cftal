@@ -50,11 +50,11 @@ build
 
 1. mkdir build
 2. cd build
-3. CC=clang-17 CXX=clang++-17 cmake -DCMAKE_BUILD_TYPE=release ..
+3. CC=clang-18 CXX=clang++-18 cmake -DCMAKE_BUILD_TYPE=release ..
 
 You may also use gcc instead of clang:
 
-3. CC=gcc-13 CXX=g++-14 cmake -DCMAKE_BUILD_TYPE=release ..
+3. CC=gcc-14 CXX=g++-14 cmake -DCMAKE_BUILD_TYPE=release ..
 
 If you want to use vectors of double's for the calculation of some elementary
 float functions, use -DCFTAL_CONFIG_USE_VF64_FOR_VF32=1 as an additional
