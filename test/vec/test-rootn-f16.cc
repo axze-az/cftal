@@ -17,7 +17,6 @@
 //
 #include "cftal/test/program.h"
 #include "cftal/test/check_rootn.h"
-#include "cftal/vec_f16.h"
 #include <iostream>
 #include <iomanip>
 

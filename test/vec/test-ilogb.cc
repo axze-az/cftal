@@ -17,7 +17,6 @@
 //
 #include <cftal/vec.h>
 #include <cftal/test/f32_f64.h>
-#include <cftal/vec_f16.h>
 #include <cstring>
 #include <iomanip>
 

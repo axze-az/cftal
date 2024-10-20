@@ -20,7 +20,6 @@
 #include <cftal/test/uniform_distribution.h>
 #include <cftal/test/of_math_funcs.h>
 #include <cftal/math/func_constants.h>
-#include <cftal/vec_f16.h>
 #include <cmath>
 #include <random>
 #include <iostream>
