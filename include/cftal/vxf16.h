@@ -176,6 +176,11 @@ namespace cftal {
         }
     };
 
+    template <size_t _N>
+    struct is_vec_specialized<vec<f16_t, _N> >
+        : public is_vec_specialized<vec<mf_f16_t, _N> > {
+    };
+
     namespace impl {
 
         template <size_t _N>
