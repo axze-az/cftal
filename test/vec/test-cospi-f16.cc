@@ -17,9 +17,6 @@
 //
 #include "cftal/test/program.h"
 #include "cftal/test/check_cospi.h"
-#include "cftal/vec_f16.h"
-#include <iostream>
-#include <iomanip>
 
 int main(int argc, char** argv)
 {

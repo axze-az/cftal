@@ -17,7 +17,6 @@
 //
 #include "cftal/test/program.h"
 #include "cftal/test/check_exp.h"
-#include "cftal/vec_f16.h"
 
 int main(int argc, char** argv)
 {
