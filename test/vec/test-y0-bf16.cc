@@ -18,7 +18,6 @@
 #include "cftal/test/program.h"
 #include "cftal/math/func_data.h"
 #include "cftal/test/check_y0.h"
-#include "cftal/vec_bf16.h"
 
 int main(int argc, char** argv)
 {

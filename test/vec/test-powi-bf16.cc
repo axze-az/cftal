@@ -17,7 +17,6 @@
 //
 #include "cftal/test/program.h"
 #include "cftal/test/check_powi.h"
-#include "cftal/vec_bf16.h"
 #include <iostream>
 #include <iomanip>
 
