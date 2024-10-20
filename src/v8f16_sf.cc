@@ -15,7 +15,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
-#include "cftal/vec_f16.h"
+#include "cftal/vec.h"
 #include "cftal/math/vec_func_traits_f16.h"
 #include "cftal/math/func.h"
 #include "cftal/math/spec_func_wrapper_f16.h"

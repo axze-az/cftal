@@ -20,8 +20,6 @@
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
-#include <cftal/vec_f16.h>
-#include <cftal/vec_bf16.h>
 #include <cftal/vsvec_func_0.h>
 #include <cftal/vsvec_lookup.h>
 #include <cftal/as.h>
