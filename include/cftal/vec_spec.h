@@ -141,6 +141,8 @@ cftal::max_vec_size_specialized()
 {
     constexpr
     const size_t r=
+        is_vec_specialized<vec<_T, 256> >::value==true ? 256 :
+        is_vec_specialized<vec<_T, 128> >::value==true ? 128 :
         is_vec_specialized<vec<_T, 64> >::value==true ? 64 :
         is_vec_specialized<vec<_T, 32> >::value==true ? 32 :
         is_vec_specialized<vec<_T, 16> >::value==true ? 16 :
