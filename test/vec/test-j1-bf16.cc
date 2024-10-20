@@ -16,9 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
 #include "cftal/test/program.h"
-#include "cftal/math/func_data.h"
 #include "cftal/test/check_j1.h"
-#include "cftal/vec_bf16.h"
 
 int main(int argc, char** argv)
 {
