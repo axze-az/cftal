@@ -16,7 +16,6 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
 #include "cftal/vec.h"
-#include "cftal/vec_bf16.h"
 #include "cftal/math/vec_func_traits_bf16.h"
 #include "cftal/math/spec_func_wrapper_bf16.h"
 #include "vec_def_math_spec_funcs.h"

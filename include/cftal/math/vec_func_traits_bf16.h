@@ -20,7 +20,6 @@
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
-#include <cftal/vec_bf16.h>
 #include <cftal/vec_cvt.h>
 #include <cftal/x86/cast_bits.h>
 #include <cftal/math/vec_func_traits_f32.h>
