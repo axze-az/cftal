@@ -505,8 +505,10 @@ _X
 cftal::math::
 horner(const _X& x, const _C& c)
 {
-    auto b=std::cbegin(c);
-    auto e=std::cend(c);
+    using std::cbegin;
+    using std::cend;
+    auto b=cbegin(c);
+    auto e=cend(c);
     if (b==e) {
         throw std::invalid_argument("cftal::math::horner(x, C)");
     }
