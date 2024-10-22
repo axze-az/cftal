@@ -25,11 +25,8 @@
 #include <cftal/std_types.h>
 #include <cftal/math/func_constants_f64.h>
 
-
 namespace cftal {
-
     namespace math {
-
         namespace impl {
 
             template <class _T>

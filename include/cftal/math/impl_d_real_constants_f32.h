@@ -26,7 +26,6 @@
 
 namespace cftal {
     namespace math {
-
         namespace impl {
 
             template <class _T>

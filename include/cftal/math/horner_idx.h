@@ -23,7 +23,6 @@
 #include <cftal/math/horner.h>
 
 namespace cftal {
-
     namespace math {
 
         // data layout of tbl[]:
