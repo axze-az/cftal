@@ -111,7 +111,7 @@ namespace cftal {
         vec(vec&& r) = default;
         vec& operator=(const vec& r) = default;
         vec& operator=(vec&& r) = default;
-
+//
         constexpr
         vec(const f16_t& v) : _v(read_bits(v)) {}
         explicit
@@ -190,11 +190,7 @@ namespace cftal {
         }
 
         template <size_t _N>
-        std::enable_if_t<
-            std::is_same_v<
-                vec<f16_t, _N>,
-                typename vec<f16_t, _N>::mask_type>,
-            vec<f16_t, _N> >
+        vec<f16_t, _N>
         cvt_f32_msk_to_f16_msk(const vec<f32_t, _N>& m) {
             const vec<mf_f16_t, 2*_N> mv=as<const vec<mf_f16_t, 2*_N> >(m);
             auto oe=odd_elements(mv);
@@ -595,6 +591,7 @@ namespace cftal {
     select_zero_or_val(const typename vec<f16_t, _N>::mask_type& m ,
                        const vec<f16_t, _N>& on_false);
 
+#if (__AVX512VL__==0) || (__CFTAL_CFG_ENABLE_AVX512__==0)
     bool
     all_of(const vec<f16_t, 1>::mask_type& m);
 
@@ -615,6 +612,7 @@ namespace cftal {
     template <std::size_t _N>
     bool
     none_of(const typename vec<f16_t, _N>::mask_type& m);
+#endif
 
     namespace impl {
 
@@ -796,8 +794,8 @@ namespace cftal {
 #if VF16_USE_INT_CMP> 0
                 return impl::f16_lt(a, b);
 #else
-                return impl::cvt_f32_msk_to_f16_msk(
-                    cvt_f16_to_f32(a()) < cvt_f16_to_f32(b()));
+                vec<float, 1>::mask_type r=cvt_f16_to_f32(a()) < cvt_f16_to_f32(b());
+                return impl::cvt_f32_msk_to_f16_msk(r);
 #endif
             }
         };
@@ -1703,7 +1701,7 @@ select(const typename vec<f16_t, 1>::mask_type& m ,
        const vec<f16_t, 1>& on_false)
 {
     auto r=select(m(), on_true(), on_false());
-    return vec<f16_t, 1>::mask_type::cvt_from_rep(r);
+    return vec<f16_t, 1>::cvt_from_rep(r);
 }
 
 template <cftal::size_t _N>
@@ -1714,7 +1712,7 @@ select(const typename vec<f16_t, _N>::mask_type& m ,
        const vec<f16_t, _N>& on_false)
 {
     auto r=select(m(), on_true(), on_false());
-    return vec<f16_t, _N>::mask_type::cvt_from_rep(r);
+    return vec<f16_t, _N>::cvt_from_rep(r);
 }
 
 inline
@@ -1724,7 +1722,7 @@ select_val_or_zero(const typename vec<f16_t, 1>::mask_type& m ,
                    const vec<f16_t, 1>& on_true)
 {
     auto r=select_val_or_zero(m(), on_true());
-    return vec<f16_t, 1>::mask_type::cvt_from_rep(r);
+    return vec<f16_t, 1>::cvt_from_rep(r);
 }
 
 template <cftal::size_t _N>
@@ -1734,7 +1732,7 @@ select_val_or_zero(const typename vec<f16_t, _N>::mask_type& m ,
                    const vec<f16_t, _N>& on_true)
 {
     auto r=select_val_or_zero(m(), on_true());
-    return vec<f16_t, _N>::mask_type::cvt_from_rep(r);
+    return vec<f16_t, _N>::cvt_from_rep(r);
 }
 
 inline
@@ -1743,7 +1741,7 @@ cftal::select_zero_or_val(const typename vec<f16_t, 1>::mask_type& m ,
                           const vec<f16_t, 1>& on_false)
 {
     auto r=select_zero_or_val(m(), on_false());
-    return vec<f16_t, 1>::mask_type::cvt_from_rep(r);
+    return vec<f16_t, 1>::cvt_from_rep(r);
 }
 
 template <cftal::size_t _N>
@@ -1752,8 +1750,10 @@ cftal::select_zero_or_val(const typename vec<f16_t, _N>::mask_type& m ,
                           const vec<f16_t, _N>& on_false)
 {
     auto r=select_zero_or_val(m(), on_false());
-    return vec<f16_t, _N>::mask_type::cvt_from_rep(r);
+    return vec<f16_t, _N>::cvt_from_rep(r);
 }
+
+#if (__AVX512VL__==0) || (__CFTAL_CFG_ENABLE_AVX512__==0)
 
 inline
 bool
@@ -1799,6 +1799,7 @@ cftal::none_of(const typename vec<f16_t, _N>::mask_type& v)
 {
     return none_of(v());
 }
+#endif
 
 template <cftal::size_t _N>
 inline
