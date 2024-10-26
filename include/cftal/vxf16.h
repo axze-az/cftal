@@ -56,7 +56,7 @@ namespace cftal {
         }
         using value_type = f16_t;
         using mask_value_type =std::conditional_t<
-            std::is_same_v<vec<float, 1>::mask_type, bit>,
+            std::is_same_v<vec<float, 1>::mask_value_type, bit>,
             bit, f16_t>;
         using mask_type = vec<mask_value_type, 1>;
         vec() = default;
@@ -102,7 +102,7 @@ namespace cftal {
         using value_type = f16_t;
         using half_type = vec<f16_t, _N/2>;
         using mask_value_type =std::conditional_t<
-            std::is_same_v<typename vec<float, _N>::mask_type, bit>,
+            std::is_same_v<typename vec<float, _N>::mask_value_type, bit>,
             bit, f16_t>;
         using mask_type = vec<mask_value_type, _N>;
         vec() = default;
