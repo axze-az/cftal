@@ -1577,7 +1577,8 @@ cftal::iszero(const vec<f16_t, _N>& a)
 #endif
     auto v_is_zero = t == mf_f16_t(0);
     using m_t = typename vec<f16_t, _N>::mask_type;
-    return m_t::cvt_from_rep(v_is_zero);
+    // return m_t::cvt_from_rep(v_is_zero);
+    return as<m_t>(v_is_zero);
 }
 
 template <cftal::size_t _N>
@@ -1587,7 +1588,8 @@ cftal::isnan(const vec<f16_t, _N>& a)
     vec<mf_f16_t, _N> aa= a() & not_sign_f16_msk::v.u16();
     auto v_is_nan = aa > exp_f16_msk::v.u16();
     using m_t = typename vec<f16_t, _N>::mask_type;
-    return m_t::cvt_from_rep(v_is_nan);
+    // return m_t::cvt_from_rep(v_is_nan);
+    return as<m_t>(v_is_nan);
 }
 
 template <cftal::size_t _N>
@@ -1597,7 +1599,8 @@ cftal::isinf(const vec<f16_t, _N>& a)
     vec<mf_f16_t, _N> aa= a() & not_sign_f16_msk::v.u16();
     auto v_is_inf = aa == exp_f16_msk::v.u16();
     using m_t = typename vec<f16_t, _N>::mask_type;
-    return m_t::cvt_from_rep(v_is_inf);
+    // return m_t::cvt_from_rep(v_is_inf);
+    return as<m_t>(v_is_inf);
 }
 
 template <cftal::size_t _N>
@@ -1607,7 +1610,8 @@ cftal::isfinite(const vec<f16_t, _N>& a)
     vec<mf_f16_t, _N> aa= a() & not_sign_f16_msk::v.u16();
     auto v_is_finite = aa < exp_f16_msk::v.u16();
     using m_t = typename vec<f16_t, _N>::mask_type;
-    return m_t::cvt_from_rep(v_is_finite);
+    // return m_t::cvt_from_rep(v_is_finite);
+    return as<m_t>(v_is_finite);
 }
 
 template <cftal::size_t _N>
