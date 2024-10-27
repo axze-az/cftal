@@ -347,19 +347,19 @@ cftal::mem<cftal::vec<int64_t, 8> >::load(const int64_t* p, std::size_t s)
         v = _mm512_set1_epi64(0);
         break;
     default: {
-            x86::vecunion<int64_t, 8, __m512, __m512d, __m512i> st;
-            uint32_t si=s & 7;
-            int64_t pi=p[0];
-            st._s[0]=pi;
-            for (uint32_t i=1; i<si; ++i) {
-                pi=p[i];
-                st._s[i]=pi;
-            }
-            for (uint32_t i=si; i<16; ++i) {
-                st._s[i]=pi;
-            }
-            v=_mm512_loadu_si512(&st._vi);
-            break;
+        x86::vecunion<int64_t, 8, __m512, __m512d, __m512i> st;
+        uint32_t si=s & 7;
+        int64_t pi=p[0];
+        st._s[0]=pi;
+        for (uint32_t i=1; i<si; ++i) {
+            pi=p[i];
+            st._s[i]=pi;
+        }
+        for (uint32_t i=si; i<8; ++i) {
+            st._s[i]=pi;
+        }
+        v=_mm512_loadu_si512(&st._vi);
+        break;
     }}
     return v;
 }

@@ -49,6 +49,10 @@ namespace cftal {
     vec<mf_f16_t, 8>
     cvt_f32_to_f16(const vec<f32_t, 8>& s);
 
+    // conversion of a f32 vector to a f16 vector
+    vec<mf_f16_t, 16>
+    cvt_f32_to_f16(const vec<f32_t, 16>& s);
+
     // conversion of a f16 vector to a f32 vector
     template <std::size_t _N>
     vec<f32_t, _N>
@@ -69,6 +73,10 @@ namespace cftal {
     // conversion of a f16 vector to a f32 vector
     vec<f32_t, 8>
     cvt_f16_to_f32(const vec<mf_f16_t, 8>& s);
+
+    // conversion of a f16 vector to a f32 vector
+    vec<f32_t, 16>
+    cvt_f16_to_f32(const vec<mf_f16_t, 16>& s);
 
     namespace impl {
 
@@ -227,6 +235,24 @@ cftal::cvt_f32_to_f16(const vec<f32_t, 8>& s)
     return r;
 }
 
+inline
+cftal::vec<cftal::mf_f16_t, 16>
+cftal::cvt_f32_to_f16(const vec<f32_t, 16>& s)
+{
+#if defined (__F16C__)
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+    vec<mf_f16_t, 16> r=_mm512_cvtps_ph(s(), 0);
+#else
+    vec<cftal::mf_f16_t, 8> rh=cvt_f32_to_f16(high_half(s));
+    vec<cftal::mf_f16_t, 8> rl=cvt_f32_to_f16(low_half(s));
+    vec<cftal::mf_f16_t, 16> r(rl, rh);
+#endif
+#else
+    vec<mf_f16_t, 16> r=impl::_cvt_f32_to_f16(s);
+#endif
+    return r;
+}
+
 template <std::size_t _N>
 cftal::vec<cftal::f32_t, _N>
 cftal::cvt_f16_to_f32(const vec<mf_f16_t, _N>& s)
@@ -282,10 +308,27 @@ cftal::vec<cftal::f32_t, 8>
 cftal::cvt_f16_to_f32(const vec<mf_f16_t, 8>& s)
 {
 #if defined (__F16C__)
-    __m128i s0= s();
-    vec<f32_t, 8> r= _mm256_cvtph_ps(s0);
+    vec<f32_t, 8> r= _mm256_cvtph_ps(s());
 #else
     vec<f32_t, 8> r= impl::_cvt_f16_to_f32(s);
+#endif
+    return r;
+}
+
+inline
+cftal::vec<cftal::f32_t, 16>
+cftal::cvt_f16_to_f32(const vec<mf_f16_t, 16>& s)
+{
+#if defined (__F16C__)
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+    vec<f32_t, 16> r=_mm512_cvtph_ps(s());
+#else
+    vec<f32_t, 8> rh= cvt_f16_to_f32(high_half(s));
+    vec<f32_t, 8> rl= cvt_f16_to_f32(low_half(s));
+    vec<f32_t, 16> r(rl, rh);
+#endif
+#else
+    vec<f32_t, 16> r= impl::_cvt_f16_to_f32(s);
 #endif
     return r;
 }
