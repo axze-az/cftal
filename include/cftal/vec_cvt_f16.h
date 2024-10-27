@@ -37,39 +37,38 @@ namespace cftal {
     vec<mf_f16_t, 1>
     cvt_f32_to_f16(const vec<f32_t, 1>& s);
 
-    // conversion of a f32 vector to a f32 vector
+    // conversion of a f32 vector to a f16 vector
     vec<mf_f16_t, 2>
     cvt_f32_to_f16(const vec<f32_t, 2>& s);
 
-    // conversion of a f32 vector to a f32 vector
+    // conversion of a f32 vector to a f16 vector
     vec<mf_f16_t, 4>
     cvt_f32_to_f16(const vec<f32_t, 4>& s);
 
-    // conversion of a f32 vector to a f32 vector
+    // conversion of a f32 vector to a f16 vector
     vec<mf_f16_t, 8>
     cvt_f32_to_f16(const vec<f32_t, 8>& s);
 
-    // conversion of a f vector to a f16 vector
+    // conversion of a f16 vector to a f32 vector
     template <std::size_t _N>
     vec<f32_t, _N>
     cvt_f16_to_f32(const vec<mf_f16_t, _N>& s);
 
-    // conversion of a f32 vector to a f16 vector
+    // conversion of a f16 vector to a f32 vector
     vec<f32_t, 1>
     cvt_f16_to_f32(const vec<mf_f16_t, 1>& s);
 
-    // conversion of a f32 vector to a f16 vector
+    // conversion of a f16 vector to a f32 vector
     vec<f32_t, 2>
     cvt_f16_to_f32(const vec<mf_f16_t, 2>& s);
 
-    // conversion of a f32 vector to a f16 vector
+    // conversion of a f16 vector to a f32 vector
     vec<f32_t, 4>
     cvt_f16_to_f32(const vec<mf_f16_t, 4>& s);
 
-    // conversion of a f32 vector to a f16 vector
+    // conversion of a f16 vector to a f32 vector
     vec<f32_t, 8>
     cvt_f16_to_f32(const vec<mf_f16_t, 8>& s);
-
 
     namespace impl {
 
