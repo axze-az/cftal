@@ -23,15 +23,6 @@
 #include <cftal/expr_func.h>
 #include <cftal/vsvec_bit_a.h>
 
-#if 0
-#include <cftal/math/vec_func_traits_f16.h>
-#include <cftal/math/vec_func_traits_f32.h>
-#include <cftal/math/vec_func_traits_f64.h>
-#include <cftal/math/elem_func_wrapper_f16.h>
-#include <cftal/math/elem_func_wrapper_f32.h>
-#include <cftal/math/elem_func_core_f64.h>
-#endif
-
 namespace cftal {
 
     namespace op_4_vsvec {
@@ -214,15 +205,7 @@ namespace cftal {
             static
             vec<_T, _N>
             v(const vec<_T, _N>& a, const vec<_T, _N>& b) {
-#if 0
-                using int_t=int_of_fp_t<_T>;
-                using traits_t=cftal::math::func_traits<vec<_T, _N>,
-                                                        vec<int_t, _N> >;
-                using func_t=cftal::math::elem_func<_T, traits_t>;
-                return func_t::pow(a, b);
-#else
                 return pow(a, b);
-#endif
             }
         };
 
