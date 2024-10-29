@@ -752,6 +752,8 @@ namespace cftal {
     OPINFO(func::f_log2, 64);
     OPINFO(func::f_log10, 64);
     OPINFO(func::f_log1p, 64);
+    OPINFO(func::f_log2p1, 64);
+    OPINFO(func::f_log10p1, 64);
 
     OPINFO(func::f_sinh, 64);
     OPINFO(func::f_cosh, 64);
