@@ -704,20 +704,20 @@ namespace cftal {
 
     }
 
-#define OPINFO(optype, opcount)                         \
-    template <typename _T, typename _A,                 \
-              typename _L, typename _R>                 \
-    struct operand<expr< optype <vsvec<_T, _A>>, _L, _R> >{    \
-        static                                          \
-        constexpr                                       \
-        size_t count() {                                \
-            return opcount;                             \
-        }                                               \
-        static                                          \
-        constexpr                                       \
-        result_size sizes() {                           \
-            return result_size::eq_size;                \
-        }                                               \
+#define OPINFO(optype, opcount)                                 \
+    template <typename _T, typename _A,                         \
+              typename _L, typename _R>                         \
+    struct operand<expr< optype <vsvec<_T, _A>>, _L, _R> >{     \
+        static                                                  \
+        constexpr                                               \
+        size_t count() {                                        \
+            return opcount;                                     \
+        }                                                       \
+        static                                                  \
+        constexpr                                               \
+        result_size sizes() {                                   \
+            return result_size::eq_size;                        \
+        }                                                       \
     }
 
     OPINFO(func::f_iszero, 8);
@@ -791,8 +791,8 @@ namespace cftal {
            expr<func::tri_data<vsvec<_T, _A>>, _LR, _RR> >& e,
            size_t i) {
         return op::fma<vsvec<_T, _A>>::v(eval_i<_N, _T>(e._l, i),
-                                   eval_i<_N, _T>(e._r._l, i),
-                                   eval_i<_N, _T>(e._r._r, i));
+                                         eval_i<_N, _T>(e._r._l, i),
+                                         eval_i<_N, _T>(e._r._r, i));
     }
 
     // fms
@@ -805,8 +805,8 @@ namespace cftal {
            expr<func::tri_data<vsvec<_T, _A>>, _LR, _RR> >& e,
            size_t i) {
         return op::fms<vsvec<_T, _A>>::v(eval_i<_N, _T>(e._l, i),
-                                        eval_i<_N, _T>(e._r._l, i),
-                                        eval_i<_N, _T>(e._r._r, i));
+                                         eval_i<_N, _T>(e._r._l, i),
+                                         eval_i<_N, _T>(e._r._r, i));
     }
 
     // nfma
@@ -819,64 +819,64 @@ namespace cftal {
            expr<op::mul<vsvec<_T, _A>>, _LR, _RR> >& e,
            size_t i) {
         return op::fnma<vsvec<_T, _A>>::v(eval_i<_N, _T>(e._l, i),
-                                         eval_i<_N, _T>(e._r._l, i),
-                                         eval_i<_N, _T>(e._r._r, i));
+                                          eval_i<_N, _T>(e._r._l, i),
+                                          eval_i<_N, _T>(e._r._r, i));
     }
 
 #define TFUNC_A1(the_func, op_type)                                     \
-    /* unary vsvec */                                                    \
+    /* unary vsvec */                                                   \
     template <typename _T, typename _A>                                 \
-    expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, void>                    \
-    the_func (const vsvec<_T, _A>& l) {                                  \
-        return expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, void>(l);     \
+    expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, void>                  \
+    the_func (const vsvec<_T, _A>& l) {                                 \
+        return expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, void>(l);   \
     }                                                                   \
-    /* unary expr */                                                    \
+        /* unary expr */                                                \
     template <typename _T, typename _A,                                 \
               template <class _U> class _OP,                            \
               typename _L, typename _R>                                 \
-        expr<op_type <vsvec<_T, _A>>,                                    \
-             expr<_OP<vsvec<_T, _A>>, _L, _R>, void>                     \
-    the_func (const expr<_OP<vsvec<_T, _A>>, _L, _R>& l) {               \
-        return expr<op_type <vsvec<_T, _A>>,                             \
-                    expr<_OP<vsvec<_T, _A>>, _L, _R>, void>(l);          \
+    expr<op_type <vsvec<_T, _A>>,                                       \
+         expr<_OP<vsvec<_T, _A>>, _L, _R>, void>                        \
+    the_func (const expr<_OP<vsvec<_T, _A>>, _L, _R>& l) {              \
+        return expr<op_type <vsvec<_T, _A>>,                            \
+                    expr<_OP<vsvec<_T, _A>>, _L, _R>, void>(l);         \
     }                                                                   \
 
 #define FUNC_A1(the_func, type, op_type)                                \
-    /* unary vsvec */                                                    \
+    /* unary vsvec */                                                   \
     template <typename _A>                                              \
-    expr<op_type <vsvec<type, _A>>, vsvec<type, _A>, void>                \
-    the_func (const vsvec<type, _A>& l) {                                \
+    expr<op_type <vsvec<type, _A>>, vsvec<type, _A>, void>              \
+    the_func (const vsvec<type, _A>& l) {                               \
         return expr<op_type <vsvec<type, _A>>, vsvec<type, _A>, void>(l); \
     }                                                                   \
-    /* unary expr */                                                    \
+        /* unary expr */                                                \
     template <typename _A,                                              \
               template <class _U> class _OP,                            \
               typename _L, typename _R>                                 \
-    expr<op_type <vsvec<type, _A>>,                                      \
-         expr<_OP<vsvec<type, _A>>, _L, _R>, void>                       \
-    the_func (const expr<_OP<vsvec<type, _A>>, _L, _R>& l) {             \
-        return expr<op_type <vsvec<type, _A>>,                           \
-                    expr<_OP<vsvec<type, _A>>, _L, _R>, void>(l);        \
+    expr<op_type <vsvec<type, _A>>,                                     \
+         expr<_OP<vsvec<type, _A>>, _L, _R>, void>                      \
+    the_func (const expr<_OP<vsvec<type, _A>>, _L, _R>& l) {            \
+        return expr<op_type <vsvec<type, _A>>,                          \
+                    expr<_OP<vsvec<type, _A>>, _L, _R>, void>(l);       \
     }                                                                   \
 
 #define MFUNC_A1(the_func, type, op_type)                               \
-    /* unary vsvec */                                                    \
+    /* unary vsvec */                                                   \
     template <typename _A>                                              \
-    expr<op_type <typename vsvec<type, _A>::mask_type>,             \
-        vsvec<type, _A>, void>                                           \
-    the_func (const vsvec<type, _A>& l) {                                \
-        return expr<op_type<typename vsvec<type, _A>::mask_type>,   \
-                    vsvec<type, _A>, void>(l);                           \
+    expr<op_type <typename vsvec<type, _A>::mask_type>,                 \
+        vsvec<type, _A>, void>                                          \
+    the_func (const vsvec<type, _A>& l) {                               \
+        return expr<op_type<typename vsvec<type, _A>::mask_type>,       \
+            vsvec<type, _A>, void>(l);                                  \
     }                                                                   \
-    /* unary expr */                                                    \
+        /* unary expr */                                                \
     template <typename _A,                                              \
               template <class _U> class _OP,                            \
               typename _L, typename _R>                                 \
-    expr<op_type <typename vsvec<type, _A>::mask_type>,              \
-         expr<_OP<vsvec<type, _A>>, _L, _R>, void>                       \
-    the_func (const expr<_OP<vsvec<type, _A>>, _L, _R>& l) {             \
-        return expr<op_type<typename vsvec<type, _A>::mask_type>,   \
-                    expr<_OP<vsvec<type, _A>>, _L, _R>, void>(l);        \
+    expr<op_type <typename vsvec<type, _A>::mask_type>,                 \
+         expr<_OP<vsvec<type, _A>>, _L, _R>, void>                      \
+    the_func (const expr<_OP<vsvec<type, _A>>, _L, _R>& l) {            \
+        return expr<op_type<typename vsvec<type, _A>::mask_type>,       \
+                    expr<_OP<vsvec<type, _A>>, _L, _R>, void>(l);       \
     }                                                                   \
 
 
@@ -1079,69 +1079,69 @@ namespace cftal {
     MFUNC_A1(signbit, f16_t, func::f_isnan)
     MFUNC_A1(signbit, bf16_t, func::f_isnan)
 
-// #undef FUNC_A1
+    // #undef FUNC_A1
 #define TFUNC_A2(the_func, op_type)                                     \
-    /* vsvec, scalar */                                                  \
+    /* vsvec, scalar */                                                 \
     template <typename _T, typename _A>                                 \
-    expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, _T>                      \
-    the_func (const vsvec<_T, _A>& l, const _T& r) {                     \
-        return expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, _T>(l, r);    \
+    expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, _T>                    \
+    the_func (const vsvec<_T, _A>& l, const _T& r) {                    \
+        return expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, _T>(l, r);  \
     }                                                                   \
-    /* scalar, vsvec */                                                  \
+        /* scalar, vsvec */                                             \
     template <typename _T, typename _A>                                 \
-    expr<op_type <vsvec<_T, _A>>, _T, vsvec<_T, _A> >                     \
-    the_func (const _T& l, const vsvec<_T, _A>& r) {                     \
-        return expr<op_type <vsvec<_T, _A>>, _T, vsvec<_T, _A> >(l, r);   \
+    expr<op_type <vsvec<_T, _A>>, _T, vsvec<_T, _A> >                   \
+    the_func (const _T& l, const vsvec<_T, _A>& r) {                    \
+        return expr<op_type <vsvec<_T, _A>>, _T, vsvec<_T, _A> >(l, r); \
     }                                                                   \
-    /* vsvec, vsvec */                                                    \
+    /* vsvec, vsvec */                                                  \
     template <typename _T, typename _A>                                 \
-    expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, vsvec<_T, _A> >           \
-    the_func (const vsvec<_T, _A>& l, const vsvec<_T, _A>& r) {           \
-        return expr<op_type <vsvec<_T, _A>>,                             \
-                    vsvec<_T, _A>, vsvec<_T, _A> >(l, r);                 \
+    expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, vsvec<_T, _A> >        \
+    the_func (const vsvec<_T, _A>& l, const vsvec<_T, _A>& r) {         \
+        return expr<op_type <vsvec<_T, _A>>,                            \
+                    vsvec<_T, _A>, vsvec<_T, _A> >(l, r);               \
     }                                                                   \
-    /* vsvec, expr */                                                    \
-    template <typename _T, typename _A,                                 \
-              template <class _U> class _OP,                 \
-              class _L, class _R>                                       \
-    expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>,                          \
-         expr<_OP<vsvec<_T, _A>>, _L, _R> >                              \
-    the_func (const vsvec<_T, _A>& l,                                    \
-              const expr<_OP<vsvec<_T, _A>>, _L, _R>& r) {               \
-        return expr<op_type <vsvec<_T, _A>>,                             \
-                    vsvec<_T, _A>,                                       \
-                    expr<_OP<vsvec<_T, _A>>, _L, _R> >(l, r);            \
-    }                                                                   \
-    /* expr, vsvec */                                                    \
+    /* vsvec, expr */                                                   \
     template <typename _T, typename _A,                                 \
               template <class _U> class _OP,                            \
               class _L, class _R>                                       \
-    expr<op_type <vsvec<_T, _A>>,                                        \
-         expr<_OP<vsvec<_T, _A>>, _L, _R>, vsvec<_T, _A> >                \
-    the_func (const expr<_OP<vsvec<_T, _A>>, _L, _R>& l,                 \
-              const vsvec<_T, _A>& r) {                                  \
-        return expr<op_type <vsvec<_T, _A>>,                             \
-                    expr<_OP<vsvec<_T, _A>>, _L, _R>,                    \
-                    vsvec<_T, _A> >(l, r);                               \
+    expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>,                        \
+        expr<_OP<vsvec<_T, _A>>, _L, _R> >                              \
+    the_func (const vsvec<_T, _A>& l,                                   \
+              const expr<_OP<vsvec<_T, _A>>, _L, _R>& r) {              \
+        return expr<op_type <vsvec<_T, _A>>,                            \
+                    vsvec<_T, _A>,                                      \
+                    expr<_OP<vsvec<_T, _A>>, _L, _R> >(l, r);           \
+    }                                                                   \
+    /* expr, vsvec */                                                   \
+    template <typename _T, typename _A,                                 \
+              template <class _U> class _OP,                            \
+              class _L, class _R>                                       \
+    expr<op_type <vsvec<_T, _A>>,                                       \
+         expr<_OP<vsvec<_T, _A>>, _L, _R>, vsvec<_T, _A> >              \
+    the_func (const expr<_OP<vsvec<_T, _A>>, _L, _R>& l,                \
+              const vsvec<_T, _A>& r) {                                 \
+        return expr<op_type <vsvec<_T, _A>>,                            \
+            expr<_OP<vsvec<_T, _A>>, _L, _R>,                           \
+                    vsvec<_T, _A> >(l, r);                              \
     }                                                                   \
     /* scalar, expr */                                                  \
     template <typename _T, typename _A,                                 \
               template <class _U> class _OP,                            \
               class _L, class _R>                                       \
-    expr<op_type <vsvec<_T, _A>>, _T,                                    \
-         expr<_OP<vsvec<_T, _A>>, _L, _R> >                              \
-    the_func (const _T& l, const expr<_OP<vsvec<_T, _A>>, _L, _R>& r) {  \
-        return expr<op_type <vsvec<_T, _A>>, _T,                         \
-                    expr<_OP<vsvec<_T, _A>>, _L, _R> >(l, r);            \
+    expr<op_type <vsvec<_T, _A>>, _T,                                   \
+         expr<_OP<vsvec<_T, _A>>, _L, _R> >                             \
+    the_func (const _T& l, const expr<_OP<vsvec<_T, _A>>, _L, _R>& r) { \
+        return expr<op_type <vsvec<_T, _A>>, _T,                        \
+                    expr<_OP<vsvec<_T, _A>>, _L, _R> >(l, r);           \
     }                                                                   \
     /* expr, scalar */                                                  \
     template <typename _T, typename _A,                                 \
               template <class _U> class _OP,                            \
               class _L, class _R>                                       \
-    expr<op_type <vsvec<_T, _A>>, expr<_OP<vsvec<_T, _A>>, _L, _R>, _T >  \
-    the_func (const expr<_OP<vsvec<_T, _A>>, _L, _R>& l, const _T& r) {  \
-        return expr<op_type <vsvec<_T, _A>>,                             \
-                    expr<_OP<vsvec<_T, _A>>, _L, _R>, _T >(l, r);        \
+    expr<op_type <vsvec<_T, _A>>, expr<_OP<vsvec<_T, _A>>, _L, _R>, _T > \
+    the_func (const expr<_OP<vsvec<_T, _A>>, _L, _R>& l, const _T& r) { \
+        return expr<op_type <vsvec<_T, _A>>,                            \
+            expr<_OP<vsvec<_T, _A>>, _L, _R>, _T >(l, r);               \
     }                                                                   \
     /* expr, expr */                                                    \
     template <typename _T,  typename _A,                                \
@@ -1149,14 +1149,14 @@ namespace cftal {
               class _LL, class _LR,                                     \
               template <class _U2> class _ROP,                          \
               class _RL, class _RR>                                     \
-    expr<op_type <vsvec<_T, _A>>,                                        \
-         expr<_LOP<vsvec<_T, _A>>, _LL, _LR>,                            \
-         expr<_ROP<vsvec<_T, _A>>, _RL, _RR> >                           \
-    the_func (const expr<_LOP<vsvec<_T, _A>>, _LL, _LR>& l,              \
-              const expr<_ROP<vsvec<_T, _A>>, _RL, _RR>& r) {            \
-        return expr<op_type <vsvec<_T, _A>>,                             \
-                    expr<_LOP<vsvec<_T, _A>>, _LL, _LR>,                 \
-                    expr<_ROP<vsvec<_T, _A>>, _RL, _RR> > (l, r);        \
+    expr<op_type <vsvec<_T, _A>>,                                       \
+         expr<_LOP<vsvec<_T, _A>>, _LL, _LR>,                           \
+         expr<_ROP<vsvec<_T, _A>>, _RL, _RR> >                          \
+    the_func (const expr<_LOP<vsvec<_T, _A>>, _LL, _LR>& l,             \
+              const expr<_ROP<vsvec<_T, _A>>, _RL, _RR>& r) {           \
+        return expr<op_type <vsvec<_T, _A>>,                            \
+                    expr<_LOP<vsvec<_T, _A>>, _LL, _LR>,                \
+                    expr<_ROP<vsvec<_T, _A>>, _RL, _RR> > (l, r);       \
     }
 
     TFUNC_A2(fmax, func::f_fmax)
@@ -1171,110 +1171,110 @@ namespace cftal {
     TFUNC_A2(atan2, func::f_atan2)
 
 #define TFUNC_A3(the_func, op_type)                                     \
-    /* vsvec, scalar, scalar */                                          \
+    /* vsvec, scalar, scalar */                                         \
     template <typename _T, typename _A>                                 \
-    expr<op_type <vsvec<_T, _A>>,                                        \
-         vsvec<_T, _A>,                                                  \
-         expr<func::tri_data<vsvec<_T, _A>>, _T, _T> >                   \
-    the_func (const vsvec<_T, _A>& a,                                    \
+    expr<op_type <vsvec<_T, _A>>,                                       \
+        vsvec<_T, _A>,                                                  \
+        expr<func::tri_data<vsvec<_T, _A>>, _T, _T> >                   \
+    the_func (const vsvec<_T, _A>& a,                                   \
               const _T& b,                                              \
               const _T& c) {                                            \
-        using r_expr_t= expr<func::tri_data<vsvec<_T, _A>>, _T, _T >;    \
+        using r_expr_t= expr<func::tri_data<vsvec<_T, _A>>, _T, _T >;   \
         r_expr_t bc(b, c);                                              \
-        expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, r_expr_t>            \
+        expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, r_expr_t>          \
             e(a, bc);                                                   \
         return e;                                                       \
     }                                                                   \
-    /* vsvec, scalar, vsvec */                                            \
-    template <typename _T, typename _A>                                 \
-    expr<op_type <vsvec<_T, _A>>,                                        \
-         vsvec<_T, _A>,                                                  \
-         expr<func::tri_data<vsvec<_T, _A>>, _T, vsvec<_T, _A> > >        \
-    the_func (const vsvec<_T, _A>& a,                                    \
-              const _T& b,                                              \
-              const vsvec<_T, _A>& c) {                                  \
-        using r_expr_t= expr<func::tri_data<vsvec<_T, _A>>,              \
-                             _T, vsvec<_T, _A> >;                        \
-        r_expr_t bc(b, c);                                              \
-        expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, r_expr_t>            \
-            e(a, bc);                                                   \
-        return e;                                                       \
-    }                                                                   \
-    /* vsvec, scalar, expr */                                            \
-    template <typename _T, typename _A,                                 \
-              template <class _U> class _OP,                            \
-              class _V >                                                \
-    expr<op_type <vsvec<_T, _A>>,                                        \
-         vsvec<_T, _A>,                                                  \
-         expr<func::tri_data<vsvec<_T, _A>>, _T,                         \
-              expr<_OP<vsvec<_T, _A>>, _T, _V> > >                       \
-    the_func (const vsvec<_T, _A>& a,                                    \
-              const _T& b,                                              \
-              const expr<_OP<vsvec<_T, _A>>, _T, _V>& c) {               \
-        using r_expr_t= expr<func::tri_data<vsvec<_T, _A>>,              \
-                             _T,                                        \
-                             expr<_OP<vsvec<_T, _A>>, _T, _V> >;         \
-        r_expr_t bc(b, c);                                              \
-        expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, r_expr_t>            \
-            e(a, bc);                                                   \
-        return e;                                                       \
-    }                                                                   \
-    /* vsvec, vsvec, scalar */                                            \
-    template <typename _T, typename _A>                                 \
-    expr<op_type <vsvec<_T, _A>>,                                        \
-         vsvec<_T, _A>,                                                  \
-         expr<func::tri_data<vsvec<_T, _A>>, vsvec<_T, _A>, _T> >         \
-    the_func (const vsvec<_T, _A>& a,                                    \
-              const vsvec<_T, _A>& b,                                    \
-              const _T& c) {                                            \
-        using r_expr_t= expr<func::tri_data<vsvec<_T, _A>>,              \
-                             vsvec<_T, _A>,_T >;                         \
-        r_expr_t bc(b, c);                                              \
-        expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, r_expr_t>            \
-            e(a, bc);                                                   \
-        return e;                                                       \
-    }                                                                   \
-    /* vsvec, vsvec, vsvec */                                              \
-    template <typename _T, typename _A>                                 \
-    expr<op_type <vsvec<_T, _A>>,                                        \
-         vsvec<_T, _A>,                                                  \
-         expr<func::tri_data<vsvec<_T, _A>>,                             \
-              vsvec<_T, _A>, vsvec<_T, _A> > >                            \
-    the_func (const vsvec<_T, _A>& a,                                    \
-              const vsvec<_T, _A>& b,                                    \
-              const vsvec<_T, _A>& c) {                                  \
-        using r_expr_t= expr<func::tri_data<vsvec<_T, _A>>,              \
-                             vsvec<_T, _A>, vsvec<_T, _A> >;              \
-        r_expr_t bc(b, c);                                              \
-        expr<op_type< vsvec<_T, _A>>, vsvec<_T, _A>, r_expr_t>            \
-            e(a, bc);                                                   \
-        return e;                                                       \
-    }                                                                   \
-    /* vsvec, vsvec, expr */                                              \
-    template <typename _T, typename _A,                                 \
-              template <class _U> class _OP,                            \
-              class _O1, class _O2>                                     \
-    expr<op_type <vsvec<_T, _A>>,                                        \
-         vsvec<_T, _A>,                                                  \
-         expr<func::tri_data<vsvec<_T, _A>>, vsvec<_T, _A>,               \
-              expr<_OP<vsvec<_T, _A>>, _O1, _O2> > >                     \
-    the_func (const vsvec<_T, _A>& a,                                    \
-              const vsvec<_T, _A>& b,                                    \
-              const expr<_OP<vsvec<_T, _A>>, _O1, _O2>& c) {             \
-        using r_expr_t= expr<func::tri_data<vsvec<_T, _A>>,              \
-                             vsvec<_T, _A>,                              \
-                             expr<_OP<vsvec<_T, _A>>, _O1, _O2> >;       \
-        r_expr_t bc(b, c);                                              \
-        expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, r_expr_t>            \
-            e(a, bc);                                                   \
-        return e;                                                       \
-    }                                                                   \
+        /* vsvec, scalar, vsvec */                                      \
+        template <typename _T, typename _A>                             \
+        expr<op_type <vsvec<_T, _A>>,                                   \
+             vsvec<_T, _A>,                                             \
+             expr<func::tri_data<vsvec<_T, _A>>, _T, vsvec<_T, _A> > >  \
+        the_func (const vsvec<_T, _A>& a,                               \
+                  const _T& b,                                          \
+                  const vsvec<_T, _A>& c) {                             \
+            using r_expr_t= expr<func::tri_data<vsvec<_T, _A>>,         \
+                                 _T, vsvec<_T, _A> >;                   \
+            r_expr_t bc(b, c);                                          \
+            expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, r_expr_t>      \
+                e(a, bc);                                               \
+            return e;                                                   \
+        }                                                               \
+        /* vsvec, scalar, expr */                                       \
+        template <typename _T, typename _A,                             \
+                  template <class _U> class _OP,                        \
+                  class _V >                                            \
+        expr<op_type <vsvec<_T, _A>>,                                   \
+             vsvec<_T, _A>,                                             \
+             expr<func::tri_data<vsvec<_T, _A>>, _T,                    \
+                  expr<_OP<vsvec<_T, _A>>, _T, _V> > >                  \
+        the_func (const vsvec<_T, _A>& a,                               \
+                  const _T& b,                                          \
+                  const expr<_OP<vsvec<_T, _A>>, _T, _V>& c) {          \
+            using r_expr_t= expr<func::tri_data<vsvec<_T, _A>>,         \
+                                 _T,                                    \
+                                 expr<_OP<vsvec<_T, _A>>, _T, _V> >;    \
+            r_expr_t bc(b, c);                                          \
+            expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, r_expr_t>      \
+                e(a, bc);                                               \
+            return e;                                                   \
+        }                                                               \
+        /* vsvec, vsvec, scalar */                                      \
+        template <typename _T, typename _A>                             \
+        expr<op_type <vsvec<_T, _A>>,                                   \
+             vsvec<_T, _A>,                                             \
+             expr<func::tri_data<vsvec<_T, _A>>, vsvec<_T, _A>, _T> >   \
+        the_func (const vsvec<_T, _A>& a,                               \
+                  const vsvec<_T, _A>& b,                               \
+                  const _T& c) {                                        \
+            using r_expr_t= expr<func::tri_data<vsvec<_T, _A>>,         \
+                                 vsvec<_T, _A>,_T >;                    \
+            r_expr_t bc(b, c);                                          \
+            expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, r_expr_t>      \
+                e(a, bc);                                               \
+            return e;                                                   \
+        }                                                               \
+        /* vsvec, vsvec, vsvec */                                       \
+        template <typename _T, typename _A>                             \
+        expr<op_type <vsvec<_T, _A>>,                                   \
+             vsvec<_T, _A>,                                             \
+             expr<func::tri_data<vsvec<_T, _A>>,                        \
+                  vsvec<_T, _A>, vsvec<_T, _A> > >                      \
+        the_func (const vsvec<_T, _A>& a,                               \
+                  const vsvec<_T, _A>& b,                               \
+                  const vsvec<_T, _A>& c) {                             \
+            using r_expr_t= expr<func::tri_data<vsvec<_T, _A>>,         \
+                                 vsvec<_T, _A>, vsvec<_T, _A> >;        \
+            r_expr_t bc(b, c);                                          \
+            expr<op_type< vsvec<_T, _A>>, vsvec<_T, _A>, r_expr_t>      \
+                e(a, bc);                                               \
+            return e;                                                   \
+        }                                                               \
+        /* vsvec, vsvec, expr */                                        \
+        template <typename _T, typename _A,                             \
+                  template <class _U> class _OP,                        \
+                  class _O1, class _O2>                                 \
+        expr<op_type <vsvec<_T, _A>>,                                   \
+             vsvec<_T, _A>,                                             \
+             expr<func::tri_data<vsvec<_T, _A>>, vsvec<_T, _A>,         \
+                  expr<_OP<vsvec<_T, _A>>, _O1, _O2> > >                \
+        the_func (const vsvec<_T, _A>& a,                               \
+                  const vsvec<_T, _A>& b,                               \
+                  const expr<_OP<vsvec<_T, _A>>, _O1, _O2>& c) {        \
+            using r_expr_t= expr<func::tri_data<vsvec<_T, _A>>,         \
+                                 vsvec<_T, _A>,                         \
+                                 expr<_OP<vsvec<_T, _A>>, _O1, _O2> >;  \
+            r_expr_t bc(b, c);                                          \
+            expr<op_type <vsvec<_T, _A>>, vsvec<_T, _A>, r_expr_t>      \
+                e(a, bc);                                               \
+            return e;                                                   \
+        }                                                               \
 
     TFUNC_A3(fma, op::fma)
     TFUNC_A3(fms, op::fms)
     TFUNC_A3(fnma, op::fnma)
 
-// #undef FUNC_A2
+    // #undef FUNC_A2
 }
 
 // Local variables:
