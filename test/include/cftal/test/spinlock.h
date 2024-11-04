@@ -71,7 +71,8 @@ namespace cftal {
         };
 
         // use an unitialized thread to refer to the current
-        // thread
+        // thread, no const reference because
+        // std::thread::native_handle() is non const
         bool
         bind_thread_to_cpu(std::thread& tid, unsigned cpu);
 
