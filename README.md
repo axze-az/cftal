@@ -27,6 +27,9 @@ are implemented and tested.
 The specializations for processors with AVX512 extensions are not tested yet.
 AArch64 code is not tested.
 
+The library also contains vectors with variable sizes. These use the
+short vectors of the library for their implementation.
+
 ## Getting Started
 
 ### Dependencies
