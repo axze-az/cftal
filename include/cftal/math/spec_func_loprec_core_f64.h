@@ -114,7 +114,6 @@ typename cftal::math::spec_func_loprec_core<double, _T>::vf_type
 cftal::math::spec_func_loprec_core<double, _T>::
 tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
 {
-    // using lanczos_ratfunc=lanczos_table_g_5_59172_N6;
     using lanczos_ratfunc=lanczos_table_g_4_35169_N5;
     vf_type xa=abs(x);
     vf_type pq=lanczos_rational_at(xa,
@@ -298,7 +297,7 @@ lgamma_k(arg_t<vf_type> x, vi_type* signp)
         vf_type log_a=abs(sst._f);
         base = _T::sel(xa_in_small, log_a, base);
     }
-    // using lanczos_ratfunc = lanczos_table_g_5_59172_N6;
+
     using lanczos_ratfunc=lanczos_table_g_4_35169_N5;
     vmf_type xa_in_lanczos =
         (((x < x_small_left) | (x > x_small_right)) & (xa < x_large));
