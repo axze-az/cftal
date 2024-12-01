@@ -724,7 +724,6 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
     // G(-z) = -pi/[sin(pi*z)*z * G(z)]
     // lanczos sum:
     vf_type xa=abs(x);
-    // using lanczos_ratfunc=lanczos_table_g_5_59172_N6;
     using lanczos_ratfunc=lanczos_table_g_4_35169_N5;
     auto pq=lanczos_rational_at(xa,
                                 lanczos_ratfunc::pdf,
@@ -1045,7 +1044,6 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
         base_l = _T::sel(xa_in_small, log_a[1], base_l);
     }
 
-    // using lanczos_ratfunc = lanczos_table_g_5_59172_N6;
     using lanczos_ratfunc=lanczos_table_g_4_35169_N5;
     vmf_type xa_in_lanczos =
         (((xc < x_small_left) | (xc > x_small_right)) & (xa < x_large));
