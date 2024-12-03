@@ -1,6 +1,7 @@
 - FIXME: the conversion of vec<f16_t, _N> to integer vectors is broken
+- more AVX512 code
 - fixed_vec_lookup_table specializations for v4f32 and v8f32 for table length
-  2
+  2? how about a template solution for all vector lengths and types?
 - documentation!!!
 
 - lower precision functions 8, 4 ulps?
@@ -8,7 +9,6 @@
   8 ulps allow 3 errornous bits  50, 20 bits precision
   what about 48 bit precision for double?
 
-- exp can be probably not be much faster
 
 double
 fmod(double x, double y)
