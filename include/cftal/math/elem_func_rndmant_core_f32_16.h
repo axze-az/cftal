@@ -40,8 +40,9 @@
 namespace cftal {
     namespace math {
 
-        // specialization of elem_func_loprec_core for double and different
-        // traits
+        // specialization of elem_func_rndmant_core for float,
+        // round of the last 16 mantissa bits for bfloat16
+        // precision and different traits
         template <typename _T>
         struct elem_func_rndmant_core<float, 16, _T> :
             public elem_func_core<float, _T> {
