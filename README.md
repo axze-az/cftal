@@ -24,7 +24,8 @@ faithfully rounding compared to mpfr.
 
 Specializations for x86 processors with instructions set extensions up to AVX2
 are implemented and tested.
-The specializations for processors with AVX512 extensions are not tested yet.
+The specializations for processors with AVX512 extensions are not much tested
+yet.
 AArch64 code is not tested.
 
 The library also contains vectors with variable sizes. These use the
@@ -60,8 +61,11 @@ You may also use gcc instead of clang:
 3. `CC=gcc-14 CXX=g++-14 cmake -DCMAKE_BUILD_TYPE=release ..`
 
 If you want to use vectors of double's for the calculation of some elementary
-float functions, use `-DCFTAL_CONFIG_USE_VF64_FOR_VF32=1` as an additional
-argument for cmake.
+and special functions for single precision, use
+
+`-DCFTAL_CONFIG_USE_VF64_FOR_VF32=1`
+
+as additional cmake argument.
 
 The compilation to a specific ABI is requested by configuring the library with
 
