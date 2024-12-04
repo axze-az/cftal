@@ -21,6 +21,8 @@ The elementary functions for half precision and bfloat16 with one argument are
 faithfully rounded (if mpfr rounds correctly).
 Tests for a  subset of the numbers for single and double precision show
 faithfully rounding compared to mpfr.
+The implemented special functions are fully tabulated for half and bfloat16
+precision.
 
 Specializations for x86 processors with instructions set extensions up to AVX2
 are implemented and tested.
@@ -67,8 +69,8 @@ and special functions for single precision, use
 
 as additional cmake argument.
 
-If you want to use vectors of float16's for the calculation of some elementary
-and special functions for half precision, use
+If you want to use vectors of float16's for the calculation of all elementary
+for half precision, use
 
 `-DCFTAL_CONFIG_USE_VF32_FOR_VF16=0`
 
