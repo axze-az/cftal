@@ -51,9 +51,9 @@ short vectors of the library for their implementation.
 create a build directory in the root directory of the project, configure and
 build
 
-1. mkdir build
-2. cd build
-3. CC=clang-18 CXX=clang++-18 cmake -DCMAKE_BUILD_TYPE=release ..
+1. `mkdir build`
+2. `cd build`
+3. `CC=clang-18 CXX=clang++-18 cmake -DCMAKE_BUILD_TYPE=release ..`
 
 You may also use gcc instead of clang:
 
@@ -62,6 +62,18 @@ You may also use gcc instead of clang:
 If you want to use vectors of double's for the calculation of some elementary
 float functions, use -DCFTAL_CONFIG_USE_VF64_FOR_VF32=1 as an additional
 argument for cmake.
+
+The complation to a specific ABI is requested by configuring the library
+`cmake -DCMAKE_BUILD_TYPE=release -DCFTAL_GCC_ARCH=x86-64-v3 ..`
+where `x64-64-v3` is one of the possible arguments to `gcc -march=`.
+The variable `CFTAL_GCC_ARCH` defaults to `native`.
+
+To enable the experimental AVX512 support configure the library with
+`cmake -DCMAKE_BUILD_TYPE=release -DCFTAL_GCC_ARCH=x86-64-v4 -DCFTAL_CONFIG_ENABLE_AVX512=1 ..`
+or use
+`cmake -DCMAKE_BUILD_TYPE=release -DCFTAL_CONFIG_ENABLE_AVX512=1 ..`
+if your processors is avx512 capable.
+
 
 ### Build and test
 
