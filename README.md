@@ -67,6 +67,14 @@ and special functions for single precision, use
 
 as additional cmake argument.
 
+If you want to use vectors of float16's for the calculation of some elementary
+and special functions for half precision, use
+
+`-DCFTAL_CONFIG_USE_VF32_FOR_VF16=0`
+
+as additional cmake argument. The default is to calculate half precision
+functions using vectors of float's-
+
 The compilation to a specific ABI is requested by configuring the library with
 
 `cmake -DCMAKE_BUILD_TYPE=release -DCFTAL_GCC_ARCH=x86-64-v3 ..`
@@ -75,9 +83,13 @@ where `x64-64-v3` is one of the possible arguments to `gcc -march=`.
 The variable `CFTAL_GCC_ARCH` defaults to `native`.
 
 To enable the experimental AVX512 support configure the library with
+
 `cmake -DCMAKE_BUILD_TYPE=release -DCFTAL_GCC_ARCH=x86-64-v4 -DCFTAL_CONFIG_ENABLE_AVX512=1 ..`
+
 or use
+
 `cmake -DCMAKE_BUILD_TYPE=release -DCFTAL_CONFIG_ENABLE_AVX512=1 ..`
+
 if your processors is avx512 capable.
 
 
