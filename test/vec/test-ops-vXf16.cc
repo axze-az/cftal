@@ -19,8 +19,6 @@
 #include "cftal/test/of_ops.h"
 #include "cftal/test/cpu_times.h"
 
-#if !defined (__AVX512F__) || (__CFTAL_CFG_ENABLE_AVX512__==0)
-
 namespace cftal {
     namespace test {
     }
@@ -37,13 +35,4 @@ int main()
     return rc==true ? 0 : 1;
 }
 
-#else
-
-int main()
-{
-    std::cout << "not testing vXf16 (missing implementation)" << std::endl;
-    return 0;
-}
-
-#endif
 
