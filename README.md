@@ -57,14 +57,16 @@ build
 
 You may also use gcc instead of clang:
 
-3. CC=gcc-14 CXX=g++-14 cmake -DCMAKE_BUILD_TYPE=release ..
+3. `CC=gcc-14 CXX=g++-14 cmake -DCMAKE_BUILD_TYPE=release ..`
 
 If you want to use vectors of double's for the calculation of some elementary
-float functions, use -DCFTAL_CONFIG_USE_VF64_FOR_VF32=1 as an additional
+float functions, use `-DCFTAL_CONFIG_USE_VF64_FOR_VF32=1` as an additional
 argument for cmake.
 
-The complation to a specific ABI is requested by configuring the library
+The compilation to a specific ABI is requested by configuring the library with
+
 `cmake -DCMAKE_BUILD_TYPE=release -DCFTAL_GCC_ARCH=x86-64-v3 ..`
+
 where `x64-64-v3` is one of the possible arguments to `gcc -march=`.
 The variable `CFTAL_GCC_ARCH` defaults to `native`.
 
