@@ -92,7 +92,7 @@ or use
 
 `cmake -DCMAKE_BUILD_TYPE=release -DCFTAL_CONFIG_ENABLE_AVX512=1 ..`
 
-if your processors is avx512 capable.
+if your processors are avx512 capable.
 
 
 ### Build and test
