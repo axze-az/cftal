@@ -397,7 +397,7 @@ cftal::select_zero_or_val(const v16f32::mask_type& m,
 #if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
     return _mm512_andnot_ps(m(), on_false());
 #else
-    return _mm512_maskz_mov_ps(_knot_mask8(m()), on_false());
+    return _mm512_maskz_mov_ps(_knot_mask16(m()), on_false());
 #endif
 }
 
