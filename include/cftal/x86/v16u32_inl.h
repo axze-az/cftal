@@ -451,7 +451,7 @@ cftal::v16u32
 cftal::select_zero_or_val(const v16u32::mask_type& m,
                           const v16u32& on_false)
 {
-    return _mm512_maskz_mov_epi32(_knot_mask8(m()), on_false());
+    return _mm512_maskz_mov_epi32(_knot_mask16(m()), on_false());
 }
 
 template <bool _P00, bool _P01, bool _P02, bool _P03,
