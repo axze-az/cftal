@@ -18,8 +18,7 @@
 #if !defined (__CFTAL_VXBF16_H__)
 #define __CFTAL_VXBF16_H__ 1
 
-#if !defined(__AVX512VL__) || !defined(__AVX512FP16__) ||       \
-    (__CFTAL_CFG_ENABLE_AVX512__==0)
+#if 1
 #include <cftal/config.h>
 #include <cftal/vec_spec.h>
 #include <cftal/cvt.h>
@@ -561,7 +560,7 @@ namespace cftal {
 
     // select
     vec<bf16_t, 1>
-    select(const typename vec<bf16_t, 1>::mask_type& m ,
+    select(const vec<bf16_t, 1>::mask_type& m ,
            const vec<bf16_t, 1>& on_true,
            const vec<bf16_t, 1>& on_false);
 
@@ -574,7 +573,7 @@ namespace cftal {
 
     // select value or zero
     vec<bf16_t, 1>
-    select_val_or_zero(const typename vec<bf16_t, 1>::mask_type& m ,
+    select_val_or_zero(const vec<bf16_t, 1>::mask_type& m ,
                        const vec<bf16_t, 1>& on_true);
 
     // select value or zero
@@ -586,7 +585,7 @@ namespace cftal {
 
     // select zero or value
     vec<bf16_t, 1>
-    select_zero_or_val(const typename vec<bf16_t, 1>::mask_type& m ,
+    select_zero_or_val(const vec<bf16_t, 1>::mask_type& m ,
                        const vec<bf16_t, 1>& on_false);
 
     // select zero or value
@@ -1705,11 +1704,14 @@ cftal::min(const vec<bf16_t, _N>& a, const vec<bf16_t, _N>& b)
 inline
 cftal::vec<cftal::bf16_t, 1>
 cftal::
-select(const typename vec<bf16_t, 1>::mask_type& m ,
+select(const vec<bf16_t, 1>::mask_type& m ,
        const vec<bf16_t, 1>& on_true,
        const vec<bf16_t, 1>& on_false)
 {
-    auto r=select(m(), on_true(), on_false());
+    // here we use the fact that vec<mf_bf16_t, 1> has a copy constructor
+    // and that vec<bit, 1> has a constructor from integer
+    auto r=select(vec<mf_bf16_t, 1>::mask_type(m()),
+                  on_true(), on_false());
     return vec<bf16_t, 1>::cvt_from_rep(r);
 }
 
@@ -1720,17 +1722,21 @@ select(const typename vec<bf16_t, _N>::mask_type& m ,
        const vec<bf16_t, _N>& on_true,
        const vec<bf16_t, _N>& on_false)
 {
-    auto r=select(m(), on_true(), on_false());
+    // here we use the fact that vec<mf_bf16_t, _N> has a copy constructor
+    // and that vec<bit, _N> has a constructor from integer
+    auto r=select(typename vec<mf_bf16_t, _N>::mask_type(m()),
+                  on_true(), on_false());
     return vec<bf16_t, _N>::cvt_from_rep(r);
 }
 
 inline
 cftal::vec<cftal::bf16_t, 1>
 cftal::
-select_val_or_zero(const typename vec<bf16_t, 1>::mask_type& m ,
+select_val_or_zero(const vec<bf16_t, 1>::mask_type& m ,
                    const vec<bf16_t, 1>& on_true)
 {
-    auto r=select_val_or_zero(m(), on_true());
+    auto r=select_val_or_zero(vec<mf_bf16_t, 1>::mask_type(m()),
+                              on_true());
     return vec<bf16_t, 1>::cvt_from_rep(r);
 }
 
@@ -1740,16 +1746,18 @@ cftal::
 select_val_or_zero(const typename vec<bf16_t, _N>::mask_type& m ,
                    const vec<bf16_t, _N>& on_true)
 {
-    auto r=select_val_or_zero(m(), on_true());
+    auto r=select_val_or_zero(typename vec<mf_bf16_t, _N>::mask_type(m()),
+                              on_true());
     return vec<bf16_t, _N>::cvt_from_rep(r);
 }
 
 inline
 cftal::vec<cftal::bf16_t, 1>
-cftal::select_zero_or_val(const typename vec<bf16_t, 1>::mask_type& m ,
+cftal::select_zero_or_val(const vec<bf16_t, 1>::mask_type& m ,
                           const vec<bf16_t, 1>& on_false)
 {
-    auto r=select_zero_or_val(m(), on_false());
+    auto r=select_zero_or_val(vec<mf_bf16_t, 1>::mask_type(m()),
+                              on_false());
     return vec<bf16_t, 1>::cvt_from_rep(r);
 }
 
@@ -1758,7 +1766,8 @@ cftal::vec<cftal::bf16_t, _N>
 cftal::select_zero_or_val(const typename vec<bf16_t, _N>::mask_type& m ,
                           const vec<bf16_t, _N>& on_false)
 {
-    auto r=select_zero_or_val(m(), on_false());
+    auto r=select_zero_or_val(typename vec<mf_bf16_t, _N>::mask_type(m()),
+                              on_false());
     return vec<bf16_t, _N>::cvt_from_rep(r);
 }
 
