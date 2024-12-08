@@ -523,7 +523,7 @@ namespace cftal {
     template <>
     struct is_signed<bf16_t> : public std::true_type {};
 
-    // use a user defined operator to avoid overriding f16
+    // use a user defined operator to avoid overriding bf16
     constexpr
     bf16_t operator ""_bf16(long double);
 
