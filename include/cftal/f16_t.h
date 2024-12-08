@@ -520,6 +520,9 @@ namespace cftal {
     template <>
     struct is_floating_point<f16_t> : public std::true_type {};
 
+    template <>
+    struct is_signed<f16_t> : public std::true_type {};
+
     // use a user defined operator to avoid overriding f16
     constexpr
     f16_t operator ""_f16(long double);
