@@ -1,5 +1,5 @@
 - FIXME: the conversion of vec<f16_t, _N> to integer vectors is broken
-- more AVX512 code
+- more AVX512 code: v32u16, v32s16, v64s8, v64u8
 - fixed_vec_lookup_table specializations for v4f32 and v8f32 for table length
   2? how about a template solution for all vector lengths and types?
 - documentation!!!
