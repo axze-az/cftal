@@ -27,29 +27,29 @@ namespace cftal {
 
     namespace x86 {
 
-	// permute s8/u8 using s8 indices
-	__m128i
-	permute_v16u8_v16s8(__m128i s, __m128i msk);
+        // permute s8/u8 using s8 indices
+        __m128i
+        permute_v16u8_v16s8(__m128i s, __m128i msk);
 
-	// permute s16/u16 using s16 indices
-	__m128i
-	permute_v8u16_v8s16(__m128i s, __m128i msk);
+        // permute s16/u16 using s16 indices
+        __m128i
+        permute_v8u16_v8s16(__m128i s, __m128i msk);
 
-	// permute s32/u32 using s32 indices
-	__m128i
-	permute_v4u32_v4s32(__m128i s, __m128i msk);
+        // permute s32/u32 using s32 indices
+        __m128i
+        permute_v4u32_v4s32(__m128i s, __m128i msk);
 
-	// permute s64/u64 using s64 indices
-	__m128i
-	permute_v2u64_v2s64(__m128i s, __m128i msk);
+        // permute s64/u64 using s64 indices
+        __m128i
+        permute_v2u64_v2s64(__m128i s, __m128i msk);
 
-	// permute f32 using s32 indices
-	__m128
-	permute_v4f32_v4s32(__m128 s, __m128i msk);
+        // permute f32 using s32 indices
+        __m128
+        permute_v4f32_v4s32(__m128 s, __m128i msk);
 
-	// permute f64 using i64 indices
-	__m128d
-	permute_v2f64_v2s64(__m128d s, __m128i msk);
+        // permute f64 using i64 indices
+        __m128d
+        permute_v2f64_v2s64(__m128d s, __m128i msk);
 
 #if defined (__AVX2__)
         // permute s32/u32 using s32 indices
@@ -75,7 +75,24 @@ namespace cftal {
         // return even numbered elements
         __m128i
         even_elements_v16u16(__m256i);
+#endif
 
+#if defined (__AVX512F__)
+        // permute s32/u32 using s32 indices
+        __m512i
+        permute_v16u32_v16s32(__m512i s, __m512i msk);
+
+        // permute s64/u64 using s64 indices
+        __m512i
+        permute_v8u64_v8s64(__m512i s, __m512i msk);
+
+        // permute f32 using s32 indices
+        __m512
+        permute_v16f32_v16s32(__m512 s, __m512i msk);
+
+        // permute f64 using s64 indices
+        __m512d
+        permute_v8f64_v8s64(__m512d s, __m512i msk);
 #endif
 
         // generic permutation of one double vector
@@ -1470,9 +1487,9 @@ cftal::x86::permute_v8u16_v8s16(__m128i s, __m128i msk)
     // and add 1 to the high bytes
     __m128i m=vpsllw_const<1>::v(msk);
     const __m128i& p=const_v16u8< 0,  0,  2,  2,  4,  4,  6,  6,
-				  8,  8, 10, 10, 12, 12, 14, 14>::iv();
+                                  8,  8, 10, 10, 12, 12, 14, 14>::iv();
     const __m128i& o=const_v16u8< 0,  1,  0,  1,  0,  1,  0,  1,
-				  0,  1,  0,  1,  0,  1,  0,  1>::iv();
+                                  0,  1,  0,  1,  0,  1,  0,  1>::iv();
     m=vpshufb::v(m, p);
     m=_mm_add_epi8(m, o);
     return permute_v16u8_v16s8(s, m);
@@ -1501,9 +1518,9 @@ cftal::x86::permute_v4u32_v4s32(__m128i s, __m128i msk)
     // and add 0, 1, 2, 3 to the bytes.
     __m128i m=vpslld_const<2>::v(msk);
     const __m128i& p=const_v16u8< 0,  0,  0,  0,  4,  4,  4,  4,
-				  8,  8,  8,  8, 12, 12, 12, 12>::iv();
+                                  8,  8,  8,  8, 12, 12, 12, 12>::iv();
     const __m128i& o=const_v16u8< 0,  1,  2,  3,  0,  1,  2,  3,
-				  0,  1,  2,  3,  0,  1,  2,  3>::iv();
+                                  0,  1,  2,  3,  0,  1,  2,  3>::iv();
     m=vpshufb::v(m, p);
     m=_mm_add_epi8(m, o);
     return permute_v16u8_v16s8(s, m);
@@ -1533,9 +1550,9 @@ cftal::x86::permute_v2u64_v2s64(__m128i s, __m128i msk)
     // and add 0, 1, 2, 3, 4, 5, 6, 7 to the bytes.
     __m128i m=vpsllq_const<4>::v(msk);
     const __m128i& p=const_v16u8< 0,  0,  0,  0,  0,  0,  0,  0,
-				  8,  8,  8,  8,  8,  8,  8,  8>::iv();
+                                  8,  8,  8,  8,  8,  8,  8,  8>::iv();
     const __m128i& o=const_v16u8< 0,  1,  2,  3,  4,  5,  6,  7,
-				  0,  1,  2,  3,  4,  5,  6,  7>::iv();
+                                  0,  1,  2,  3,  4,  5,  6,  7>::iv();
     m=vpshufb::v(m, p);
     m=_mm_add_epi8(m, o);
     return permute_v16u8_v16s8(s, m);
@@ -1561,7 +1578,7 @@ cftal::x86::permute_v4f32_v4s32(__m128 s, __m128i msk)
     return r;
 #else
     return _mm_castsi128_ps(
-	permute_v4u32_v4s32(_mm_castps_si128(s), msk));
+        permute_v4u32_v4s32(_mm_castps_si128(s), msk));
 #endif
 }
 
@@ -1584,7 +1601,7 @@ cftal::x86::permute_v2f64_v2s64(__m128d s, __m128i msk)
     return r;
 #else
     return _mm_castsi128_pd(
-	permute_v2u64_v2s64(_mm_castpd_si128(s), msk));
+        permute_v2u64_v2s64(_mm_castpd_si128(s), msk));
 #endif
 }
 
@@ -1677,6 +1694,49 @@ cftal::x86::even_elements_v16u16(__m256i s)
     __m256i r=vpshufb::v(s, p);
     r = perm1_v4u64<0, 2, 1, 3>::v(r);
     return _mm256_castsi256_si128(r);
+}
+
+#endif
+
+#if defined (__AVX512F__)
+// permute s32/u32 using s32 indices
+inline
+__m512i
+cftal::x86::permute_v16u32_v16s32(__m512i s, __m512i msk)
+{
+    const __m512i zero=_mm512_setzero_si512();
+    __mmask16 rm=_mm512_cmpge_epi32_mask(msk, zero);
+    return _mm512_maskz_permutexvar_epi32(rm, msk, s);
+}
+
+// permute s64/u64 using s64 indices
+inline
+__m512i
+cftal::x86::permute_v8u64_v8s64(__m512i s, __m512i msk)
+{
+    const __m512i zero=_mm512_setzero_si512();
+    __mmask8 rm=_mm512_cmpge_epi64_mask(msk, zero);
+    return _mm512_maskz_permutexvar_epi64(rm, msk, s);
+}
+
+// permute f32 using s32 indices
+inline
+__m512
+cftal::x86::permute_v16f32_v16s32(__m512 s, __m512i msk)
+{
+    const __m512i zero=_mm512_setzero_si512();
+    __mmask16 rm=_mm512_cmpge_epi32_mask(msk, zero);
+    return _mm512_maskz_permutexvar_ps(rm, msk, s);
+}
+
+// permute f64 using s64 indices
+inline
+__m512d
+cftal::x86::permute_v8f64_v8s64(__m512d s, __m512i msk)
+{
+    const __m512i zero=_mm512_setzero_si512();
+    __mmask8 rm=_mm512_cmpge_epi64_mask(msk, zero);
+    return _mm512_maskz_permutexvar_pd(rm, msk, s);
 }
 
 #endif
@@ -4187,7 +4247,7 @@ inline
 __m512
 cftal::x86::
 perm1_v16f32<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
-	     _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
+             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
 v(__m512 a)
 {
     constexpr const bool zero_elements=
@@ -4224,9 +4284,9 @@ v(__m512 a)
         ((_P15 >= 0 ? (1<<15) : 0));
 
     if (no_perm) {
-	if (!zero_elements)
-	    return a;
-	return _mm512_maskz_mov_ps(zm, a);
+        if (!zero_elements)
+            return a;
+        return _mm512_maskz_mov_ps(zm, a);
     }
     constexpr const uint32_t c00 = (_P00 < 0) ? -1 : _P00 & 15;
     constexpr const uint32_t c01 = (_P01 < 0) ? -1 : _P01 & 15;
@@ -4245,11 +4305,11 @@ v(__m512 a)
     constexpr const uint32_t c14 = (_P14 < 0) ? -1 : _P14 & 15;
     constexpr const uint32_t c15 = (_P15 < 0) ? -1 : _P15 & 15;
     const __m512i msk=const_v16u32<c00, c01, c02, c03,
-				   c04, c05, c06, c07,
-				   c08, c09, c10, c11,
-				   c12, c13, c14, c15>::iv();
+                                   c04, c05, c06, c07,
+                                   c08, c09, c10, c11,
+                                   c12, c13, c14, c15>::iv();
     if (zm != 0xFFFF) {
-	return _mm512_maskz_permutexvar_ps(zm, msk, a);
+        return _mm512_maskz_permutexvar_ps(zm, msk, a);
     }
     return _mm512_permutexvar_ps(msk, a);
 }
@@ -4262,7 +4322,7 @@ inline
 __m512
 cftal::x86::
 perm2_v16f32<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
-	     _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
+             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
 v(__m512 a, __m512 b)
 {
     constexpr const uint32_t
@@ -4314,16 +4374,16 @@ v(__m512 a, __m512 b)
         return ap;
     }
     if (b_only) {
-	// elements to select from vector b or zero
-	constexpr const int32_t
-	    b00 = _P00 < 16 ? -1 : _P00-16, b01 = _P01 < 16 ? -1 : _P01-16,
-	    b02 = _P02 < 16 ? -1 : _P02-16, b03 = _P03 < 16 ? -1 : _P03-16,
-	    b04 = _P04 < 16 ? -1 : _P04-16, b05 = _P05 < 16 ? -1 : _P05-16,
-	    b06 = _P06 < 16 ? -1 : _P06-16, b07 = _P07 < 16 ? -1 : _P07-16,
-	    b08 = _P08 < 16 ? -1 : _P08-16, b09 = _P09 < 16 ? -1 : _P09-16,
-	    b10 = _P10 < 16 ? -1 : _P10-16, b11 = _P11 < 16 ? -1 : _P11-16,
-	    b12 = _P12 < 16 ? -1 : _P12-16, b13 = _P13 < 16 ? -1 : _P13-16,
-	    b14 = _P14 < 16 ? -1 : _P14-16, b15 = _P15 < 16 ? -1 : _P15-16;
+        // elements to select from vector b or zero
+        constexpr const int32_t
+            b00 = _P00 < 16 ? -1 : _P00-16, b01 = _P01 < 16 ? -1 : _P01-16,
+            b02 = _P02 < 16 ? -1 : _P02-16, b03 = _P03 < 16 ? -1 : _P03-16,
+            b04 = _P04 < 16 ? -1 : _P04-16, b05 = _P05 < 16 ? -1 : _P05-16,
+            b06 = _P06 < 16 ? -1 : _P06-16, b07 = _P07 < 16 ? -1 : _P07-16,
+            b08 = _P08 < 16 ? -1 : _P08-16, b09 = _P09 < 16 ? -1 : _P09-16,
+            b10 = _P10 < 16 ? -1 : _P10-16, b11 = _P11 < 16 ? -1 : _P11-16,
+            b12 = _P12 < 16 ? -1 : _P12-16, b13 = _P13 < 16 ? -1 : _P13-16,
+            b14 = _P14 < 16 ? -1 : _P14-16, b15 = _P15 < 16 ? -1 : _P15-16;
         const __m512 bp=perm1_v16f32<
             b00, b01, b02, b03, b04, b05, b06, b07,
             b08, b09, b10, b11, b12, b13, b14, b15>::v(b);
@@ -4363,9 +4423,9 @@ v(__m512 a, __m512 b)
         ((_P14 >= 0 ? (1<<14) : 0)) |
         ((_P15 >= 0 ? (1<<15) : 0));
     const __m512i msk=const_v16u32<_P00, _P01, _P02, _P03,
-				   _P04, _P05, _P06, _P07,
-				   _P08, _P09, _P10, _P11,
-				   _P12, _P13, _P14, _P15>::iv();
+                                   _P04, _P05, _P06, _P07,
+                                   _P08, _P09, _P10, _P11,
+                                   _P12, _P13, _P14, _P15>::iv();
     if (zm != 0xFFFF) {
         return _mm512_maskz_permutex2var_ps(zm, a, msk, b);
     }
@@ -4380,7 +4440,7 @@ inline
 __m512i
 cftal::x86::
 perm1_v16u32<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
-	     _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
+             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
 v(__m512i a)
 {
     constexpr const bool zero_elements=
@@ -4417,9 +4477,9 @@ v(__m512i a)
         ((_P15 >= 0 ? (1<<15) : 0));
 
     if (no_perm) {
-	if (!zero_elements)
-	    return a;
-	return _mm512_maskz_mov_epi32(zm, a);
+        if (!zero_elements)
+            return a;
+        return _mm512_maskz_mov_epi32(zm, a);
     }
     constexpr const uint32_t c00 = (_P00 < 0) ? -1 : _P00 & 15;
     constexpr const uint32_t c01 = (_P01 < 0) ? -1 : _P01 & 15;
@@ -4438,11 +4498,11 @@ v(__m512i a)
     constexpr const uint32_t c14 = (_P14 < 0) ? -1 : _P14 & 15;
     constexpr const uint32_t c15 = (_P15 < 0) ? -1 : _P15 & 15;
     const __m512i msk=const_v16u32<c00, c01, c02, c03,
-				   c04, c05, c06, c07,
-				   c08, c09, c10, c11,
-				   c12, c13, c14, c15>::iv();
+                                   c04, c05, c06, c07,
+                                   c08, c09, c10, c11,
+                                   c12, c13, c14, c15>::iv();
     if (zm != 0xFFFF) {
-	return _mm512_maskz_permutexvar_epi32(zm, msk, a);
+        return _mm512_maskz_permutexvar_epi32(zm, msk, a);
     }
     return _mm512_permutexvar_epi32(msk, a);
 }
@@ -4455,7 +4515,7 @@ inline
 __m512i
 cftal::x86::
 perm2_v16u32<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
-	     _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
+             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
 v(__m512i a, __m512i b)
 {
     constexpr const uint32_t
@@ -4507,16 +4567,16 @@ v(__m512i a, __m512i b)
         return ap;
     }
     if (b_only) {
-	// elements to select from vector b or zero
-	constexpr const int32_t
-	    b00 = _P00 < 16 ? -1 : _P00-16, b01 = _P01 < 16 ? -1 : _P01-16,
-	    b02 = _P02 < 16 ? -1 : _P02-16, b03 = _P03 < 16 ? -1 : _P03-16,
-	    b04 = _P04 < 16 ? -1 : _P04-16, b05 = _P05 < 16 ? -1 : _P05-16,
-	    b06 = _P06 < 16 ? -1 : _P06-16, b07 = _P07 < 16 ? -1 : _P07-16,
-	    b08 = _P08 < 16 ? -1 : _P08-16, b09 = _P09 < 16 ? -1 : _P09-16,
-	    b10 = _P10 < 16 ? -1 : _P10-16, b11 = _P11 < 16 ? -1 : _P11-16,
-	    b12 = _P12 < 16 ? -1 : _P12-16, b13 = _P13 < 16 ? -1 : _P13-16,
-	    b14 = _P14 < 16 ? -1 : _P14-16, b15 = _P15 < 16 ? -1 : _P15-16;
+        // elements to select from vector b or zero
+        constexpr const int32_t
+            b00 = _P00 < 16 ? -1 : _P00-16, b01 = _P01 < 16 ? -1 : _P01-16,
+            b02 = _P02 < 16 ? -1 : _P02-16, b03 = _P03 < 16 ? -1 : _P03-16,
+            b04 = _P04 < 16 ? -1 : _P04-16, b05 = _P05 < 16 ? -1 : _P05-16,
+            b06 = _P06 < 16 ? -1 : _P06-16, b07 = _P07 < 16 ? -1 : _P07-16,
+            b08 = _P08 < 16 ? -1 : _P08-16, b09 = _P09 < 16 ? -1 : _P09-16,
+            b10 = _P10 < 16 ? -1 : _P10-16, b11 = _P11 < 16 ? -1 : _P11-16,
+            b12 = _P12 < 16 ? -1 : _P12-16, b13 = _P13 < 16 ? -1 : _P13-16,
+            b14 = _P14 < 16 ? -1 : _P14-16, b15 = _P15 < 16 ? -1 : _P15-16;
         const __m512i bp=perm1_v16u32<
             b00, b01, b02, b03, b04, b05, b06, b07,
             b08, b09, b10, b11, b12, b13, b14, b15>::v(b);
@@ -4556,9 +4616,9 @@ v(__m512i a, __m512i b)
         ((_P14 >= 0 ? (1<<14) : 0)) |
         ((_P15 >= 0 ? (1<<15) : 0));
     const __m512i pperm=const_v16u32<_P00, _P01, _P02, _P03,
-				     _P04, _P05, _P06, _P07,
-				     _P08, _P09, _P10, _P11,
-				     _P12, _P13, _P14, _P15>::iv();
+                                     _P04, _P05, _P06, _P07,
+                                     _P08, _P09, _P10, _P11,
+                                     _P12, _P13, _P14, _P15>::iv();
     if (zm != 0xFFFF) {
         return _mm512_maskz_permutex2var_epi32(zm, a, pperm, b);
     }
@@ -5401,9 +5461,9 @@ __m512i cftal::x86::perm_v16u32(__m512i a)
     static_assert(_P15 < 16,
                   "cftal::x86::perm_v16u32(a) : _P15 < 16");
     return perm1_v16u32<_P00, _P01, _P02, _P03,
-			_P04, _P05, _P06, _P07,
-			_P08, _P09, _P10, _P11,
-			_P12, _P13, _P14, _P15>::v(a);
+                        _P04, _P05, _P06, _P07,
+                        _P08, _P09, _P10, _P11,
+                        _P12, _P13, _P14, _P15>::v(a);
 }
 
 template <int _P00, int _P01, int _P02, int _P03,
@@ -5445,9 +5505,9 @@ __m512i cftal::x86::perm_v16u32(__m512i a, __m512i b)
     static_assert(_P15 < 32,
                   "cftal::x86::perm_v16u32(a, b) : _P15 < 32");
     return perm2_v16u32<_P00, _P01, _P02, _P03,
-			_P04, _P05, _P06, _P07,
-			_P08, _P09, _P10, _P11,
-			_P12, _P13, _P14, _P15>::v(a, b);
+                        _P04, _P05, _P06, _P07,
+                        _P08, _P09, _P10, _P11,
+                        _P12, _P13, _P14, _P15>::v(a, b);
 }
 #endif
 
