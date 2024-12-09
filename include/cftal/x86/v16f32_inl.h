@@ -602,6 +602,13 @@ cftal::v16f32 cftal::trunc(const v16f32& a)
 }
 
 inline
+cftal::v16f32
+cftal::permute(const v16f32& s, const v16s32& idx)
+{
+    return x86::permute_v16f32_v16s32(s(), idx());
+}
+
+inline
 cftal::variable_vec_lookup_table<float, int32_t, 16>::
 variable_vec_lookup_table(const vec<int32_t, 16>& idx)
     : _msk(idx)

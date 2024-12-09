@@ -165,6 +165,9 @@ namespace cftal {
     permute(const vec<float, 16>& s0,
             const vec<float, 16>& s1);
 
+    vec<float, 16>
+    permute(const vec<float, 16>& s, const vec<int32_t, 16>& idx);
+
     template <>
     class variable_vec_lookup_table<float, int32_t, 16> {
     private:
