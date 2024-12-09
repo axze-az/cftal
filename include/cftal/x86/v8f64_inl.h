@@ -618,6 +618,13 @@ cftal::v8f64 cftal::permute(const v8f64& a, const v8f64& b)
 }
 
 inline
+cftal::v8f64
+cftal::permute(const v8f64& s, const v8s64& idx)
+{
+    return x86::permute_v8f64_v8s64(s(), idx());
+}
+
+inline
 cftal::variable_vec_lookup_table<double, int32_t, 8>::
 variable_vec_lookup_table(const vec<int32_t, 8>& idx)
     : _msk(idx)
