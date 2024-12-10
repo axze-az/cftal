@@ -1607,10 +1607,16 @@ inline
 __m256i
 cftal::x86::permute_v8u32_v8s32(__m256i s, __m256i msk)
 {
+#if defined (__AVX512VL__)
+    const __m256i zero=_mm256_setzero_si256();
+    __mmask8 rm=_mm256_cmpge_epi32_mask(msk, zero);
+    return _mm256_maskz_permutexvar_epi32(rm, msk, s);
+#else
     __m256i r=_mm256_permutevar8x32_epi32(s, msk);
     __m256i z_e=_mm256_srai_epi32(msk, 31);
     r = _mm256_andnot_si256(z_e, r);
     return r;
+#endif
 }
 
 // permute s64/u64 using s64 indices
@@ -1618,10 +1624,16 @@ inline
 __m256i
 cftal::x86::permute_v4u64_v4s64(__m256i s, __m256i msk)
 {
+#if defined (__AVX512VL__)
+    const __m256i zero=_mm256_setzero_si256();
+    __mmask8 rm=_mm256_cmpge_epi64_mask(msk, zero);
+    return _mm256_maskz_permutexvar_epi64(rm, msk, s);
+#else
     __m256i msk32=perm1_v8u32<0, 0, 2, 2, 4, 4, 6, 6>::v(msk+msk);
     const __m256i& mskc=const_v8u32<0, 1, 0, 1, 0, 1, 0, 1>::iv();
     msk32 = _mm256_add_epi32(msk32, mskc);
     return permute_v8u32_v8s32(s, msk32);
+#endif
 }
 
 // permute f32 using s32 indices
@@ -1629,10 +1641,16 @@ inline
 __m256
 cftal::x86::permute_v8f32_v8s32(__m256 s, __m256i msk)
 {
+#if defined (__AVX512VL__)
+    const __m256i zero=_mm256_setzero_si256();
+    __mmask8 rm=_mm256_cmpge_epi32_mask(msk, zero);
+    return _mm256_maskz_permutexvar_ps(rm, msk, s);
+#else
     __m256 r=_mm256_permutevar8x32_ps(s, msk);
     __m256i z_e=_mm256_srai_epi32(msk, 31);
     r = _mm256_castsi256_ps(_mm256_andnot_si256(z_e, _mm256_castps_si256(r)));
     return r;
+#endif
 }
 
 // permute f64 using s64 indices
@@ -1640,8 +1658,14 @@ inline
 __m256d
 cftal::x86::permute_v4f64_v4s64(__m256d s, __m256i msk)
 {
+#if defined (__AVX512VL__)
+    const __m256i zero=_mm256_setzero_si256();
+    __mmask8 rm=_mm256_cmpge_epi64_mask(msk, zero);
+    return _mm256_maskz_permutexvar_pd(rm, msk, s);
+#else
     return _mm256_castsi256_pd(permute_v4u64_v4s64(
         _mm256_castpd_si256(s), msk));
+#endif
 }
 
 // return odd elements
