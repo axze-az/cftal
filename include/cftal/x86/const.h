@@ -157,7 +157,7 @@ namespace cftal {
 
 #endif
 
-#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+#if defined (__AVX512F__)
 
         // static constants consisting of 16 uint32_t
         template <uint32_t _P00, uint32_t _P01,
@@ -173,6 +173,36 @@ namespace cftal {
             static
             __attribute__((__aligned__(64),
                           __visibility__("hidden")))
+            const u_t _msk;
+        public:
+            static const __m512i& iv();
+            static const __m512& fv();
+            static const __m512d& dv();
+        };
+#endif
+
+#if defined (__AVX512BW__)
+        // static constants consisting of 32 uint16_t
+        template <uint16_t _P00, uint16_t _P01,
+                  uint16_t _P02, uint16_t _P03,
+                  uint16_t _P04, uint16_t _P05,
+                  uint16_t _P06, uint16_t _P07,
+                  uint16_t _P08, uint16_t _P09,
+                  uint16_t _P10, uint16_t _P11,
+                  uint16_t _P12, uint16_t _P13,
+                  uint16_t _P14, uint16_t _P15,
+                  uint16_t _P16, uint16_t _P17,
+                  uint16_t _P18, uint16_t _P19,
+                  uint16_t _P20, uint16_t _P21,
+                  uint16_t _P22, uint16_t _P23,
+                  uint16_t _P24, uint16_t _P25,
+                  uint16_t _P26, uint16_t _P27,
+                  uint16_t _P28, uint16_t _P29,
+                  uint16_t _P30, uint16_t _P31>
+        class const_v32u16 {
+            using u_t = vecunion<uint16_t, 32, __m512, __m512d, __m512i>;
+            static __attribute__((__aligned__(64),
+                                  __visibility__("hidden")))
             const u_t _msk;
         public:
             static const __m512i& iv();
@@ -722,7 +752,7 @@ const_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
 }
 #endif // __AVX__
 
-#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+#if defined (__AVX512F__)
 
 template <cftal::uint32_t _P00, cftal::uint32_t _P01,
           cftal::uint32_t _P02, cftal::uint32_t _P03,
@@ -791,6 +821,93 @@ const __m512d&
 cftal::x86::
 const_v16u32<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
 	     _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::dv()
+{
+    return _msk._vd;
+}
+
+#endif
+
+#if defined (__AVX512BW__)
+
+template <uint16_t _P00, uint16_t _P01, uint16_t _P02, uint16_t _P03,
+          uint16_t _P04, uint16_t _P05, uint16_t _P06, uint16_t _P07,
+          uint16_t _P08, uint16_t _P09, uint16_t _P10, uint16_t _P11,
+          uint16_t _P12, uint16_t _P13, uint16_t _P14, uint16_t _P15,
+          uint16_t _P16, uint16_t _P17, uint16_t _P18, uint16_t _P19,
+          uint16_t _P20, uint16_t _P21, uint16_t _P22, uint16_t _P23,
+          uint16_t _P24, uint16_t _P25, uint16_t _P26, uint16_t _P27,
+          uint16_t _P28, uint16_t _P29, uint16_t _P30, uint16_t _P31>
+const typename
+cftal::x86::
+const_v32u16<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+             _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+             _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>::u_t
+cftal::x86::
+const_v32u16<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+             _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+             _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>::_msk= {{
+        _P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+        _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+        _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+        _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31
+    }
+};
+
+template <uint16_t _P00, uint16_t _P01, uint16_t _P02, uint16_t _P03,
+          uint16_t _P04, uint16_t _P05, uint16_t _P06, uint16_t _P07,
+          uint16_t _P08, uint16_t _P09, uint16_t _P10, uint16_t _P11,
+          uint16_t _P12, uint16_t _P13, uint16_t _P14, uint16_t _P15,
+          uint16_t _P16, uint16_t _P17, uint16_t _P18, uint16_t _P19,
+          uint16_t _P20, uint16_t _P21, uint16_t _P22, uint16_t _P23,
+          uint16_t _P24, uint16_t _P25, uint16_t _P26, uint16_t _P27,
+          uint16_t _P28, uint16_t _P29, uint16_t _P30, uint16_t _P31>
+inline
+const __m512i&
+cftal::x86::
+const_v32u16<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+             _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+             _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>::iv()
+{
+    return _msk._vi;
+}
+
+template <uint16_t _P00, uint16_t _P01, uint16_t _P02, uint16_t _P03,
+          uint16_t _P04, uint16_t _P05, uint16_t _P06, uint16_t _P07,
+          uint16_t _P08, uint16_t _P09, uint16_t _P10, uint16_t _P11,
+          uint16_t _P12, uint16_t _P13, uint16_t _P14, uint16_t _P15,
+          uint16_t _P16, uint16_t _P17, uint16_t _P18, uint16_t _P19,
+          uint16_t _P20, uint16_t _P21, uint16_t _P22, uint16_t _P23,
+          uint16_t _P24, uint16_t _P25, uint16_t _P26, uint16_t _P27,
+          uint16_t _P28, uint16_t _P29, uint16_t _P30, uint16_t _P31>
+inline
+const __m512&
+cftal::x86::
+const_v32u16<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+             _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+             _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>::fv()
+{
+    return _msk._vf;
+}
+
+template <uint16_t _P00, uint16_t _P01, uint16_t _P02, uint16_t _P03,
+          uint16_t _P04, uint16_t _P05, uint16_t _P06, uint16_t _P07,
+          uint16_t _P08, uint16_t _P09, uint16_t _P10, uint16_t _P11,
+          uint16_t _P12, uint16_t _P13, uint16_t _P14, uint16_t _P15,
+          uint16_t _P16, uint16_t _P17, uint16_t _P18, uint16_t _P19,
+          uint16_t _P20, uint16_t _P21, uint16_t _P22, uint16_t _P23,
+          uint16_t _P24, uint16_t _P25, uint16_t _P26, uint16_t _P27,
+          uint16_t _P28, uint16_t _P29, uint16_t _P30, uint16_t _P31>
+inline
+const __m512d&
+cftal::x86::
+const_v32u16<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+             _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+             _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>::dv()
 {
     return _msk._vd;
 }
