@@ -1673,6 +1673,11 @@ inline
 __m128i
 cftal::x86::odd_elements_v16u16(__m256i s)
 {
+#if defined (__AVX512VL__) && defined (__AVX512BW__)
+    const __m256i idx=const_v16u16<1, 3, 5, 7, 9, 11, 13, 15,
+                                   0, 0, 0, 0, 0,  0,  0,  0>::iv();
+    return _mm256_castsi256_si128(_mm256_permutexvar_epi16(idx, s));
+#else
     // 1 3 5 7 --> 2 6 10 14
     const __m256i& p=const_v32u8< 2,  3,  6,  7,  10,  11, 14, 15,
                                   0,  0,  0,  0,   0,   0,  0,  0,
@@ -1681,6 +1686,7 @@ cftal::x86::odd_elements_v16u16(__m256i s)
     __m256i r=vpshufb::v(s, p);
     r = perm1_v4u64<0, 2, 1, 3>::v(r);
     return _mm256_castsi256_si128(r);
+#endif
 }
 
 // return even elements
@@ -1688,6 +1694,11 @@ inline
 __m128i
 cftal::x86::even_elements_v16u16(__m256i s)
 {
+#if defined (__AVX512VL__) && defined (__AVX512BW__)
+    const __m256i idx=const_v16u16<0, 2, 4, 6, 8, 10, 12, 14,
+                                   0, 0, 0, 0, 0,  0,  0,  0>::iv();
+    return _mm256_castsi256_si128(_mm256_permutexvar_epi16(idx, s));
+#else
     // 0 2 4 6 --> 0 4 8 12
     const __m256i& p=const_v32u8< 0,  1,  4,  5,  8,  9, 12, 13,
                                   0,  0,  0,  0,  0,  0,  0,  0,
@@ -1696,6 +1707,7 @@ cftal::x86::even_elements_v16u16(__m256i s)
     __m256i r=vpshufb::v(s, p);
     r = perm1_v4u64<0, 2, 1, 3>::v(r);
     return _mm256_castsi256_si128(r);
+#endif
 }
 
 #endif
