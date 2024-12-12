@@ -95,6 +95,17 @@ namespace cftal {
         permute_v8f64_v8s64(__m512d s, __m512i msk);
 #endif
 
+#if defined (__AVX512BW__)
+#if defined (__AVX512VL__)
+        // permute s16/u16 using s16 indices
+        __m256i
+        permute_v16u16_v16s16(__m256i s, __m256i msk);
+#endif
+        // permute s16/u16 using s16 indices
+        __m512i
+        permute_v32u16_v32s16(__m512i s, __m512i msk);
+#endif
+
         // generic permutation of one double vector
         template <int _P0, int _P1>
         struct perm1_v2f64 {
@@ -1754,6 +1765,32 @@ cftal::x86::permute_v8f64_v8s64(__m512d s, __m512i msk)
 }
 
 #endif
+
+#if defined (__AVX512BW__)
+#if defined (__AVX512VL__)
+// permute s16/u16 using s16 indices
+inline
+__m256i
+cftal::x86::permute_v16u16_v16s16(__m256i s, __m256i msk)
+{
+    const __m256i zero=_mm256_setzero_si256();
+    __mmask8 rm=_mm256_cmpge_epi16_mask(msk, zero);
+    return _mm256_maskz_permutexvar_epi16(rm, msk, s);
+}
+#endif
+
+// permute s16/u16 using s16 indices
+inline
+__m512i
+cftal::x86::permute_v32u16_v32s16(__m512i s, __m512i msk)
+{
+    const __m512i zero=_mm512_setzero_si512();
+    __mmask16 rm=_mm512_cmpge_epi16_mask(msk, zero);
+    return _mm512_maskz_permutexvar_epi16(rm, msk, s);
+}
+#endif
+
+
 
 template <int _P0, int _P1>
 inline
