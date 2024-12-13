@@ -104,6 +104,16 @@ namespace cftal {
         // permute s16/u16 using s16 indices
         __m512i
         permute_v32u16_v32s16(__m512i s, __m512i msk);
+
+#if defined (__AVX512VL__)
+        // return odd numbered elements
+        __m256i
+        odd_elements_v32u16(__m512i);
+
+        // return even numbered elements
+        __m256i
+        even_elements_v32u16(__m512i);
+#endif
 #endif
 
         // generic permutation of one double vector
@@ -1788,6 +1798,31 @@ cftal::x86::permute_v32u16_v32s16(__m512i s, __m512i msk)
     __mmask16 rm=_mm512_cmpge_epi16_mask(msk, zero);
     return _mm512_maskz_permutexvar_epi16(rm, msk, s);
 }
+
+#if defined (__AVX512VL__)
+inline
+__m256i
+cftal::x86::odd_elements_v32u16(__m512i s)
+{
+    const __m512i idx=const_v32u16< 1,  3,  5,  7,  9, 11, 13, 15,
+                                   17, 19, 21, 23, 25, 27, 29, 31,
+                                    0,  0,  0,  0,  0,  0,  0,  0,
+                                    0,  0,  0,  0,  0,  0,  0,  0>::iv();
+    return _mm512_castsi512_si256(_mm512_permutexvar_epi16(idx, s));
+}
+
+// return even elements
+inline
+__m256i
+cftal::x86::even_elements_v32u16(__m512i s)
+{
+    const __m512i idx=const_v32u16< 0,  2,  4,  6,  8, 10, 12, 14,
+                                   16, 18, 20, 22, 24, 26, 28, 30,
+                                    0,  0,  0,  0,  0,  0,  0,  0,
+                                    0,  0,  0,  0,  0,  0,  0,  0>::iv();
+    return _mm512_castsi512_si256(_mm512_permutexvar_epi16(idx, s));
+}
+#endif
 #endif
 
 
