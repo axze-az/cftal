@@ -1564,7 +1564,7 @@ cftal::x86::permute_v2u64_v2s64(__m128i s, __m128i msk)
         _mm_maskz_permutevar_pd(rm, _mm_castsi128_pd(s), msk));
 #elif defined (__AVX__)
     __m128i r=_mm_castpd_si128(
-        _mm_permutevar_pd(_mm_castsi128_pd(s), msk+msk));
+        _mm_permutevar_pd(_mm_castsi128_pd(s), _mm_add_epi64(msk,msk));
     __m128i neg=_mm_cmpgt_epi64(_mm_setzero_si128(), msk);
     r = _mm_andnot_si128(neg, r);
     return r;
@@ -1612,7 +1612,7 @@ cftal::x86::permute_v2f64_v2s64(__m128d s, __m128i msk)
     __mmask8 rm=_mm_cmpge_epi64_mask(msk, zero);
     return _mm_maskz_permutevar_pd(rm, s, msk);
 #elif defined (__AVX__)
-    __m128d r=_mm_permutevar_pd(s, msk+msk);
+    __m128d r=_mm_permutevar_pd(s, _mm_add_epi64(msk, msk));
     __m128i neg=_mm_cmpgt_epi64(_mm_setzero_si128(), msk);
     r = _mm_castsi128_pd(_mm_andnot_si128(neg, _mm_castpd_si128(r)));
     return r;
@@ -1650,7 +1650,8 @@ cftal::x86::permute_v4u64_v4s64(__m256i s, __m256i msk)
     __mmask8 rm=_mm256_cmpge_epi64_mask(msk, zero);
     return _mm256_maskz_permutexvar_epi64(rm, msk, s);
 #else
-    __m256i msk32=perm1_v8u32<0, 0, 2, 2, 4, 4, 6, 6>::v(msk+msk);
+    __m256i msk32=perm1_v8u32<0, 0, 2, 2, 4, 4, 6, 6>::v(
+        _mm256_add_epi64(msk,msk));
     const __m256i& mskc=const_v8u32<0, 1, 0, 1, 0, 1, 0, 1>::iv();
     msk32 = _mm256_add_epi32(msk32, mskc);
     return permute_v8u32_v8s32(s, msk32);
