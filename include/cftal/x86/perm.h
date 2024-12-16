@@ -1564,7 +1564,7 @@ cftal::x86::permute_v2u64_v2s64(__m128i s, __m128i msk)
         _mm_maskz_permutevar_pd(rm, _mm_castsi128_pd(s), msk));
 #elif defined (__AVX__)
     __m128i r=_mm_castpd_si128(
-        _mm_permutevar_pd(_mm_castsi128_pd(s), _mm_add_epi64(msk,msk));
+        _mm_permutevar_pd(_mm_castsi128_pd(s), _mm_add_epi64(msk, msk)));
     __m128i neg=_mm_cmpgt_epi64(_mm_setzero_si128(), msk);
     r = _mm_andnot_si128(neg, r);
     return r;
