@@ -1651,7 +1651,7 @@ cftal::x86::permute_v4u64_v4s64(__m256i s, __m256i msk)
     return _mm256_maskz_permutexvar_epi64(rm, msk, s);
 #else
     __m256i msk32=perm1_v8u32<0, 0, 2, 2, 4, 4, 6, 6>::v(
-        _mm256_add_epi64(msk,msk));
+        _mm256_add_epi64(msk, msk));
     const __m256i& mskc=const_v8u32<0, 1, 0, 1, 0, 1, 0, 1>::iv();
     msk32 = _mm256_add_epi32(msk32, mskc);
     return permute_v8u32_v8s32(s, msk32);
