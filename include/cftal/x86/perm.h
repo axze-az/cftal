@@ -1571,7 +1571,7 @@ cftal::x86::permute_v2u64_v2s64(__m128i s, __m128i msk)
 #else
     // multiply mask with 8, shuffle it to qwords
     // and add 0, 1, 2, 3, 4, 5, 6, 7 to the bytes.
-    __m128i m=vpsllq_const<4>::v(msk);
+    __m128i m=vpsllq_const<3>::v(msk);
     const __m128i& p=const_v16u8< 0,  0,  0,  0,  0,  0,  0,  0,
                                   8,  8,  8,  8,  8,  8,  8,  8>::iv();
     const __m128i& o=const_v16u8< 0,  1,  2,  3,  4,  5,  6,  7,
