@@ -45,6 +45,10 @@ namespace cftal {
 
     template <size_t _N>
     vec<bf16_t, _N>
+    scalbn(const vec<bf16_t, _N>& a, const vec<int16_t, _N>& e);
+
+    template <size_t _N>
+    vec<bf16_t, _N>
     frexp(const vec<bf16_t, _N>& a, vec<int16_t, _N>* e);
 
     template <size_t _N>
@@ -1169,6 +1173,15 @@ ldexp(const vec<cftal::bf16_t, _N>& v, const vec<cftal::int16_t, _N>& e)
     vec<bf16_t, _N> r(ldexp(low_half(v), low_half(e)),
                      ldexp(high_half(v), low_half(e)));
     return r;
+}
+
+template <cftal::size_t _N>
+inline
+cftal::vec<cftal::bf16_t, _N>
+cftal::
+scalbn(const vec<cftal::bf16_t, _N>& v, const vec<cftal::int16_t, _N>& e)
+{
+    return ldexp(v, e);
 }
 
 template <cftal::size_t _N>

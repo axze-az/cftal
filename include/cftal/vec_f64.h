@@ -161,6 +161,11 @@ namespace cftal {
     vec<double, 1>
     ldexp(arg_t<vec<double, 1> > a, arg_t<vec<int32_t, 1> > e);
 
+    // scalbn, ldexp alias
+    template <size_t _N>
+    vec<double, _N>
+    scalbn(const vec<double, _N>& a, const vec<int32_t, _N>& e);
+
     // nextafter, 0 ulps
     template <size_t _N>
     vec<double, _N>
@@ -1883,6 +1888,14 @@ cftal::ldexp(const vec<double, _N>& a, const vec<int32_t, _N>& e)
 {
     return vec<double, _N>(ldexp(low_half(a), low_half(e)),
                            ldexp(high_half(a), high_half(e)));
+}
+
+template <cftal::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::scalbn(const vec<double, _N>& a, const vec<int32_t, _N>& e)
+{
+    return ldexp(a, e);
 }
 
 template <cftal::size_t _N>
