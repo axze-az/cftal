@@ -2284,14 +2284,14 @@ cftal::frexp(const vec<float, _N>& a, vec<int32_t, _N>* e)
 {
     vec<float, _N> r;
     if (e != nullptr) {
-	vec<int32_t, _N/2> el, eh;
-	r=vec<float, _N>(frexp(low_half(a), &el),
-			 frexp(high_half(a), &eh));
+        vec<int32_t, _N/2> el, eh;
+        r=vec<float, _N>(frexp(low_half(a), &el),
+                         frexp(high_half(a), &eh));
         vec<int32_t, _N> er(el, eh);
         *e = er;
     } else {
-	r=vec<float, _N>(frexp(low_half(a), nullptr),
-			 frexp(high_half(a), nullptr));
+        r=vec<float, _N>(frexp(low_half(a), nullptr),
+                         frexp(high_half(a), nullptr));
     }
     return r;
 }
@@ -2493,7 +2493,7 @@ cftal::native::rsqrt_11b(const vec<float, _N>& x)
 {
 #if defined (__SSE__)
     return vec<float, _N>(rsqrt_11b(low_half(x)),
-			  rsqrt_11b(high_half(x)));
+                          rsqrt_11b(high_half(x)));
 #else
     using vf_type = vec<float, _N>;
     using vi_type = vec<int32_t, _N>;

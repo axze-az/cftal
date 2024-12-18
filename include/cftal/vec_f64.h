@@ -1869,14 +1869,14 @@ cftal::frexp(const vec<double, _N>& a, vec<int32_t, _N>* e)
 {
     vec<double, _N> r;
     if (e != nullptr) {
-	vec<int32_t, _N/2> el, eh;
-	r=vec<double, _N>(frexp(low_half(a), &el),
-			  frexp(high_half(a), &eh));
+        vec<int32_t, _N/2> el, eh;
+        r=vec<double, _N>(frexp(low_half(a), &el),
+                          frexp(high_half(a), &eh));
         vec<int32_t, _N> er(el, eh);
         *e = er;
     } else {
-	r=vec<double, _N>(frexp(low_half(a), nullptr),
-			  frexp(high_half(a), nullptr));
+        r=vec<double, _N>(frexp(low_half(a), nullptr),
+                          frexp(high_half(a), nullptr));
     }
     return r;
 }
