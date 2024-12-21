@@ -8,7 +8,6 @@ set(has_ipo, FALSE)
 set (CSRCS
     mul_div_32.cc
     mul_div_64.cc
-    d_real.cc
     exp_data_f16.cc
     exp_data_f32.cc
     exp_data_f64.cc
@@ -27,14 +26,10 @@ set (CSRCS
     y0_data_f32.cc
     j1_data_f32.cc
     y1_data_f32.cc
-    math_common.cc
     payne_hanek.cc
     lanczos.cc
     x86_ops_1.cc
     x86_ins_ext.cc
-    vec_traits.cc
-    # vec <f16_t, _N>
-    vXf16.cc
     # vec <double, 1>
     v1f64_ef.cc
     v1f64_sf.cc
