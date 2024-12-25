@@ -33,7 +33,7 @@ namespace cftal {
             using int_type = _I;
             using int_allocator_type = _IA;
             template <size_t _VEC_LEN>
-            using lookup_type = // cftal::
+            using lookup_type =
                 variable_vec_lookup_table<_T, _I, _VEC_LEN>;
 
             template <size_t _VEC_LEN>
@@ -50,7 +50,7 @@ namespace cftal {
             using int_type = _I;
             using int_allocator_type = _IA;
             template <size_t _VEC_LEN>
-            using lookup_type = // cftal::impl::
+            using lookup_type =
                 fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN>;
 
             template <size_t _VEC_LEN>
@@ -80,7 +80,7 @@ namespace cftal {
             using result_type = typename _TRAITS::result_type;
             using int_type = typename _TRAITS::int_type;
             using int_allocator_type = typename _TRAITS::int_allocator_type;
-            // allocator type of vsvec returned by from
+            // allocator type of vsvec returned by from method
             using result_allocator_type =
                 typename std::allocator_traits<int_allocator_type>::template
                     rebind_alloc<result_type>;
@@ -96,7 +96,7 @@ namespace cftal {
             // move assignment
             vsvec_lookup_table&
             operator=(vsvec_lookup_table&& r);
-            // destructor is not required
+            // default destructor is sufficient
             ~vsvec_lookup_table() = default;
             // perform a lookup from tbl
             vsvec<result_type, result_allocator_type>
@@ -116,7 +116,8 @@ namespace cftal {
         // constructor
         variable_vsvec_lookup_table(const vsvec<_I, _IA>& idx);
         // deleted copy constructor
-        variable_vsvec_lookup_table(const variable_vsvec_lookup_table&) = delete;
+        variable_vsvec_lookup_table(const variable_vsvec_lookup_table&)
+            = delete;
         // move constructor
         variable_vsvec_lookup_table(variable_vsvec_lookup_table&& r);
         // copy assignment, deleted
@@ -125,14 +126,14 @@ namespace cftal {
         // move assignment
         variable_vsvec_lookup_table&
         operator=(variable_vsvec_lookup_table&& r);
-        // destructor is not required
+        // default destructor is sufficient
         ~variable_vsvec_lookup_table() = default;
-        // allocator type of vsvec the returned by from
         // perform a lookup from tbl
         vsvec<_T, _A>
         from(const _T* tbl);
     };
 
+    // convinience function to create a variable_vsvec_lookup_table
     template <typename _T, typename _I, typename _A>
     variable_vsvec_lookup_table<_T, _I, _A>
     make_variable_lookup_table(const vsvec<_I, _A>& idx);
@@ -158,14 +159,14 @@ namespace cftal {
         // move assignment
         fixed_vsvec_lookup_table&
         operator=(fixed_vsvec_lookup_table&& r);
-        // destructor is not required
+        // default destructor is sufficient
         ~fixed_vsvec_lookup_table() = default;
-        // allocator type of vsvec the returned by from
         // perform a lookup from tbl
         vsvec<_T, _A>
         from(const _T (&tbl)[_TABLE_LEN]);
     };
 
+    // convinience function to create a fixed_vsvec_lookup_table
     template <std::size_t _TABLE_LEN, typename _T, typename _I, typename _A>
     fixed_vsvec_lookup_table<_TABLE_LEN, _T, _I, _A>
     make_fixed_lookup_table(const vsvec<_I, _A>& idx);
