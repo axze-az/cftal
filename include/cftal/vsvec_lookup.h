@@ -104,6 +104,8 @@ namespace cftal {
         };
     };
 
+    // variable lookup table for vsvec<_T, _A>.
+    // with signed _I negative indices are possible
     template <typename _T, typename _I, typename _IA>
     class variable_vsvec_lookup_table
         : private impl::vsvec_lookup_table<
@@ -138,6 +140,8 @@ namespace cftal {
     variable_vsvec_lookup_table<_T, _I, _A>
     make_variable_lookup_table(const vsvec<_I, _A>& idx);
 
+    // fixed length lookup table for vsvec<_T, _A>.
+    // even with signed _I negative indices are NOT possible
     template <std::size_t _TABLE_LEN, typename _T, typename _I, typename _IA>
     class fixed_vsvec_lookup_table
         : private impl::vsvec_lookup_table<

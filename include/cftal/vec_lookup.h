@@ -23,6 +23,8 @@
 
 namespace cftal {
 
+    // variable lookup table for vec<_T, _VEC_LEN>.
+    // with signed _I negative indices are possible
     template <typename _T, typename _I, std::size_t _VEC_LEN>
     class variable_vec_lookup_table {
     private:
@@ -48,7 +50,6 @@ namespace cftal {
     namespace impl {
         // implementation class for fixed lookup tables without
         // a safe interface
-#if 1
         template <std::size_t _TABLE_LEN, typename _T,
                   typename _I, std::size_t _VEC_LEN>
         class fixed_vec_lookup_table {
@@ -65,27 +66,11 @@ namespace cftal {
                 return vec<_T, _VEC_LEN>(lh, hh);
             }
         };
-#else
-        template <std::size_t _TABLE_LEN, typename _T,
-                  typename _I, std::size_t _VEC_LEN>
-        class fixed_vec_lookup_table
-            : private variable_vec_lookup_table<_T, _I, _VEC_LEN> {
-        private:
-        protected:
-            using base_type=variable_vec_lookup_table<_T, _I, _VEC_LEN>;
-            // constructor, prepares table lookups into _T[_TABLE_LEN]
-            fixed_vec_lookup_table(const vec<_I, _VEC_LEN>& idx)
-                : base_type(idx) {}
-            // perform the lookup using the prepared data
-            vec<_T, _VEC_LEN>
-            fromp(const _T* tbl) const {
-                return base_type::from(tbl);
-            }
-        };
-#endif
     }
 
-    // lookup table with a fixed length, delegates work to
+    // fixed length lookup table for vec<_T, _VEC_LEN>.
+    // even with signed _I negative indices are NOT possible
+    // fixed_vec_lookup_table delegates work to
     // impl::fixed_vec_lookup_table
     template <std::size_t _TABLE_LEN, typename _T,
               typename _I, std::size_t _VEC_LEN>
