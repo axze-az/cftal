@@ -599,7 +599,7 @@ cftal::mul_lo_hi(const v8u32& x, const v8u32& y)
 }
 
 inline
-cftal::variable_vec_lookup_table<uint32_t, int32_t, 8>::
+cftal::impl::variable_vec_lookup_table<uint32_t, int32_t, 8>::
 variable_vec_lookup_table(const vec<int32_t, 8>& idx)
     : _msk(idx())
 {
@@ -607,8 +607,8 @@ variable_vec_lookup_table(const vec<int32_t, 8>& idx)
 
 inline
 cftal::v8u32
-cftal::variable_vec_lookup_table<uint32_t, int32_t, 8>::
-from(const uint32_t* tbl) const
+cftal::impl::variable_vec_lookup_table<uint32_t, int32_t, 8>::
+fromp(const uint32_t* tbl) const
 {
     return _mm256_i32gather_epi32(
         reinterpret_cast<const int*>(tbl), _msk, sizeof(uint32_t));

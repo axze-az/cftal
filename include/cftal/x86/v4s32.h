@@ -152,20 +152,20 @@ namespace cftal {
     std::pair<vec<int32_t, 4>, vec<int32_t, 4> >
     mul_lo_hi(const vec<int32_t, 4>& a, const vec<int32_t, 4>& b);
 
+    namespace impl {
 #if defined (__AVX2__)
-    template <>
-    class variable_vec_lookup_table<int32_t, int32_t, 4> {
-    private:
-        vec<int32_t, 4> _msk;
-    public:
-        variable_vec_lookup_table(const vec<int32_t, 4>& idx);
-        vec<int32_t, 4>
-        from(const int32_t* tbl) const;
-    };
+        template <>
+        class variable_vec_lookup_table<int32_t, int32_t, 4> {
+        private:
+            vec<int32_t, 4> _msk;
+        public:
+            variable_vec_lookup_table(const vec<int32_t, 4>& idx);
+            vec<int32_t, 4>
+            fromp(const int32_t* tbl) const;
+        };
 #endif
 
 #if defined (__SSSE3__)
-    namespace impl {
         template <>
         class fixed_vec_lookup_table<4, int32_t, int32_t, 4> {
             // a msk
@@ -180,8 +180,8 @@ namespace cftal {
             vec<int32_t, 4>
             fromp(const int32_t*) const;
         };
-    }
 #endif
+    }
 
 #if defined (__AVX2__)
     namespace impl {

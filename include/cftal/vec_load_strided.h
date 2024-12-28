@@ -164,7 +164,7 @@ cftal::impl::load_indices<cftal::vec<_T, _N>, cftal::vec<_I, _N> >::
 from(const _T* src, const vec<_I, _N>& iv, ssize_t offset)
 {
     auto lck=make_variable_lookup_table<_T>(iv);
-    return lck.from(src+offset);
+    return lck.fromp(src+offset);
 }
 
 template <typename _I, size_t _N>

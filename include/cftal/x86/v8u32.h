@@ -152,17 +152,17 @@ namespace cftal {
     vec<uint32_t, 8>
     permute(const vec<uint32_t, 8>& s, const vec<int32_t, 8>& idx);
 
-    template <>
-    class variable_vec_lookup_table<uint32_t, int32_t, 8> {
-    private:
-        __m256i _msk;
-    public:
-        variable_vec_lookup_table(const vec<int32_t, 8>& idx);
-        vec<uint32_t, 8>
-        from(const uint32_t* tbl) const;
-    };
-
     namespace impl {
+        template <>
+        class variable_vec_lookup_table<uint32_t, int32_t, 8> {
+        private:
+            __m256i _msk;
+        public:
+            variable_vec_lookup_table(const vec<int32_t, 8>& idx);
+            vec<uint32_t, 8>
+            fromp(const uint32_t* tbl) const;
+        };
+
         template <>
         class fixed_vec_lookup_table<4, uint32_t, int32_t, 8> {
         private:

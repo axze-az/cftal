@@ -168,17 +168,18 @@ namespace cftal {
     vec<float, 16>
     permute(const vec<float, 16>& s, const vec<int32_t, 16>& idx);
 
-    template <>
-    class variable_vec_lookup_table<float, int32_t, 16> {
-    private:
-        vec<int32_t, 16> _msk;
-    public:
-        variable_vec_lookup_table(const vec<int32_t, 16>& idx);
-        vec<float, 16>
-        from(const float* tbl) const;
-    };
-
     namespace impl {
+
+        template <>
+        class variable_vec_lookup_table<float, int32_t, 16> {
+        private:
+            vec<int32_t, 16> _msk;
+        public:
+            variable_vec_lookup_table(const vec<int32_t, 16>& idx);
+            vec<float, 16>
+            fromp(const float* tbl) const;
+        };
+
         template <>
         class fixed_vec_lookup_table<4, float, int32_t, 16> {
         private:

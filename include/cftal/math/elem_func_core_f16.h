@@ -902,7 +902,7 @@ lookup_from(arg_t<vf_type> x)
 {
     vi_type idx=cvt_to_index_4<_TBL>(x);
     auto lk=make_variable_lookup_table<f16_t>(idx);
-    vf_type y=lk.from(_TBL::tbl_zero());
+    vf_type y=lk.fromp(_TBL::tbl_zero());
     return y;
 }
 

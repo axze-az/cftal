@@ -625,7 +625,7 @@ cftal::permute(const v8f64& s, const v8s64& idx)
 }
 
 inline
-cftal::variable_vec_lookup_table<double, int32_t, 8>::
+cftal::impl::variable_vec_lookup_table<double, int32_t, 8>::
 variable_vec_lookup_table(const vec<int32_t, 8>& idx)
     : _msk(idx)
 {
@@ -633,8 +633,8 @@ variable_vec_lookup_table(const vec<int32_t, 8>& idx)
 
 inline
 cftal::vec<double, 8>
-cftal::variable_vec_lookup_table<double, int32_t, 8>::
-from(const double* tbl) const
+cftal::impl::variable_vec_lookup_table<double, int32_t, 8>::
+fromp(const double* tbl) const
 {
     return x86::vgatherdpd<__m512d, __m256i>::v<sizeof(double)>(tbl, _msk());
 }

@@ -718,7 +718,7 @@ cftal::v4f32 cftal::trunc(const v4f32& a)
 
 #if defined (__AVX2__)
 inline
-cftal::variable_vec_lookup_table<float, int32_t, 4>::
+cftal::impl::variable_vec_lookup_table<float, int32_t, 4>::
 variable_vec_lookup_table(const vec<int32_t, 4>& idx)
     : _msk(idx)
 {
@@ -726,8 +726,8 @@ variable_vec_lookup_table(const vec<int32_t, 4>& idx)
 
 inline
 cftal::vec<float, 4>
-cftal::variable_vec_lookup_table<float, int32_t, 4>::
-from(const float* tbl) const
+cftal::impl::variable_vec_lookup_table<float, int32_t, 4>::
+fromp(const float* tbl) const
 {
     return _mm_i32gather_ps(tbl, _msk(), sizeof(float));
 }

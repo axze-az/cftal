@@ -326,7 +326,7 @@ process_part(vf_type& ipa,
     auto lck=make_variable_lookup_table<double>(k);
     vf_type p[elem_count_f64];
     for (uint32_t i=0; i<elem_count_f64; ++i) {
-        vf_type pi_bits=lck.from(two_over_pi_b24_dbl+i);
+        vf_type pi_bits=lck.from(two_over_pi_b24_dbl, i);
         p[i] = x*pi_bits*scale;
         scale *= scale_step_f64();
     }
@@ -575,10 +575,10 @@ process_part(vhf_type& ipart, vhf_type& r,
     using std::max;
     k = max(k, vi_type(0));
     auto lck=make_variable_lookup_table<double>(k);
-    const double *pibits=two_over_pi_b24_unscaled_dbl;
+    const auto& pibits=two_over_pi_b24_unscaled_dbl;
     vhf_type p[elem_count_f64];
     for (uint32_t i=0; i<elem_count_f64; ++i) {
-        vhf_type pibitsi=lck.from(pibits+i);
+        vhf_type pibitsi=lck.from(pibits, i);
         p[i] = xd*pibitsi;
     }
     // ip contains the integer parts of pi[i]

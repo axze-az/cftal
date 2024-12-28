@@ -185,20 +185,19 @@ namespace cftal {
     vec<float, 4>
     permute(const vec<float, 4>& s, const vec<int32_t, 4>& idx);
 
-#if defined (__AVX2__)
-    template <>
-    class variable_vec_lookup_table<float, int32_t, 4> {
-    private:
-        vec<int32_t, 4> _msk;
-    public:
-        variable_vec_lookup_table(const vec<int32_t, 4>& idx);
-        vec<float, 4>
-        from(const float* tbl) const;
-    };
-#endif
-
-#if defined (__SSSE3__)
     namespace impl {
+#if defined (__AVX2__)
+        template <>
+        class variable_vec_lookup_table<float, int32_t, 4> {
+        private:
+            vec<int32_t, 4> _msk;
+        public:
+            variable_vec_lookup_table(const vec<int32_t, 4>& idx);
+            vec<float, 4>
+            fromp(const float* tbl) const;
+        };
+#endif
+#if defined (__SSSE3__)
         template <>
         class fixed_vec_lookup_table<4, float, int32_t, 4> {
             // a msk
@@ -213,8 +212,8 @@ namespace cftal {
             vec<float, 4>
             fromp(const float*) const;
         };
-    }
 #endif
+    }
 
 #if defined (__AVX2__)
     namespace impl {

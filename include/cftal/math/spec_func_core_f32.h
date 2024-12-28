@@ -116,7 +116,7 @@ namespace cftal {
             static
             vf_type
             __j01y01_small_tbl_k(arg_t<vf_type> xc,
-                                 const float tb[j01y01_data<float>::ENTRIES],
+                                 const float (&tb)[j01y01_data<float>::ENTRIES],
                                  float max_small_x);
 
             static
@@ -687,12 +687,12 @@ erfc_tbl_k(arg_t<vf_type> xc)
     vf_type xr=x - xi0;
     vf_type xr2=xr*xr;
     auto lck=make_variable_lookup_table<float>(idxs);
-    const float* pt=erfc_table::_tbl;
+    const auto& pt=erfc_table::_tbl;
     vf_type i=horner2_idx<erfc_table::POLY_ORDER-1>(xr, xr2, lck, pt);
-    vf_type c1=lck.from(pt+erfc_table::POLY_ORDER-1);
+    vf_type c1=lck.from(pt, erfc_table::POLY_ORDER-1);
     i = horner(xr, i, c1);
-    vf_type c0h=lck.from(pt+erfc_table::POLY_ORDER);
-    vf_type c0l=lck.from(pt+erfc_table::POLY_ORDER+1);
+    vf_type c0h=lck.from(pt, erfc_table::POLY_ORDER);
+    vf_type c0l=lck.from(pt, erfc_table::POLY_ORDER+1);
     i *= xr;
     vf_type ih, il;
     d_ops::add212cond(ih, il, c0h, c0l, i);
@@ -898,23 +898,23 @@ __lgamma_1_2_tbl_k(arg_t<vf_type> xch, arg_t<vf_type> xcl)
 
     vf_type xh, xl;
     d_ops::add122(xh, xl, -x0, xch, xcl);
-    const float* pt=lng_tbl::_12_tbl;
+    const auto& pt=lng_tbl::_12_tbl;
     cih=lck.from(pt);
     d_ops::unorm_mul122(ph, pl, cih, xh, xl);
     for (int i=1; i<lng_tbl::ELEMS_PER_INTERVAL-lng_tbl::DD_COEFFS*2; ++i) {
-        cih=lck.from(pt+i);
+        cih=lck.from(pt, i);
         d_ops::add122(ph, pl, cih, ph, pl);
         d_ops::unorm_mul22(ph, pl, ph, pl, xh, xl);
     }
     for (int i=lng_tbl::ELEMS_PER_INTERVAL-lng_tbl::DD_COEFFS*2;
          i<lng_tbl::ELEMS_PER_INTERVAL-2; i+=2) {
-        cih=lck.from(pt+i);
-        cil=lck.from(pt+i+1);
+        cih=lck.from(pt, i);
+        cil=lck.from(pt, i+1);
         d_ops::add22(ph, pl, cih, cil, ph, pl);
         d_ops::unorm_mul22(ph, pl, ph, pl, xh, xl);
     }
-    cih=lck.from(pt+lng_tbl::ELEMS_PER_INTERVAL-2);
-    cil=lck.from(pt+lng_tbl::ELEMS_PER_INTERVAL-1);
+    cih=lck.from(pt, lng_tbl::ELEMS_PER_INTERVAL-2);
+    cil=lck.from(pt, lng_tbl::ELEMS_PER_INTERVAL-1);
     // cih+cil >= ph+pl or have at least the same exponent
     // because it is the value in the middle of the interval
     d_ops::add22(ph, pl, cih, cil, ph, pl);
@@ -1206,7 +1206,7 @@ inline
 typename cftal::math::spec_func_core<float, _T>::vf_type
 cftal::math::spec_func_core<float, _T>::
 __j01y01_small_tbl_k(arg_t<vf_type> xc,
-                     const float tb[j01y01_data<float>::ENTRIES],
+                     const float (&tb)[j01y01_data<float>::ENTRIES],
                      float max_small_x)
 {
     using tbl_t=j01y01_data<float>;
@@ -1227,9 +1227,9 @@ __j01y01_small_tbl_k(arg_t<vf_type> xc,
     __check_tbl_idx(idx, xb, tb, tbl_t::ELEMS);
     lk=make_variable_lookup_table<float>(idx);
     // read the negative interval centers
-    const vf_type x0h=lk.from(tb + tbl_t::NEG_X_OFFS_H);
-    const vf_type x0m=lk.from(tb + tbl_t::NEG_X_OFFS_M);
-    const vf_type x0l=lk.from(tb + tbl_t::NEG_X_OFFS_L);
+    const vf_type x0h=lk.from(tb, tbl_t::NEG_X_OFFS_H);
+    const vf_type x0m=lk.from(tb, tbl_t::NEG_X_OFFS_M);
+    const vf_type x0l=lk.from(tb, tbl_t::NEG_X_OFFS_L);
     vf_type xrh, xrl;
     d_ops::add122cond(xrh, xrl, xb, x0h, x0m);
     d_ops::add122cond(xrh, xrl, x0l, xrh, xrl);
@@ -1239,12 +1239,12 @@ __j01y01_small_tbl_k(arg_t<vf_type> xc,
     vf_type p=horner2_idx<tbl_t::POLY_ORD-3>(
         xrh, xr2, lk, tb+tbl_t::NEG_X_OFFS_L+1);
     vf_type rh, rl;
-    vf_type c3=lk.from(tb+tbl_t::C3);
-    vf_type c2=lk.from(tb+tbl_t::C2);
-    vf_type c1h=lk.from(tb+tbl_t::C1H);
-    vf_type c1l=lk.from(tb+tbl_t::C1L);
-    vf_type c0h=lk.from(tb+tbl_t::C0H);
-    vf_type c0l=lk.from(tb+tbl_t::C0L);
+    vf_type c3=lk.from(tb, tbl_t::C3);
+    vf_type c2=lk.from(tb, tbl_t::C2);
+    vf_type c1h=lk.from(tb, tbl_t::C1H);
+    vf_type c1l=lk.from(tb, tbl_t::C1L);
+    vf_type c0h=lk.from(tb, tbl_t::C0H);
+    vf_type c0l=lk.from(tb, tbl_t::C0L);
     horner_comp_quick(rh, rl, xrh, p, c3, c2);
     horner_comp_quick_dpc_si(rh, rl, xrh, rh, rl, c1h, c1l);
     d_ops::unorm_mul22(rh, rl, rh, rl, xrh, xrl);

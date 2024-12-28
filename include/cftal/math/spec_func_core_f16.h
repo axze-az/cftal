@@ -136,7 +136,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
     using v2i_type=typename _T::v2i_type;
     vli_type idx32=cvt<vli_type>(idx);
     auto lk=make_variable_lookup_table<typename vli_type::value_type>(idx32);
-    vli_type t=lk.from(f16_lgamma_data::tbl_zero());
+    vli_type t=lk.fromp(f16_lgamma_data::tbl_zero());
     v2i_type t1=as<v2i_type>(t);
     vi_type yi=odd_elements(t1);
     vmf_type is_nan=isnan(xc);

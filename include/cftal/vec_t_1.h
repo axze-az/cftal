@@ -349,21 +349,22 @@ namespace cftal {
     template <typename _T>
     std::ostream& operator<<(std::ostream& s, const vec<_T, 1>& v);
 
-    template <typename _T, typename _I>
-    class variable_vec_lookup_table<_T, _I, 1> {
-    private:
-        // vec<_I, 1> m_idx;
-        _I _idx;
-    public:
-        variable_vec_lookup_table(const vec<_I, 1>& idx) : _idx(idx()) {}
-        vec<_T, 1>
-        from(const _T* tbl) const {
-            vec<_T, 1> r=tbl[_idx];
-            return r;
-        }
-    };
-
     namespace impl {
+
+        template <typename _T, typename _I>
+        class variable_vec_lookup_table<_T, _I, 1> {
+        private:
+            // vec<_I, 1> m_idx;
+            _I _idx;
+        public:
+            variable_vec_lookup_table(const vec<_I, 1>& idx) : _idx(idx()) {}
+            vec<_T, 1>
+            fromp(const _T* tbl) const {
+                vec<_T, 1> r=tbl[_idx];
+                return r;
+            }
+        };
+
         template <std::size_t _TABLE_LEN, typename _T, typename _I>
         class fixed_vec_lookup_table<_TABLE_LEN, _T, _I, 1> {
         private:

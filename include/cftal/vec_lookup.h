@@ -23,23 +23,54 @@
 
 namespace cftal {
 
+    namespace impl {
+
+        // implementation class for variable lookup tables without
+        // an array interface
+        template <typename _T, typename _I, std::size_t _VEC_LEN>
+        class variable_vec_lookup_table {
+        private:
+            variable_vec_lookup_table<_T, _I, _VEC_LEN/2> _lh;
+            variable_vec_lookup_table<_T, _I, _VEC_LEN/2> _hh;
+        public:
+            variable_vec_lookup_table(const vec<_I, _VEC_LEN>& idx)
+                : _lh(low_half(idx)), _hh(high_half(idx)) {}
+            vec<_T, _VEC_LEN>
+            fromp(const _T* tbl) const {
+                vec<_T, _VEC_LEN/2> lh=_lh.fromp(tbl);
+                vec<_T, _VEC_LEN/2> hh=_hh.fromp(tbl);
+                return vec<_T, _VEC_LEN>(lh, hh);
+            }
+        };
+
+    }
+
     // variable lookup table for vec<_T, _VEC_LEN>.
     // with signed _I negative indices are possible
     template <typename _T, typename _I, std::size_t _VEC_LEN>
-    class variable_vec_lookup_table {
+    class variable_vec_lookup_table
+        : public impl::variable_vec_lookup_table<_T, _I, _VEC_LEN> {
     private:
-        variable_vec_lookup_table<_T, _I, _VEC_LEN/2> _lh;
-        variable_vec_lookup_table<_T, _I, _VEC_LEN/2> _hh;
+        using base_type=
+            impl::variable_vec_lookup_table<_T, _I, _VEC_LEN>;
     public:
+        // constructor, prepares table lookup
         variable_vec_lookup_table(const vec<_I, _VEC_LEN>& idx)
-            : _lh(low_half(idx)), _hh(high_half(idx)) {}
+            : base_type(idx) {}
+        // perform the lookup using the prepared data
+        template <size_t _TABLE_LEN>
         vec<_T, _VEC_LEN>
-        from(const _T* tbl) const {
-            vec<_T, _VEC_LEN/2> lh=_lh.from(tbl);
-            vec<_T, _VEC_LEN/2> hh=_hh.from(tbl);
-            return vec<_T, _VEC_LEN>(lh, hh);
+        from(const _T (&tbl)[_TABLE_LEN]) const {
+            return base_type::fromp(tbl);
+        }
+        // perform the lookup using the prepared data
+        template <size_t _TABLE_LEN>
+        vec<_T, _VEC_LEN>
+        from(const _T (&tbl)[_TABLE_LEN], size_t zero_offset) const {
+            return base_type::fromp(tbl+zero_offset);
         }
     };
+
 
     template <typename _T, typename _I, std::size_t _VEC_LEN>
     variable_vec_lookup_table<_T, _I, _VEC_LEN>

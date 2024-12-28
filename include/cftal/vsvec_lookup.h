@@ -40,7 +40,7 @@ namespace cftal {
             static
             vec<_T, _VEC_LEN>
             fromp(const lookup_type<_VEC_LEN>& lck, const _T* p) {
-                return lck.from(p);
+                return lck.fromp(p);
             }
         };
 

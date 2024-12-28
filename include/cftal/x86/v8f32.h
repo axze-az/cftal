@@ -191,22 +191,22 @@ namespace cftal {
             const vec<float, 8>& s1);
 
 #if defined (__AVX2__)
-
     vec<float, 8>
     permute(const vec<float, 8>& s, const vec<int32_t, 8>& idx);
-
-    template <>
-    class variable_vec_lookup_table<float, int32_t, 8> {
-    private:
-        vec<int32_t, 8> _msk;
-    public:
-        variable_vec_lookup_table(const vec<int32_t, 8>& idx);
-        vec<float, 8>
-        from(const float* tbl) const;
-    };
 #endif
 
     namespace impl {
+#if defined (__AVX2__)
+        template <>
+        class variable_vec_lookup_table<float, int32_t, 8> {
+        private:
+            vec<int32_t, 8> _msk;
+        public:
+            variable_vec_lookup_table(const vec<int32_t, 8>& idx);
+            vec<float, 8>
+            fromp(const float* tbl) const;
+        };
+#endif
         template <>
         class fixed_vec_lookup_table<4, float, int32_t, 8> {
         private:
