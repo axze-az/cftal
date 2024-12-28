@@ -132,7 +132,15 @@ namespace cftal {
         ~variable_vsvec_lookup_table() = default;
         // perform a lookup from tbl
         vsvec<_T, _A>
-        from(const _T* tbl);
+        fromp(const _T* tbl);
+        // perform a lookup from tbl
+	template <size_t _TABLE_LEN>
+	vsvec<_T, _A>
+	from(const _T (&tbl)[_TABLE_LEN]);
+        // perform a lookup from tbl
+	template <size_t _TABLE_LEN>
+	vsvec<_T, _A>
+	from(const _T (&tbl)[_TABLE_LEN], size_t zero_offset);
     };
 
     // convinience function to create a variable_vsvec_lookup_table
@@ -317,8 +325,29 @@ template <typename _T, typename _I, typename _IA>
 cftal::vsvec<_T,
             typename cftal::variable_vsvec_lookup_table<_T, _I, _IA>::_A >
 cftal::variable_vsvec_lookup_table<_T, _I, _IA>::
-from(const _T* p)
+fromp(const _T* p)
 {
+    return base_type::fromp(p);
+}
+
+template <typename _T, typename _I, typename _IA>
+template <cftal::size_t _TABLE_LEN>
+cftal::vsvec<_T,
+            typename cftal::variable_vsvec_lookup_table<_T, _I, _IA>::_A >
+cftal::variable_vsvec_lookup_table<_T, _I, _IA>::
+from(const _T (&tbl)[_TABLE_LEN])
+{
+    return base_type::fromp(tbl);
+}
+
+template <typename _T, typename _I, typename _IA>
+template <cftal::size_t _TABLE_LEN>
+cftal::vsvec<_T,
+            typename cftal::variable_vsvec_lookup_table<_T, _I, _IA>::_A >
+cftal::variable_vsvec_lookup_table<_T, _I, _IA>::
+from(const _T (&tbl)[_TABLE_LEN], size_t zero_offset)
+{
+    const _T* p=&tbl[0]+zero_offset; 
     return base_type::fromp(p);
 }
 
