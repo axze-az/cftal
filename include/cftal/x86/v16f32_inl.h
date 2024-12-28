@@ -618,7 +618,7 @@ variable_vec_lookup_table(const vec<int32_t, 16>& idx)
 inline
 cftal::v16f32
 cftal::impl::variable_vec_lookup_table<float, int32_t, 16>::
-from(const float* tbl) const
+fromp(const float* tbl) const
 {
     return x86::vgatherdps<__m512, __m512i>::v<sizeof(float)>(tbl, _msk());
 }
