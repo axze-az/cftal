@@ -134,14 +134,14 @@ namespace cftal {
         vsvec<_T, _A>
         fromp(const _T* tbl);
         // perform a lookup from tbl
-	template <size_t _TABLE_LEN>
-	vsvec<_T, _A>
-	from(const _T (&tbl)[_TABLE_LEN]);
+        template <size_t _TABLE_LEN>
+        vsvec<_T, _A>
+        from(const _T (&tbl)[_TABLE_LEN]);
         // perform a lookup from tbl with positive and negative
         // indices
-	template <size_t _TABLE_LEN>
-	vsvec<_T, _A>
-	from(const _T (&tbl)[_TABLE_LEN], size_t zero_offset);
+        template <size_t _TABLE_LEN>
+        vsvec<_T, _A>
+        from(const _T (&tbl)[_TABLE_LEN], size_t zero_offset);
     };
 
     // convinience function to create a variable_vsvec_lookup_table

@@ -64,7 +64,7 @@ namespace cftal {
             return base_type::fromp(tbl);
         }
         // perform the lookup using the prepared data positive and
-	// negative indices
+        // negative indices
         template <size_t _TABLE_LEN>
         vec<_T, _VEC_LEN>
         from(const _T (&tbl)[_TABLE_LEN], size_t zero_offset) const {
