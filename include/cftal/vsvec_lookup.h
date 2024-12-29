@@ -137,7 +137,8 @@ namespace cftal {
 	template <size_t _TABLE_LEN>
 	vsvec<_T, _A>
 	from(const _T (&tbl)[_TABLE_LEN]);
-        // perform a lookup from tbl
+        // perform a lookup from tbl with positive and negative
+        // indices
 	template <size_t _TABLE_LEN>
 	vsvec<_T, _A>
 	from(const _T (&tbl)[_TABLE_LEN], size_t zero_offset);
