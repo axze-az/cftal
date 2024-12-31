@@ -33,8 +33,11 @@ namespace cftal {
             variable_vec_lookup_table<_T, _I, _VEC_LEN/2> _lh;
             variable_vec_lookup_table<_T, _I, _VEC_LEN/2> _hh;
         public:
+            // constructor, prepares table lookup, delegates the work
+            // to _lh and _hh constructors
             variable_vec_lookup_table(const vec<_I, _VEC_LEN>& idx)
                 : _lh(low_half(idx)), _hh(high_half(idx)) {}
+            // perform the lookup using the prepared data
             vec<_T, _VEC_LEN>
             fromp(const _T* tbl) const {
                 vec<_T, _VEC_LEN/2> lh=_lh.fromp(tbl);
@@ -72,7 +75,7 @@ namespace cftal {
         }
     };
 
-
+    // function to create a variable_vec_lookup_table
     template <typename _T, typename _I, std::size_t _VEC_LEN>
     variable_vec_lookup_table<_T, _I, _VEC_LEN>
     make_variable_lookup_table(const vec<_I, _VEC_LEN>& idx) {
@@ -89,8 +92,10 @@ namespace cftal {
             fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _lh;
             fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _hh;
         public:
+            // constructor, prepares table lookups into _T[_TABLE_LEN]
             fixed_vec_lookup_table(const vec<_I, _VEC_LEN>& idx)
                 : _lh(low_half(idx)), _hh(high_half(idx)) {}
+            // perform the lookup using the prepared data
             vec<_T, _VEC_LEN>
             fromp(const _T* tbl) const {
                 vec<_T, _VEC_LEN/2> lh=_lh.fromp(tbl);
@@ -122,6 +127,7 @@ namespace cftal {
         }
     };
 
+    // function to create a fixed_vec_lookup_table
     template <std::size_t _TABLE_LEN, typename _T,
               typename _I, std::size_t _VEC_LEN>
     fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN>
