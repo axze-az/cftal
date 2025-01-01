@@ -29,7 +29,7 @@ int main()
     cftal::test::cpu_times_to_stdout tt;
     std::cout << "testing vXf16" << std::endl;
     using cftal::f16_t;
-    bool rc=cftal::test::of_ops_up_to<f16_t, 16>::v();
+    bool rc=cftal::test::of_ops_up_to<f16_t, 32>::v();
     if (rc==false)
         std::cerr << "f16_t test failed" << std::endl;
     return rc==true ? 0 : 1;
