@@ -19,11 +19,6 @@
 #include "cftal/test/of_ops.h"
 #include "cftal/test/cpu_times.h"
 
-namespace cftal {
-    namespace test {
-    }
-}
-
 int main()
 {
     cftal::test::cpu_times_to_stdout tt;
