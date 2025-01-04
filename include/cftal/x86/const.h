@@ -159,6 +159,101 @@ namespace cftal {
 
 #if defined (__AVX512F__)
 
+        struct set_mask_if_gt_zero {
+            // set resutl at bit x (1 << _Px) to 1 if _Px >= 0
+            template <int _P0, int _P1>
+            static constexpr uint8_t m2() {
+                constexpr const uint8_t r=
+                    (_P0 >= 0 ? (1<<0) : 0) |
+                    (_P1 >= 0 ? (1<<1) : 0);
+                return r;
+            }
+
+            // set resutl at bit x (1 << _Px) to 1 if _Px >= 0
+            template <int _P0, int _P1, int _P2, int _P3>
+            static constexpr uint8_t m4() {
+                constexpr const uint8_t l=m2<_P0, _P1>();
+                constexpr const uint8_t h=m2<_P2, _P3>();
+                constexpr const uint8_t r=l | (h<<2);
+                return r;
+            }
+
+            // set resutl at bit x (1 << _Px) to 1 if _Px >= 0
+            template <int _P0, int _P1, int _P2, int _P3,
+                      int _P4, int _P5, int _P6, int _P7>
+            static constexpr uint8_t m8() {
+                constexpr const uint8_t l=m4<_P0, _P1, _P2, _P3>();
+                constexpr const uint8_t h=m4<_P4, _P5, _P6, _P7>();
+                constexpr const uint8_t r=l | (h<<4);
+                return r;
+
+            }
+
+            template <int _P00, int _P01, int _P02, int _P03,
+                      int _P04, int _P05, int _P06, int _P07,
+                      int _P08, int _P09, int _P10, int _P11,
+                      int _P12, int _P13, int _P14, int _P15>
+            static constexpr uint16_t m16() {
+                constexpr const uint16_t l=
+                    m8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07>();
+                constexpr const uint16_t h=
+                    m8<_P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>();
+                constexpr const uint16_t r=l | (h<<8);
+                return r;
+            }
+
+            template <int _P00, int _P01, int _P02, int _P03,
+                      int _P04, int _P05, int _P06, int _P07,
+                      int _P08, int _P09, int _P10, int _P11,
+                      int _P12, int _P13, int _P14, int _P15,
+                      int _P16, int _P17, int _P18, int _P19,
+                      int _P20, int _P21, int _P22, int _P23,
+                      int _P24, int _P25, int _P26, int _P27,
+                      int _P28, int _P29, int _P30, int _P31>
+            static constexpr uint32_t m32() {
+                constexpr const uint32_t l=
+                    m16<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+                        _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>();
+                constexpr const uint32_t h=
+                    m16<_P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+                        _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>();
+                constexpr const uint32_t r=l | (h<<16);
+                return r;
+            }
+
+            template <int _P00, int _P01, int _P02, int _P03,
+                      int _P04, int _P05, int _P06, int _P07,
+                      int _P08, int _P09, int _P10, int _P11,
+                      int _P12, int _P13, int _P14, int _P15,
+                      int _P16, int _P17, int _P18, int _P19,
+                      int _P20, int _P21, int _P22, int _P23,
+                      int _P24, int _P25, int _P26, int _P27,
+                      int _P28, int _P29, int _P30, int _P31,
+                      int _P32, int _P33, int _P34, int _P35,
+                      int _P36, int _P37, int _P38, int _P39,
+                      int _P40, int _P41, int _P42, int _P43,
+                      int _P44, int _P45, int _P46, int _P47,
+                      int _P48, int _P49, int _P50, int _P51,
+                      int _P52, int _P53, int _P54, int _P55,
+                      int _P56, int _P57, int _P58, int _P59,
+                      int _P60, int _P61, int _P62, int _P63>
+            static constexpr uint64_t m64() {
+                constexpr const uint64_t l=
+                    m32<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+                        _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+                        _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+                        _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>();
+                constexpr const uint64_t h=
+                    m32<_P32, _P33, _P34, _P35, _P36, _P37, _P38, _P39,
+                        _P40, _P41, _P42, _P43, _P44, _P45, _P46, _P47,
+                        _P48, _P49, _P50, _P51, _P52, _P53, _P54, _P55,
+                        _P56, _P57, _P58, _P59, _P60, _P61, _P62, _P63>();
+                constexpr const uint64_t r= l | (h<<32);
+                return r;
+            }
+        };
+
+
         // static constants consisting of 16 uint32_t
         template <uint32_t _P00, uint32_t _P01,
                   uint32_t _P02, uint32_t _P03,
