@@ -4226,15 +4226,9 @@ perm1_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a)
         return _mm512_maskz_mov_pd(zm, a);
     }
     // full permute:
-    const __m512i pperm=
-        _mm512_setr_epi64(_P0 & 7,
-                          _P1 & 7,
-                          _P2 & 7,
-                          _P3 & 7,
-                          _P4 & 7,
-                          _P5 & 7,
-                          _P6 & 7,
-                          _P7 & 7);
+    const __m512i pperm=const_v8u64<
+        _P0 & 7, _P1 & 7, _P2 & 7, _P3 & 7,
+        _P4 & 7, _P5 & 7, _P6 & 7, _P7 & 7>::iv();
     if (zm != 0xFF) {
         return _mm512_maskz_permutexvar_pd(zm, pperm, a);
     }
@@ -4292,15 +4286,10 @@ perm2_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a, __m512d b)
     const __mmask8 zm=
         set_mask_if_gt_zero::m8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>();
     // full permute:
-    const __m512i pperm=
-        _mm512_setr_epi64(_P0 & 15,
-                          _P1 & 15,
-                          _P2 & 15,
-                          _P3 & 15,
-                          _P4 & 15,
-                          _P5 & 15,
-                          _P6 & 15,
-                          _P7 & 15);
+    const __m512i pperm=const_v8u64<
+        _P0 & 15, _P1 & 15, _P2 & 15, _P3 & 15,
+        _P4 & 15, _P5 & 15, _P6 & 15, _P7 & 15>::iv();
+
     if (zm != 0xFF) {
         return _mm512_maskz_permutex2var_pd(zm, a, pperm, b);
     }
@@ -4671,15 +4660,9 @@ perm1_v8u64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512i a)
         return _mm512_maskz_mov_epi64(zm, a);
     }
     // full permute:
-    const __m512i pperm=
-        _mm512_setr_epi64(_P0 & 7,
-                          _P1 & 7,
-                          _P2 & 7,
-                          _P3 & 7,
-                          _P4 & 7,
-                          _P5 & 7,
-                          _P6 & 7,
-                          _P7 & 7);
+    const __m512i pperm=const_v8u64<
+        _P0 & 7, _P1 & 7, _P2 & 7, _P3 & 7,
+        _P4 & 7, _P5 & 7, _P6 & 7, _P7 & 7>::iv();
     if (zm != 0xFF) {
         return _mm512_maskz_permutexvar_epi64(zm, pperm, a);
     }
@@ -4737,15 +4720,9 @@ perm2_v8u64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512i a, __m512i b)
     const __mmask8 zm=
         set_mask_if_gt_zero::m8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>();
     // full permute:
-    const __m512i pperm=
-        _mm512_setr_epi64(_P0 & 15,
-                          _P1 & 15,
-                          _P2 & 15,
-                          _P3 & 15,
-                          _P4 & 15,
-                          _P5 & 15,
-                          _P6 & 15,
-                          _P7 & 15);
+    const __m512i pperm=const_v8u64<
+        _P0 & 15, _P1 & 15, _P2 & 15, _P3 & 15,
+        _P4 & 15, _P5 & 15, _P6 & 15, _P7 & 15>::iv();
     if (zm != 0xFF) {
         return _mm512_maskz_permutex2var_epi64(zm, a, pperm, b);
     }
