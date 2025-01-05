@@ -90,6 +90,19 @@ namespace cftal {
             static const __m128d& dv();
         };
 
+        // static constants consisting of 2 uint64_t
+        template <uint64_t _P0, uint64_t _P1>
+        class const_v2u64 {
+            using u_t = vecunion<uint64_t, 2, __m128, __m128d, __m128i>;
+            static __attribute__((__aligned__(16),
+                                  __visibility__("hidden")))
+            const u_t _msk;
+        public:
+            static const __m128i& iv();
+            static const __m128& fv();
+            static const __m128d& dv();
+        };
+
 #if defined (__AVX__)
         // static constants consisting of 8 uint32_t
         template <uint32_t _P0, uint32_t _P1,
@@ -155,6 +168,19 @@ namespace cftal {
             static const __m256d& dv();
         };
 
+        // static constants consisting of 4 uint64_t
+        template <uint64_t _P0, uint64_t _P1,
+                  uint64_t _P2, uint64_t _P3>
+        class const_v4u64 {
+            using u_t = vecunion<uint64_t, 4, __m256, __m256d, __m256i>;
+            static __attribute__((__aligned__(16),
+                                  __visibility__("hidden")))
+            const u_t _msk;
+        public:
+            static const __m256i& iv();
+            static const __m256& fv();
+            static const __m256d& dv();
+        };
 #endif
 
 #if defined (__AVX512F__)
@@ -274,6 +300,23 @@ namespace cftal {
             static const __m512& fv();
             static const __m512d& dv();
         };
+
+        // static constants consisting of 8 uint64_t
+        template <uint64_t _P0, uint64_t _P1,
+                  uint64_t _P2, uint64_t _P3,
+                  uint64_t _P4, uint64_t _P5,
+                  uint64_t _P6, uint64_t _P7>
+        class const_v8u64 {
+            using u_t = vecunion<uint64_t, 8, __m512, __m512d, __m512i>;
+            static __attribute__((__aligned__(32),
+                                  __visibility__("hidden")))
+            const u_t _msk;
+        public:
+            static const __m512i& iv();
+            static const __m512& fv();
+            static const __m512d& dv();
+        };
+
 #endif
 
 #if defined (__AVX512BW__)
@@ -642,6 +685,38 @@ const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
     return _msk._vd;
 }
 
+template <cftal::uint64_t _P0, cftal::uint64_t _P1>
+const
+typename cftal::x86::const_v2u64<_P0, _P1>::u_t
+cftal::x86::const_v2u64<_P0, _P1>::_msk= {{
+        _P0, _P1
+    }
+};
+
+template <cftal::uint64_t _P0, cftal::uint64_t _P1>
+inline
+const __m128i&
+cftal::x86::const_v2u64<_P0, _P1>::iv()
+{
+    return _msk._vi;
+}
+
+template <cftal::uint64_t _P0, cftal::uint64_t _P1>
+inline
+const __m128&
+cftal::x86::const_v2u64<_P0, _P1>::fv()
+{
+    return  _msk._vf;
+}
+
+template <cftal::uint64_t _P0, cftal::uint64_t _P1>
+inline
+const __m128d&
+cftal::x86::const_v2u64<_P0, _P1>::dv()
+{
+    return _msk._vd;
+}
+
 
 #if defined (__AVX__)
 template <cftal::uint32_t _P0, cftal::uint32_t _P1,
@@ -845,6 +920,43 @@ const_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
 {
     return _msk._vd;
 }
+
+template <cftal::uint64_t _P0, cftal::uint64_t _P1,
+          cftal::uint64_t _P2, cftal::uint64_t _P3>
+const
+typename cftal::x86::const_v4u64<_P0, _P1, _P2, _P3>::u_t
+cftal::x86::const_v4u64<_P0, _P1, _P2, _P3>::_msk= {{
+        _P0, _P1, _P2, _P3
+    }
+};
+
+template <cftal::uint64_t _P0, cftal::uint64_t _P1,
+          cftal::uint64_t _P2, cftal::uint64_t _P3>
+inline
+const __m256i&
+cftal::x86::const_v4u64<_P0, _P1, _P2, _P3>::iv()
+{
+    return _msk._vi;
+}
+
+template <cftal::uint64_t _P0, cftal::uint64_t _P1,
+          cftal::uint64_t _P2, cftal::uint64_t _P3>
+inline
+const __m256&
+cftal::x86::const_v4u64<_P0, _P1, _P2, _P3>::fv()
+{
+    return  _msk._vf;
+}
+
+template <cftal::uint64_t _P0, cftal::uint64_t _P1,
+          cftal::uint64_t _P2, cftal::uint64_t _P3>
+inline
+const __m256d&
+cftal::x86::const_v4u64<_P0, _P1, _P2, _P3>::dv()
+{
+    return _msk._vd;
+}
+
 #endif // __AVX__
 
 #if defined (__AVX512F__)
@@ -916,6 +1028,54 @@ const __m512d&
 cftal::x86::
 const_v16u32<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
              _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::dv()
+{
+    return _msk._vd;
+}
+
+template <cftal::uint64_t _P0, cftal::uint64_t _P1,
+          cftal::uint64_t _P2, cftal::uint64_t _P3,
+          cftal::uint64_t _P4, cftal::uint64_t _P5,
+          cftal::uint64_t _P6, cftal::uint64_t _P7>
+const typename
+cftal::x86::
+const_v8u64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::u_t
+cftal::x86::
+const_v8u64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::_msk= {{
+        _P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7
+    }
+};
+
+template <cftal::uint64_t _P0, cftal::uint64_t _P1,
+          cftal::uint64_t _P2, cftal::uint64_t _P3,
+          cftal::uint64_t _P4, cftal::uint64_t _P5,
+          cftal::uint64_t _P6, cftal::uint64_t _P7>
+inline
+const __m512i&
+cftal::x86::
+const_v8u64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
+{
+    return _msk._vi;
+}
+
+template <cftal::uint64_t _P0, cftal::uint64_t _P1,
+          cftal::uint64_t _P2, cftal::uint64_t _P3,
+          cftal::uint64_t _P4, cftal::uint64_t _P5,
+          cftal::uint64_t _P6, cftal::uint64_t _P7>
+inline
+const __m512&
+cftal::x86::
+const_v8u64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
+{
+    return _msk._vf;
+}
+
+template <cftal::uint64_t _P0, cftal::uint64_t _P1,
+          cftal::uint64_t _P2, cftal::uint64_t _P3,
+          cftal::uint64_t _P4, cftal::uint64_t _P5,
+          cftal::uint64_t _P6, cftal::uint64_t _P7>
+inline
+const __m512d&
+cftal::x86::const_v8u64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
 {
     return _msk._vd;
 }
