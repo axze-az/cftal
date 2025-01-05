@@ -2696,7 +2696,7 @@ cftal::x86::vgatherdpd<__m128d, __m128i>::
 v(const double* base, __m128i idx)
 {
 #if defined (__AVX2__)
-    const __m128d msk=_mm_castsi128_pd(_mm_set_epi64x(-1, -1));
+    const __m128d msk=_mm_castsi128_pd(_mm_set1_epi64x(-1));
     const __m128d src=_mm_setzero_pd();
     // const __m128d msk=_mm_cmpeq_pd(src, src);
     return _mm_mask_i32gather_pd(src, base, idx, msk, _SCALE);
@@ -2773,7 +2773,7 @@ cftal::x86::
 vgatherdpd<__m256d, __m128i>::v(const double* base, __m128i idx)
 {
 #if defined (__AVX2__)
-    const __m256d msk=_mm256_castsi256_pd(_mm256_set_epi64x(-1, -1, -1, -1));
+    const __m256d msk=_mm256_castsi256_pd(_mm256_set1_epi64x(-1));
     const __m256d src=_mm256_setzero_pd();
     // const __m256d msk=_mm256_cmp_pd(src, src, _CMP_EQ_OQ);
     return _mm256_mask_i32gather_pd(src, base, idx, msk, _SCALE);

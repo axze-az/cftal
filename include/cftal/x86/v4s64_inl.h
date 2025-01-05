@@ -382,7 +382,7 @@ cftal::mem<cftal::vec<int64_t, 4> >::load(const int64_t* p, std::size_t s)
         v = _mm256_setr_epi64x(p[0], p[0], p[0], p[0]);
         break;
     case 0:
-        v = _mm256_set_epi64x(0, 0, 0, 0);
+        v = _mm256_set1_epi64x(0);
         break;
     }
     return v;
