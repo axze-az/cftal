@@ -1509,7 +1509,7 @@ cftal::x86::permute_v8u16_v8s16(__m128i s, __m128i idx)
     __mmask8 rm=_mm_cmpge_epi16_mask(idx, zero);
     return _mm_maskz_permutexvar_epi16(rm, idx, s);
 #else
-    // multiply mask with two, shuffle it to low/high bytes
+    // multiply mask by two, shuffle it to low/high bytes
     // and add 1 to the high bytes
     __m128i m=vpsllw_const<1>::v(idx);
     const __m128i& p=const_v16u8< 0,  0,  2,  2,  4,  4,  6,  6,
@@ -1539,7 +1539,7 @@ cftal::x86::permute_v4u32_v4s32(__m128i s, __m128i idx)
     r = _mm_andnot_si128(z_e, r);
     return r;
 #else
-    // multiply mask with 4, shuffle it to dwords
+    // multiply mask by 4, shuffle it to dwords
     // and add 0, 1, 2, 3 to the bytes.
     __m128i m=vpslld_const<2>::v(idx);
     const __m128i& p=const_v16u8< 0,  0,  0,  0,  4,  4,  4,  4,
@@ -1569,7 +1569,7 @@ cftal::x86::permute_v2u64_v2s64(__m128i s, __m128i idx)
     r = _mm_andnot_si128(neg, r);
     return r;
 #else
-    // multiply mask with 8, shuffle it to qwords
+    // multiply mask by 8, shuffle it to qwords
     // and add 0, 1, 2, 3, 4, 5, 6, 7 to the bytes.
     __m128i m=vpsllq_const<3>::v(idx);
     const __m128i& p=const_v16u8< 0,  0,  0,  0,  0,  0,  0,  0,
