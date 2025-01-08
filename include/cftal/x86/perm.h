@@ -29,44 +29,44 @@ namespace cftal {
 
         // permute s8/u8 using s8 indices
         __m128i
-        permute_v16u8_v16s8(__m128i s, __m128i msk);
+        permute_v16u8_v16s8(__m128i s, __m128i idx);
 
         // permute s16/u16 using s16 indices
         __m128i
-        permute_v8u16_v8s16(__m128i s, __m128i msk);
+        permute_v8u16_v8s16(__m128i s, __m128i idx);
 
         // permute s32/u32 using s32 indices
         __m128i
-        permute_v4u32_v4s32(__m128i s, __m128i msk);
+        permute_v4u32_v4s32(__m128i s, __m128i idx);
 
         // permute s64/u64 using s64 indices
         __m128i
-        permute_v2u64_v2s64(__m128i s, __m128i msk);
+        permute_v2u64_v2s64(__m128i s, __m128i idx);
 
         // permute f32 using s32 indices
         __m128
-        permute_v4f32_v4s32(__m128 s, __m128i msk);
+        permute_v4f32_v4s32(__m128 s, __m128i idx);
 
         // permute f64 using i64 indices
         __m128d
-        permute_v2f64_v2s64(__m128d s, __m128i msk);
+        permute_v2f64_v2s64(__m128d s, __m128i idx);
 
 #if defined (__AVX2__)
         // permute s32/u32 using s32 indices
         __m256i
-        permute_v8u32_v8s32(__m256i s, __m256i msk);
+        permute_v8u32_v8s32(__m256i s, __m256i idx);
 
         // permute s64/u64 using s64 indices
         __m256i
-        permute_v4u64_v4s64(__m256i s, __m256i msk);
+        permute_v4u64_v4s64(__m256i s, __m256i idx);
 
         // permute f32 using s32 indices
         __m256
-        permute_v8f32_v8s32(__m256 s, __m256i msk);
+        permute_v8f32_v8s32(__m256 s, __m256i idx);
 
         // permute f64 using s64 indices
         __m256d
-        permute_v4f64_v4s64(__m256d s, __m256i msk);
+        permute_v4f64_v4s64(__m256d s, __m256i idx);
 
         // return odd numbered elements
         __m128i
@@ -80,30 +80,30 @@ namespace cftal {
 #if defined (__AVX512F__)
         // permute s32/u32 using s32 indices
         __m512i
-        permute_v16u32_v16s32(__m512i s, __m512i msk);
+        permute_v16u32_v16s32(__m512i s, __m512i idx);
 
         // permute s64/u64 using s64 indices
         __m512i
-        permute_v8u64_v8s64(__m512i s, __m512i msk);
+        permute_v8u64_v8s64(__m512i s, __m512i idx);
 
         // permute f32 using s32 indices
         __m512
-        permute_v16f32_v16s32(__m512 s, __m512i msk);
+        permute_v16f32_v16s32(__m512 s, __m512i idx);
 
         // permute f64 using s64 indices
         __m512d
-        permute_v8f64_v8s64(__m512d s, __m512i msk);
+        permute_v8f64_v8s64(__m512d s, __m512i idx);
 #endif
 
 #if defined (__AVX512BW__)
 #if defined (__AVX512VL__)
         // permute s16/u16 using s16 indices
         __m256i
-        permute_v16u16_v16s16(__m256i s, __m256i msk);
+        permute_v16u16_v16s16(__m256i s, __m256i idx);
 #endif
         // permute s16/u16 using s16 indices
         __m512i
-        permute_v32u16_v32s16(__m512i s, __m512i msk);
+        permute_v32u16_v32s16(__m512i s, __m512i idx);
 
 #if defined (__AVX512VL__)
         // return odd numbered elements
@@ -1494,24 +1494,24 @@ namespace cftal {
 // permute s8/u8 using s8 indices
 inline
 __m128i
-cftal::x86::permute_v16u8_v16s8(__m128i s, __m128i msk)
+cftal::x86::permute_v16u8_v16s8(__m128i s, __m128i idx)
 {
-    return vpshufb::v(s, msk);
+    return vpshufb::v(s, idx);
 }
 
 // permute s16/u16 using s16 indices
 inline
 __m128i
-cftal::x86::permute_v8u16_v8s16(__m128i s, __m128i msk)
+cftal::x86::permute_v8u16_v8s16(__m128i s, __m128i idx)
 {
 #if defined (__AVX512VL__) && defined (__AVX512BW__)
     const __m128i zero=_mm_setzero_si128();
-    __mmask8 rm=_mm_cmpge_epi16_mask(msk, zero);
-    return _mm_maskz_permutexvar_epi16(rm, msk, s);
+    __mmask8 rm=_mm_cmpge_epi16_mask(idx, zero);
+    return _mm_maskz_permutexvar_epi16(rm, idx, s);
 #else
     // multiply mask with two, shuffle it to low/high bytes
     // and add 1 to the high bytes
-    __m128i m=vpsllw_const<1>::v(msk);
+    __m128i m=vpsllw_const<1>::v(idx);
     const __m128i& p=const_v16u8< 0,  0,  2,  2,  4,  4,  6,  6,
                                   8,  8, 10, 10, 12, 12, 14, 14>::iv();
     const __m128i& o=const_v16u8< 0,  1,  0,  1,  0,  1,  0,  1,
@@ -1525,23 +1525,23 @@ cftal::x86::permute_v8u16_v8s16(__m128i s, __m128i msk)
 // permute s32/u32 using s32 indices
 inline
 __m128i
-cftal::x86::permute_v4u32_v4s32(__m128i s, __m128i msk)
+cftal::x86::permute_v4u32_v4s32(__m128i s, __m128i idx)
 {
 #if defined (__AVX512VL__)
     const __m128i zero=_mm_setzero_si128();
-    __mmask8 rm=_mm_cmpge_epi32_mask(msk, zero);
+    __mmask8 rm=_mm_cmpge_epi32_mask(idx, zero);
     return _mm_castps_si128(
-        _mm_maskz_permutevar_ps(rm, _mm_castsi128_ps(s), msk));
+        _mm_maskz_permutevar_ps(rm, _mm_castsi128_ps(s), idx));
 #elif defined (__AVX__)
     __m128i r=_mm_castps_si128(
-        _mm_permutevar_ps(_mm_castsi128_ps(s), msk));
-    __m128i z_e=_mm_srai_epi32(msk, 31);
+        _mm_permutevar_ps(_mm_castsi128_ps(s), idx));
+    __m128i z_e=_mm_srai_epi32(idx, 31);
     r = _mm_andnot_si128(z_e, r);
     return r;
 #else
     // multiply mask with 4, shuffle it to dwords
     // and add 0, 1, 2, 3 to the bytes.
-    __m128i m=vpslld_const<2>::v(msk);
+    __m128i m=vpslld_const<2>::v(idx);
     const __m128i& p=const_v16u8< 0,  0,  0,  0,  4,  4,  4,  4,
                                   8,  8,  8,  8, 12, 12, 12, 12>::iv();
     const __m128i& o=const_v16u8< 0,  1,  2,  3,  0,  1,  2,  3,
@@ -1555,23 +1555,23 @@ cftal::x86::permute_v4u32_v4s32(__m128i s, __m128i msk)
 // permute s64/u64 using s64 indices
 inline
 __m128i
-cftal::x86::permute_v2u64_v2s64(__m128i s, __m128i msk)
+cftal::x86::permute_v2u64_v2s64(__m128i s, __m128i idx)
 {
 #if defined (__AVX512VL__)
     const __m128i zero=_mm_setzero_si128();
-    __mmask8 rm=_mm_cmpge_epi64_mask(msk, zero);
+    __mmask8 rm=_mm_cmpge_epi64_mask(idx, zero);
     return _mm_castpd_si128(
-        _mm_maskz_permutevar_pd(rm, _mm_castsi128_pd(s), msk));
+        _mm_maskz_permutevar_pd(rm, _mm_castsi128_pd(s), idx));
 #elif defined (__AVX__)
     __m128i r=_mm_castpd_si128(
-        _mm_permutevar_pd(_mm_castsi128_pd(s), _mm_add_epi64(msk, msk)));
-    __m128i neg=_mm_cmpgt_epi64(_mm_setzero_si128(), msk);
+        _mm_permutevar_pd(_mm_castsi128_pd(s), _mm_add_epi64(idx, idx)));
+    __m128i neg=_mm_cmpgt_epi64(_mm_setzero_si128(), idx);
     r = _mm_andnot_si128(neg, r);
     return r;
 #else
     // multiply mask with 8, shuffle it to qwords
     // and add 0, 1, 2, 3, 4, 5, 6, 7 to the bytes.
-    __m128i m=vpsllq_const<3>::v(msk);
+    __m128i m=vpsllq_const<3>::v(idx);
     const __m128i& p=const_v16u8< 0,  0,  0,  0,  0,  0,  0,  0,
                                   8,  8,  8,  8,  8,  8,  8,  8>::iv();
     const __m128i& o=const_v16u8< 0,  1,  2,  3,  4,  5,  6,  7,
@@ -1585,40 +1585,40 @@ cftal::x86::permute_v2u64_v2s64(__m128i s, __m128i msk)
 // permute f32 using s32 indices
 inline
 __m128
-cftal::x86::permute_v4f32_v4s32(__m128 s, __m128i msk)
+cftal::x86::permute_v4f32_v4s32(__m128 s, __m128i idx)
 {
 #if defined (__AVX512VL__)
     const __m128i zero=_mm_setzero_si128();
-    __mmask8 rm=_mm_cmpge_epi32_mask(msk, zero);
-    return _mm_maskz_permutevar_ps(rm, s, msk);
+    __mmask8 rm=_mm_cmpge_epi32_mask(idx, zero);
+    return _mm_maskz_permutevar_ps(rm, s, idx);
 #elif defined (__AVX__)
-    __m128 r=_mm_permutevar_ps(s, msk);
-    __m128i z_e=_mm_srai_epi32(msk, 31);
+    __m128 r=_mm_permutevar_ps(s, idx);
+    __m128i z_e=_mm_srai_epi32(idx, 31);
     r = _mm_castsi128_ps(_mm_andnot_si128(z_e, _mm_castps_si128(r)));
     return r;
 #else
     return _mm_castsi128_ps(
-        permute_v4u32_v4s32(_mm_castps_si128(s), msk));
+        permute_v4u32_v4s32(_mm_castps_si128(s), idx));
 #endif
 }
 
 // permute f64 using s64 indices
 inline
 __m128d
-cftal::x86::permute_v2f64_v2s64(__m128d s, __m128i msk)
+cftal::x86::permute_v2f64_v2s64(__m128d s, __m128i idx)
 {
 #if defined (__AVX512VL__)
     const __m128i zero=_mm_setzero_si128();
-    __mmask8 rm=_mm_cmpge_epi64_mask(msk, zero);
-    return _mm_maskz_permutevar_pd(rm, s, msk);
+    __mmask8 rm=_mm_cmpge_epi64_mask(idx, zero);
+    return _mm_maskz_permutevar_pd(rm, s, idx);
 #elif defined (__AVX__)
-    __m128d r=_mm_permutevar_pd(s, _mm_add_epi64(msk, msk));
-    __m128i neg=_mm_cmpgt_epi64(_mm_setzero_si128(), msk);
+    __m128d r=_mm_permutevar_pd(s, _mm_add_epi64(idx, idx));
+    __m128i neg=_mm_cmpgt_epi64(_mm_setzero_si128(), idx);
     r = _mm_castsi128_pd(_mm_andnot_si128(neg, _mm_castpd_si128(r)));
     return r;
 #else
     return _mm_castsi128_pd(
-        permute_v2u64_v2s64(_mm_castpd_si128(s), msk));
+        permute_v2u64_v2s64(_mm_castpd_si128(s), idx));
 #endif
 }
 
@@ -1626,15 +1626,15 @@ cftal::x86::permute_v2f64_v2s64(__m128d s, __m128i msk)
 // permute s32/u32 using s32 indices
 inline
 __m256i
-cftal::x86::permute_v8u32_v8s32(__m256i s, __m256i msk)
+cftal::x86::permute_v8u32_v8s32(__m256i s, __m256i idx)
 {
 #if defined (__AVX512VL__)
     const __m256i zero=_mm256_setzero_si256();
-    __mmask8 rm=_mm256_cmpge_epi32_mask(msk, zero);
-    return _mm256_maskz_permutexvar_epi32(rm, msk, s);
+    __mmask8 rm=_mm256_cmpge_epi32_mask(idx, zero);
+    return _mm256_maskz_permutexvar_epi32(rm, idx, s);
 #else
-    __m256i r=_mm256_permutevar8x32_epi32(s, msk);
-    __m256i z_e=_mm256_srai_epi32(msk, 31);
+    __m256i r=_mm256_permutevar8x32_epi32(s, idx);
+    __m256i z_e=_mm256_srai_epi32(idx, 31);
     r = _mm256_andnot_si256(z_e, r);
     return r;
 #endif
@@ -1643,33 +1643,33 @@ cftal::x86::permute_v8u32_v8s32(__m256i s, __m256i msk)
 // permute s64/u64 using s64 indices
 inline
 __m256i
-cftal::x86::permute_v4u64_v4s64(__m256i s, __m256i msk)
+cftal::x86::permute_v4u64_v4s64(__m256i s, __m256i idx)
 {
 #if defined (__AVX512VL__)
     const __m256i zero=_mm256_setzero_si256();
-    __mmask8 rm=_mm256_cmpge_epi64_mask(msk, zero);
-    return _mm256_maskz_permutexvar_epi64(rm, msk, s);
+    __mmask8 rm=_mm256_cmpge_epi64_mask(idx, zero);
+    return _mm256_maskz_permutexvar_epi64(rm, idx, s);
 #else
-    __m256i msk32=perm1_v8u32<0, 0, 2, 2, 4, 4, 6, 6>::v(
-        _mm256_add_epi64(msk, msk));
-    const __m256i& mskc=const_v8u32<0, 1, 0, 1, 0, 1, 0, 1>::iv();
-    msk32 = _mm256_add_epi32(msk32, mskc);
-    return permute_v8u32_v8s32(s, msk32);
+    __m256i idx32=perm1_v8u32<0, 0, 2, 2, 4, 4, 6, 6>::v(
+        _mm256_add_epi64(idx, idx));
+    const __m256i& idxc=const_v8u32<0, 1, 0, 1, 0, 1, 0, 1>::iv();
+    idx32 = _mm256_add_epi32(idx32, idxc);
+    return permute_v8u32_v8s32(s, idx32);
 #endif
 }
 
 // permute f32 using s32 indices
 inline
 __m256
-cftal::x86::permute_v8f32_v8s32(__m256 s, __m256i msk)
+cftal::x86::permute_v8f32_v8s32(__m256 s, __m256i idx)
 {
 #if defined (__AVX512VL__)
     const __m256i zero=_mm256_setzero_si256();
-    __mmask8 rm=_mm256_cmpge_epi32_mask(msk, zero);
-    return _mm256_maskz_permutexvar_ps(rm, msk, s);
+    __mmask8 rm=_mm256_cmpge_epi32_mask(idx, zero);
+    return _mm256_maskz_permutexvar_ps(rm, idx, s);
 #else
-    __m256 r=_mm256_permutevar8x32_ps(s, msk);
-    __m256i z_e=_mm256_srai_epi32(msk, 31);
+    __m256 r=_mm256_permutevar8x32_ps(s, idx);
+    __m256i z_e=_mm256_srai_epi32(idx, 31);
     r = _mm256_castsi256_ps(_mm256_andnot_si256(z_e, _mm256_castps_si256(r)));
     return r;
 #endif
@@ -1678,15 +1678,15 @@ cftal::x86::permute_v8f32_v8s32(__m256 s, __m256i msk)
 // permute f64 using s64 indices
 inline
 __m256d
-cftal::x86::permute_v4f64_v4s64(__m256d s, __m256i msk)
+cftal::x86::permute_v4f64_v4s64(__m256d s, __m256i idx)
 {
 #if defined (__AVX512VL__)
     const __m256i zero=_mm256_setzero_si256();
-    __mmask8 rm=_mm256_cmpge_epi64_mask(msk, zero);
-    return _mm256_maskz_permutexvar_pd(rm, msk, s);
+    __mmask8 rm=_mm256_cmpge_epi64_mask(idx, zero);
+    return _mm256_maskz_permutexvar_pd(rm, idx, s);
 #else
     return _mm256_castsi256_pd(permute_v4u64_v4s64(
-        _mm256_castpd_si256(s), msk));
+        _mm256_castpd_si256(s), idx));
 #endif
 }
 
@@ -1738,41 +1738,41 @@ cftal::x86::even_elements_v16u16(__m256i s)
 // permute s32/u32 using s32 indices
 inline
 __m512i
-cftal::x86::permute_v16u32_v16s32(__m512i s, __m512i msk)
+cftal::x86::permute_v16u32_v16s32(__m512i s, __m512i idx)
 {
     const __m512i zero=_mm512_setzero_si512();
-    __mmask16 rm=_mm512_cmpge_epi32_mask(msk, zero);
-    return _mm512_maskz_permutexvar_epi32(rm, msk, s);
+    __mmask16 rm=_mm512_cmpge_epi32_mask(idx, zero);
+    return _mm512_maskz_permutexvar_epi32(rm, idx, s);
 }
 
 // permute s64/u64 using s64 indices
 inline
 __m512i
-cftal::x86::permute_v8u64_v8s64(__m512i s, __m512i msk)
+cftal::x86::permute_v8u64_v8s64(__m512i s, __m512i idx)
 {
     const __m512i zero=_mm512_setzero_si512();
-    __mmask8 rm=_mm512_cmpge_epi64_mask(msk, zero);
-    return _mm512_maskz_permutexvar_epi64(rm, msk, s);
+    __mmask8 rm=_mm512_cmpge_epi64_mask(idx, zero);
+    return _mm512_maskz_permutexvar_epi64(rm, idx, s);
 }
 
 // permute f32 using s32 indices
 inline
 __m512
-cftal::x86::permute_v16f32_v16s32(__m512 s, __m512i msk)
+cftal::x86::permute_v16f32_v16s32(__m512 s, __m512i idx)
 {
     const __m512i zero=_mm512_setzero_si512();
-    __mmask16 rm=_mm512_cmpge_epi32_mask(msk, zero);
-    return _mm512_maskz_permutexvar_ps(rm, msk, s);
+    __mmask16 rm=_mm512_cmpge_epi32_mask(idx, zero);
+    return _mm512_maskz_permutexvar_ps(rm, idx, s);
 }
 
 // permute f64 using s64 indices
 inline
 __m512d
-cftal::x86::permute_v8f64_v8s64(__m512d s, __m512i msk)
+cftal::x86::permute_v8f64_v8s64(__m512d s, __m512i idx)
 {
     const __m512i zero=_mm512_setzero_si512();
-    __mmask8 rm=_mm512_cmpge_epi64_mask(msk, zero);
-    return _mm512_maskz_permutexvar_pd(rm, msk, s);
+    __mmask8 rm=_mm512_cmpge_epi64_mask(idx, zero);
+    return _mm512_maskz_permutexvar_pd(rm, idx, s);
 }
 
 #endif
@@ -1782,22 +1782,22 @@ cftal::x86::permute_v8f64_v8s64(__m512d s, __m512i msk)
 // permute s16/u16 using s16 indices
 inline
 __m256i
-cftal::x86::permute_v16u16_v16s16(__m256i s, __m256i msk)
+cftal::x86::permute_v16u16_v16s16(__m256i s, __m256i idx)
 {
     const __m256i zero=_mm256_setzero_si256();
-    __mmask8 rm=_mm256_cmpge_epi16_mask(msk, zero);
-    return _mm256_maskz_permutexvar_epi16(rm, msk, s);
+    __mmask8 rm=_mm256_cmpge_epi16_mask(idx, zero);
+    return _mm256_maskz_permutexvar_epi16(rm, idx, s);
 }
 #endif
 
 // permute s16/u16 using s16 indices
 inline
 __m512i
-cftal::x86::permute_v32u16_v32s16(__m512i s, __m512i msk)
+cftal::x86::permute_v32u16_v32s16(__m512i s, __m512i idx)
 {
     const __m512i zero=_mm512_setzero_si512();
-    __mmask16 rm=_mm512_cmpge_epi16_mask(msk, zero);
-    return _mm512_maskz_permutexvar_epi16(rm, msk, s);
+    __mmask16 rm=_mm512_cmpge_epi16_mask(idx, zero);
+    return _mm512_maskz_permutexvar_epi16(rm, idx, s);
 }
 
 #if defined (__AVX512VL__)
