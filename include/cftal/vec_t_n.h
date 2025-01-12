@@ -308,7 +308,9 @@ namespace cftal {
             const vec<_I, _N>& idx);
 
     // permutation of two vectors using indices in idx,
-    // idx<0 means set the element to zero
+    // idx<0 means set the element to zero, 0 <= idx < _N
+    // take the element from vl[idx], idx >= _N means take the
+    // element from vh[idx-_N]
     template <typename _T, typename _I, size_t _N>
     std::enable_if_t<std::is_signed_v<_I>, vec<_T, _N>>
     permute(const vec<_T, _N>& vl, const vec<_T, _N>& vh,
