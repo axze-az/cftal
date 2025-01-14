@@ -31,6 +31,9 @@ namespace cftal {
         __m128i
         permute_v16u8_v16s8(__m128i s, __m128i idx);
 
+        __m128i
+        permute_v16u8_v16s8(__m128i l, __m128i h, __m128i idx);
+
         // permute s16/u16 using s16 indices
         __m128i
         permute_v8u16_v8s16(__m128i s, __m128i idx);
@@ -1497,6 +1500,30 @@ __m128i
 cftal::x86::permute_v16u8_v16s8(__m128i s, __m128i idx)
 {
     return vpshufb::v(s, idx);
+}
+
+inline
+__m128i
+cftal::x86::permute_v16u8_v16s8(__m128i l, __m128i h, __m128i idx)
+{
+#if defined (__AVX512VL__) && defined (__AVX512BW__)
+    const __m128i zero=_mm_setzero_si128();
+    __mmask16 rm=_mm_cmpge_epi8_mask(idx, zero);
+    return _mm_maskz_permutex2var_epi8(rm, l, idx, h);
+#else
+    // set idxgt15 to -1 where idx > 15
+    __m128i idxgt15=_mm_cmpgt_epi8(idx, _mm_set1_epi8(15));
+    // idx < 16 --> 16 > idx
+    __m128i idxlt16=_mm_cmpgt_epi8(_mm_set1_epi8(16), idx);
+    // and or in theses -1 into idx
+    __m128i idxl= _mm_or_s128(idx, idxgt15);
+    // pshufb uses only 4 bits, therefore it is ok not to subtract 16 from
+    // idx for idxh
+    __m128i idxh= _mm_or_si128(idx, idxlt16)
+    __m128i rl=vpshufb::v(l, idxl);
+    __m128i rh=vpshufb::v(h, idxh);
+    return vpshufb::v(s, idx);
+#endif
 }
 
 // permute s16/u16 using s16 indices
