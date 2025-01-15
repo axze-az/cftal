@@ -38,6 +38,9 @@ namespace cftal {
         __m128i
         permute_v8u16_v8s16(__m128i s, __m128i idx);
 
+        __m128i
+        permute_v8u16_v8s16(__m128i l, __m128i h, __m128i idx);
+
         // permute s32/u32 using s32 indices
         __m128i
         permute_v4u32_v4s32(__m128i s, __m128i idx);
@@ -1516,13 +1519,13 @@ cftal::x86::permute_v16u8_v16s8(__m128i l, __m128i h, __m128i idx)
     // idx < 16 --> 16 > idx
     __m128i idxlt16=_mm_cmpgt_epi8(_mm_set1_epi8(16), idx);
     // and or in theses -1 into idx
-    __m128i idxl= _mm_or_s128(idx, idxgt15);
+    __m128i idxl= _mm_or_si128(idx, idxgt15);
     // pshufb uses only 4 bits, therefore it is ok not to subtract 16 from
     // idx for idxh
-    __m128i idxh= _mm_or_si128(idx, idxlt16)
+    __m128i idxh= _mm_or_si128(idx, idxlt16);
     __m128i rl=vpshufb::v(l, idxl);
     __m128i rh=vpshufb::v(h, idxh);
-    return vpshufb::v(s, idx);
+    return _mm_or_si128(rl, rh);
 #endif
 }
 
@@ -1546,6 +1549,28 @@ cftal::x86::permute_v8u16_v8s16(__m128i s, __m128i idx)
     m=vpshufb::v(m, p);
     m=_mm_add_epi8(m, o);
     return permute_v16u8_v16s8(s, m);
+#endif
+}
+
+inline
+__m128i
+cftal::x86::permute_v8u16_v8s16(__m128i l, __m128i h, __m128i idx)
+{
+#if defined (__AVX512VL__) && defined (__AVX512BW__)
+    const __m128i zero=_mm_setzero_si128();
+    __mmask8 rm=_mm_cmpge_epi8_mask(idx, zero);
+    return _mm_maskz_permutex2var_epi16(rm, l, idx, h);
+#else
+    // multiply mask by two, shuffle it to low/high bytes
+    // and add 1 to the high bytes
+    __m128i m=vpsllw_const<1>::v(idx);
+    const __m128i& p=const_v16u8< 0,  0,  2,  2,  4,  4,  6,  6,
+                                  8,  8, 10, 10, 12, 12, 14, 14>::iv();
+    const __m128i& o=const_v16u8< 0,  1,  0,  1,  0,  1,  0,  1,
+                                  0,  1,  0,  1,  0,  1,  0,  1>::iv();
+    m=vpshufb::v(m, p);
+    m=_mm_add_epi8(m, o);
+    return permute_v16u8_v16s8(l, h, m);
 #endif
 }
 
