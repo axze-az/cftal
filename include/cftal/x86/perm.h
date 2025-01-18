@@ -59,6 +59,9 @@ namespace cftal {
         __m128
         permute_v4f32_v4s32(__m128 s, __m128i idx);
 
+        __m128
+        permute_v4f32_v4s32(__m128 l, __m128 h, __m128i idx);
+
         // permute f64 using i64 indices
         __m128d
         permute_v2f64_v2s64(__m128d s, __m128i idx);
@@ -1626,8 +1629,8 @@ cftal::x86::permute_v4u32_v4s32(__m128i l, __m128i h, __m128i idx)
         _mm_permutevar_ps(_mm_castsi128_ps(h), idx));
     __m128i idx_lt_z=_mm_srai_epi32(idx, 31);
     __m128i idx_lt_4=_mm_cmpgt_epi32(_mm_set1_epi32(4), idx);
-    rl = _mm_andnot_si128(idx_lt_z, rh);
-    rh = _mm_andnot_si128(idx_lt_4, rl);
+    rl = _mm_andnot_si128(idx_lt_z, rl);
+    rh = _mm_andnot_si128(idx_lt_4, rh);
     return _mm_or_si128(rl, rh);
 #else
     // multiply mask by 4, shuffle it to dwords
@@ -1721,6 +1724,28 @@ cftal::x86::permute_v4f32_v4s32(__m128 s, __m128i idx)
     __m128i z_e=_mm_srai_epi32(idx, 31);
     r = _mm_castsi128_ps(_mm_andnot_si128(z_e, _mm_castps_si128(r)));
     return r;
+#else
+    return _mm_castsi128_ps(
+        permute_v4u32_v4s32(_mm_castps_si128(s), idx));
+#endif
+}
+
+inline
+__m128
+cftal::x86::permute_v4f32_v4s32(__m128 l, __m128 h, __m128i idx)
+{
+#if defined (__AVX512VL__)
+    const __m128i zero=_mm_setzero_si128();
+    __mmask8 rm=_mm_cmpge_epi32_mask(idx, zero);
+    return _mm_maskz_permutex2var_ps(rm, l, idx, h);
+#elif defined (__AVX__)
+    __m128 rl=_mm_permutevar_ps(l, idx);
+    __m128 rh=_mm_permutevar_ps(l, idx);
+    __m128i idx_lt_z=_mm_srai_epi32(idx, 31);
+    __m128i idx_lt_4=_mm_cmpgt_epi32(_mm_set1_epi32(4), idx);
+    rl = _mm_andnot_ps(_mm_castsi128_ps(idx_lt_z), rl);
+    rh = _mm_andnot_ps(_mm_castsi128_ps(idx_lt_4), rh);
+    return _mm_or_ps(rl, rh);
 #else
     return _mm_castsi128_ps(
         permute_v4u32_v4s32(_mm_castps_si128(s), idx));
