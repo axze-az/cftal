@@ -1629,9 +1629,10 @@ cftal::x86::permute_v4u32_v4s32(__m128i l, __m128i h, __m128i idx)
         _mm_permutevar_ps(_mm_castsi128_ps(h), idx));
     __m128i idx_lt_z=_mm_srai_epi32(idx, 31);
     __m128i idx_lt_4=_mm_cmpgt_epi32(_mm_set1_epi32(4), idx);
-    rl = _mm_andnot_si128(idx_lt_z, rl);
-    rh = _mm_andnot_si128(idx_lt_4, rh);
-    return _mm_or_si128(rl, rh);
+    rl=_mm_and_si128(idx_lt_4, rl);
+    rh=_mm_andnot_si128(idx_lt_4, rh);
+    __m128i r=_mm_or_si128(rl, rh);
+    return _mm_andnot_si128(idx_lt_z, r);
 #else
     // multiply mask by 4, shuffle it to dwords
     // and add 0, 1, 2, 3 to the bytes.
@@ -1693,9 +1694,10 @@ cftal::x86::permute_v2u64_v2s64(__m128i l, __m128i h, __m128i idx)
         _mm_permutevar_pd(_mm_castsi128_pd(h), idx64));
     __m128i idx_lt_z=_mm_cmpgt_epi64(_mm_setzero_si128(), idx);
     __m128i idx_lt_2=_mm_cmpgt_epi64(_mm_set1_epi64x(2), idx);
-    rl = _mm_andnot_si128(idx_lt_z, rl);
+    rl = _mm_and_si128(idx_lt_2, rl);
     rh = _mm_andnot_si128(idx_lt_2, rh);
-    return _mm_or_si128(rl, rh);
+    __m128i r= _mm_or_si128(rl, rh);
+    return _mm_andnot_si128(idx_lt_z, r);
 #else
     // multiply mask by 8, shuffle it to qwords
     // and add 0, 1, 2, 3, 4, 5, 6, 7 to the bytes.
@@ -1743,9 +1745,10 @@ cftal::x86::permute_v4f32_v4s32(__m128 l, __m128 h, __m128i idx)
     __m128 rh=_mm_permutevar_ps(l, idx);
     __m128i idx_lt_z=_mm_srai_epi32(idx, 31);
     __m128i idx_lt_4=_mm_cmpgt_epi32(_mm_set1_epi32(4), idx);
-    rl = _mm_andnot_ps(_mm_castsi128_ps(idx_lt_z), rl);
+    rl = _mm_and_ps(_mm_castsi128_ps(idx_lt_4), rl);
     rh = _mm_andnot_ps(_mm_castsi128_ps(idx_lt_4), rh);
-    return _mm_or_ps(rl, rh);
+    __m128 r=_mm_or_ps(rl, rh);
+    return _mm_andnot_ps(_mm_castsi128_ps(idx_lt_z), r);
 #else
     return _mm_castsi128_ps(
         permute_v4u32_v4s32(_mm_castps_si128(s), idx));
