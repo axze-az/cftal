@@ -88,6 +88,9 @@ namespace cftal {
         __m256
         permute_v8f32_v8s32(__m256 s, __m256i idx);
 
+        __m256
+        permute_v8f32_v8s32(__m256 l, __m256 h, __m256i idx);
+
         // permute f64 using s64 indices
         __m256d
         permute_v4f64_v4s64(__m256d s, __m256i idx);
@@ -1895,6 +1898,21 @@ cftal::x86::permute_v8f32_v8s32(__m256 s, __m256i idx)
     __m256i z_e=_mm256_srai_epi32(idx, 31);
     r = _mm256_castsi256_ps(_mm256_andnot_si256(z_e, _mm256_castps_si256(r)));
     return r;
+#endif
+}
+
+inline
+__m256
+cftal::x86::permute_v8f32_v8s32(__m256 l, __m256 h, __m256i idx)
+{
+#if defined (__AVX512VL__)
+    const __m256i zero=_mm256_setzero_si256();
+    __mmask8 rm=_mm256_cmpge_epi32_mask(idx, zero);
+    return _mm256_maskz_permutex2var_ps(rm, l, idx, h);
+#else
+    return _mm256_castsi256_ps(
+        permute_v8u32_v8s32(_mm256_castps_si256(l), _mm256_castps_si256(h),
+                            idx));
 #endif
 }
 
