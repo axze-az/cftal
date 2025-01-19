@@ -95,6 +95,9 @@ namespace cftal {
         __m256d
         permute_v4f64_v4s64(__m256d s, __m256i idx);
 
+        __m256d
+        permute_v4f64_v4s64(__m256d l, __m256d h, __m256i idx);
+
         // return odd numbered elements
         __m128i
         odd_elements_v16u16(__m256i);
@@ -1910,9 +1913,8 @@ cftal::x86::permute_v8f32_v8s32(__m256 l, __m256 h, __m256i idx)
     __mmask8 rm=_mm256_cmpge_epi32_mask(idx, zero);
     return _mm256_maskz_permutex2var_ps(rm, l, idx, h);
 #else
-    return _mm256_castsi256_ps(
-        permute_v8u32_v8s32(_mm256_castps_si256(l), _mm256_castps_si256(h),
-                            idx));
+    return _mm256_castsi256_ps(permute_v8u32_v8s32(
+        _mm256_castps_si256(l), _mm256_castps_si256(h), idx));
 #endif
 }
 
@@ -1928,6 +1930,20 @@ cftal::x86::permute_v4f64_v4s64(__m256d s, __m256i idx)
 #else
     return _mm256_castsi256_pd(permute_v4u64_v4s64(
         _mm256_castpd_si256(s), idx));
+#endif
+}
+
+inline
+__m256d
+cftal::x86::permute_v4f64_v4s64(__m256d l, __m256d h, __m256i idx)
+{
+#if defined (__AVX512VL__)
+    const __m256i zero=_mm256_setzero_si256();
+    __mmask8 rm=_mm256_cmpge_epi64_mask(idx, zero);
+    return _mm256_maskz_permutex2var_pd(rm, l, idx, h);
+#else
+    return _mm256_castsi256_pd(permute_v4u64_v4s64(
+        _mm256_castpd_si256(l), _mm256_castpd_si256(h), idx));
 #endif
 }
 
