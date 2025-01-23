@@ -112,17 +112,29 @@ namespace cftal {
         __m512i
         permute_v16u32_v16s32(__m512i s, __m512i idx);
 
+        __m512i
+        permute_v16u32_v16s32(__m512i l, __m512i h, __m512i idx);
+
         // permute s64/u64 using s64 indices
         __m512i
         permute_v8u64_v8s64(__m512i s, __m512i idx);
+
+        __m512i
+        permute_v8u64_v8s64(__m512i l, __m512i h, __m512i idx);
 
         // permute f32 using s32 indices
         __m512
         permute_v16f32_v16s32(__m512 s, __m512i idx);
 
+        __m512
+        permute_v16f32_v16s32(__m512 l, __m512 h, __m512i idx);
+
         // permute f64 using s64 indices
         __m512d
         permute_v8f64_v8s64(__m512d s, __m512i idx);
+
+        __m512d
+        permute_v8f64_v8s64(__m512d l, __m512d h, __m512i idx);
 #endif
 
 #if defined (__AVX512BW__)
@@ -2002,6 +2014,16 @@ cftal::x86::permute_v16u32_v16s32(__m512i s, __m512i idx)
     return _mm512_maskz_permutexvar_epi32(rm, idx, s);
 }
 
+// permute s32/u32 using s32 indices
+inline
+__m512i
+cftal::x86::permute_v16u32_v16s32(__m512i l, __m512i h, __m512i idx)
+{
+    const __m512i zero=_mm512_setzero_si512();
+    __mmask16 rm=_mm512_cmpge_epi32_mask(idx, zero);
+    return _mm512_maskz_permutex2var_epi32(rm, l, idx, h);
+}
+
 // permute s64/u64 using s64 indices
 inline
 __m512i
@@ -2010,6 +2032,15 @@ cftal::x86::permute_v8u64_v8s64(__m512i s, __m512i idx)
     const __m512i zero=_mm512_setzero_si512();
     __mmask8 rm=_mm512_cmpge_epi64_mask(idx, zero);
     return _mm512_maskz_permutexvar_epi64(rm, idx, s);
+}
+
+inline
+__m512i
+cftal::x86::permute_v8u64_v8s64(__m512i l, __m512i h, __m512i idx)
+{
+    const __m512i zero=_mm512_setzero_si512();
+    __mmask8 rm=_mm512_cmpge_epi64_mask(idx, zero);
+    return _mm512_maskz_permutex2var_epi64(rm, l, idx, h);
 }
 
 // permute f32 using s32 indices
@@ -2022,6 +2053,15 @@ cftal::x86::permute_v16f32_v16s32(__m512 s, __m512i idx)
     return _mm512_maskz_permutexvar_ps(rm, idx, s);
 }
 
+inline
+__m512
+cftal::x86::permute_v16f32_v16s32(__m512 l, __m512 h, __m512i idx)
+{
+    const __m512i zero=_mm512_setzero_si512();
+    __mmask16 rm=_mm512_cmpge_epi32_mask(idx, zero);
+    return _mm512_maskz_permutex2var_ps(rm, l, idx, h);
+}
+
 // permute f64 using s64 indices
 inline
 __m512d
@@ -2030,6 +2070,15 @@ cftal::x86::permute_v8f64_v8s64(__m512d s, __m512i idx)
     const __m512i zero=_mm512_setzero_si512();
     __mmask8 rm=_mm512_cmpge_epi64_mask(idx, zero);
     return _mm512_maskz_permutexvar_pd(rm, idx, s);
+}
+
+inline
+__m512d
+cftal::x86::permute_v8f64_v8s64(__m512d l, __m512d h, __m512i idx)
+{
+    const __m512i zero=_mm512_setzero_si512();
+    __mmask8 rm=_mm512_cmpge_epi64_mask(idx, zero);
+    return _mm512_maskz_permutex2var_pd(rm, l, idx, h);
 }
 
 #endif
