@@ -142,10 +142,16 @@ namespace cftal {
         // permute s16/u16 using s16 indices
         __m256i
         permute_v16u16_v16s16(__m256i s, __m256i idx);
+
+        __m256i
+        permute_v16u16_v16s16(__m256i l, __m256i h, __m256i idx);
 #endif
         // permute s16/u16 using s16 indices
         __m512i
         permute_v32u16_v32s16(__m512i s, __m512i idx);
+
+        __m512i
+        permute_v32u16_v32s16(__m512i l, __m512i h, __m512i idx);
 
 #if defined (__AVX512VL__)
         // return odd numbered elements
@@ -2091,8 +2097,18 @@ __m256i
 cftal::x86::permute_v16u16_v16s16(__m256i s, __m256i idx)
 {
     const __m256i zero=_mm256_setzero_si256();
-    __mmask8 rm=_mm256_cmpge_epi16_mask(idx, zero);
+    __mmask16 rm=_mm256_cmpge_epi16_mask(idx, zero);
     return _mm256_maskz_permutexvar_epi16(rm, idx, s);
+}
+
+// permute s16/u16 using s16 indices
+inline
+__m256i
+cftal::x86::permute_v16u16_v16s16(__m256i l, __m256i h, __m256i idx)
+{
+    const __m256i zero=_mm256_setzero_si256();
+    __mmask16 rm=_mm256_cmpge_epi16_mask(idx, zero);
+    return _mm256_maskz_permutex2var_epi16(rm, l, idx, h);
 }
 #endif
 
@@ -2102,8 +2118,17 @@ __m512i
 cftal::x86::permute_v32u16_v32s16(__m512i s, __m512i idx)
 {
     const __m512i zero=_mm512_setzero_si512();
-    __mmask16 rm=_mm512_cmpge_epi16_mask(idx, zero);
+    __mmask32 rm=_mm512_cmpge_epi16_mask(idx, zero);
     return _mm512_maskz_permutexvar_epi16(rm, idx, s);
+}
+
+inline
+__m512i
+cftal::x86::permute_v32u16_v32s16(__m512i l, __m512i h, __m512i idx)
+{
+    const __m512i zero=_mm512_setzero_si512();
+    __mmask32 rm=_mm512_cmpge_epi16_mask(idx, zero);
+    return _mm512_maskz_permutex2var_epi16(rm, h, idx, l);
 }
 
 #if defined (__AVX512VL__)
