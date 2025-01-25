@@ -32,6 +32,13 @@ namespace cftal {
     template <typename _T>
     _T hadd(const vec<_T, 1>& n);
 
+    // dot product
+    template <typename _T, std::size_t _N>
+    _T dot_product(const vec<_T, _N>& a, const vec<_T, _N>& b);
+
+    template <typename _T>
+    _T dot_product(const vec<_T, 1>& a, const vec<_T, 1>& b);
+
     // execute on_true or on_false in dependence of m
     template <typename _T, std::size_t _N,
               typename _ON_TRUE, typename _ON_FALSE>
@@ -100,6 +107,26 @@ _T
 cftal::hadd(const vec<_T, 1>& v)
 {
     return v();
+}
+
+template <typename _T, std::size_t _N>
+inline
+_T
+cftal::dot_product(const vec<_T, _N>& a, const vec<_T, _N>& b)
+{
+    return
+        dot_product(high_half(a),
+                    high_half(b)) +
+        dot_product(low_half(a),
+                    low_half(b));
+}
+
+template <typename _T>
+inline
+_T
+cftal::dot_product(const vec<_T, 1>& a, const vec<_T, 1>& b)
+{
+    return a()*b();
 }
 
 template <typename _T, std::size_t _N, typename _ON_TRUE, typename _ON_FALSE>
