@@ -98,7 +98,8 @@ inline
 _T
 cftal::hadd(const vec<_T, _N>& v)
 {
-    return hadd(low_half(v)) + hadd(high_half(v));
+    vec<_T, _N/2> t=high_half(v)+low_half(v);
+    return hadd(t);
 }
 
 template <typename _T>
