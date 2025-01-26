@@ -37,6 +37,12 @@ namespace cftal {
     _T dot_product(const vec<_T, _N>& a, const vec<_T, _N>& b);
 
     template <typename _T>
+    _T dot_product(const vec<_T, 4>& a, const vec<_T, 4>& b);
+
+    template <typename _T>
+    _T dot_product(const vec<_T, 2>& a, const vec<_T, 2>& b);
+
+    template <typename _T>
     _T dot_product(const vec<_T, 1>& a, const vec<_T, 1>& b);
 
     // execute on_true or on_false in dependence of m
@@ -115,11 +121,32 @@ inline
 _T
 cftal::dot_product(const vec<_T, _N>& a, const vec<_T, _N>& b)
 {
-    return
-        dot_product(high_half(a),
-                    high_half(b)) +
-        dot_product(low_half(a),
-                    low_half(b));
+    vec<_T, _N/2> a23=high_half(a), a01=low_half(a),
+        b23=high_half(b), b01=low_half(b);
+    vec<_T, _N/4> a3=high_half(a23), a2=low_half(a23),
+        a1=high_half(a01), a0=low_half(a01);
+    vec<_T, _N/4> b3=high_half(b23), b2=low_half(b23),
+        b1=high_half(b01), b0=low_half(b01);
+    vec<_T, _N/4> t=a3*b3+a2*b2+a1*b1+a0*b0;
+    return hadd(t);
+}
+
+template <typename _T>
+inline
+_T
+cftal::dot_product(const vec<_T, 4>& a, const vec<_T, 4>& b)
+{
+    vec<_T, 4> t=a*b;
+    return hadd(t);
+}
+
+template <typename _T>
+inline
+_T
+cftal::dot_product(const vec<_T, 2>& a, const vec<_T, 2>& b)
+{
+    vec<_T, 2> t=a*b;
+    return hadd(t);
 }
 
 template <typename _T>
