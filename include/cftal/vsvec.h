@@ -21,6 +21,7 @@
 #include <cftal/config.h>
 #include <cftal/vsvec_func_1.h>
 #include <cftal/vsvec_load_strided.h>
+#include <cftal/vsvec_misc.h>
 
 // Local variables:
 // mode: c++
