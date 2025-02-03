@@ -19,7 +19,7 @@
 #define __CFTAL_VSVEC_MISC_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/vsvec_func_1.h>
+#include <cftal/vsvec_load_strided.h>
 
 namespace cftal {
 
@@ -27,6 +27,11 @@ namespace cftal {
     _T
     dot_product(const vsvec<_T, _A>& a, const vsvec<_T, _A>& b);
 
+    template <typename _T, typename _A>
+    _T
+    dot_product(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a,
+		const vsvec<_T, _A>& b);
+    
 }
 
 template <typename _T, typename _A>
@@ -54,9 +59,9 @@ dot_product(const vsvec<_T, _A>& a, const vsvec<_T, _A>& b)
                 a3 += a.template loadv<_N>(i+3*_N) *
                     b.template loadv<_N>(i+3*_N);
             }
-	    a2 += a3;
-	    a0 += a1;
-	    a0 += a2;
+            a2 += a3;
+            a0 += a1;
+            a0 += a2;
         }
         for (size_t i=n4; i<n1; i+= _N) {
             a0 +=a.template loadv<_N>(i+0*_N)
