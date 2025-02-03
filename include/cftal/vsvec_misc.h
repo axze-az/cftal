@@ -75,4 +75,7 @@ dot_product(const vsvec<_T, _A>& a, const vsvec<_T, _A>& b)
     return r;
 }
 
+// Local variables:
+// mode: c++
+// end:
 #endif
