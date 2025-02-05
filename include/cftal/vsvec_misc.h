@@ -112,8 +112,8 @@ dot_product(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a,
             for (size_t i=0; i<n4; i+=4*_N) {
                 v_t a0 = lck_a.fromp(&a[(i+0*_N)*stride_a+offset_a]);
                 v_t a1 = lck_a.fromp(&a[(i+1*_N)*stride_a+offset_a]);
-                v_t a2 = lck_a.fromp(&a[(i+1*_N)*stride_a+offset_a]);
-                v_t a3 = lck_a.fromp(&a[(i+1*_N)*stride_a+offset_a]);
+                v_t a2 = lck_a.fromp(&a[(i+2*_N)*stride_a+offset_a]);
+                v_t a3 = lck_a.fromp(&a[(i+3*_N)*stride_a+offset_a]);
 
                 r0 += a0 * b.template loadv<_N>(i+0*_N);
                 r1 += a1 * b.template loadv<_N>(i+1*_N);
@@ -173,12 +173,12 @@ dot_product(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a,
             for (size_t i=0; i<n4; i+=4*_N) {
                 v_t a0 = lck_a.fromp(&a[(i+0*_N)*stride_a+offset_a]);
                 v_t a1 = lck_a.fromp(&a[(i+1*_N)*stride_a+offset_a]);
-                v_t a2 = lck_a.fromp(&a[(i+1*_N)*stride_a+offset_a]);
-                v_t a3 = lck_a.fromp(&a[(i+1*_N)*stride_a+offset_a]);
+                v_t a2 = lck_a.fromp(&a[(i+2*_N)*stride_a+offset_a]);
+                v_t a3 = lck_a.fromp(&a[(i+3*_N)*stride_a+offset_a]);
                 v_t b0 = lck_b.fromp(&b[(i+0*_N)*stride_b+offset_b]);
                 v_t b1 = lck_b.fromp(&b[(i+1*_N)*stride_b+offset_b]);
-                v_t b2 = lck_b.fromp(&b[(i+1*_N)*stride_b+offset_b]);
-                v_t b3 = lck_b.fromp(&b[(i+1*_N)*stride_b+offset_b]);
+                v_t b2 = lck_b.fromp(&b[(i+2*_N)*stride_b+offset_b]);
+                v_t b3 = lck_b.fromp(&b[(i+3*_N)*stride_b+offset_b]);
 
                 r0 += a0 * b0;
                 r1 += a1 * b1;
