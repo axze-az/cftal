@@ -41,7 +41,7 @@ namespace cftal {
     _T
     dot_product(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a,
                 const vsvec<_T, _A>& b, int32_t stride_b, size_t offset_b);
-   
+
 }
 
 template <typename _T, typename _A>
