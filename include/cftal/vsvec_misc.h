@@ -20,6 +20,8 @@
 
 #include <cftal/config.h>
 #include <cftal/vsvec_load_strided.h>
+#include <stdexcept>
+#include <sstream>
 
 namespace cftal {
 
@@ -45,7 +47,7 @@ namespace cftal {
 }
 
 template <typename _T, typename _A>
-cftal::vsvec<_T, _A>
+_T
 cftal::
 dot_product(const vsvec<_T, _A>& a, const vsvec<_T, _A>& b)
 {
@@ -88,7 +90,7 @@ dot_product(const vsvec<_T, _A>& a, const vsvec<_T, _A>& b)
 }
 
 template <typename _T, typename _A>
-cftal::vsvec<_T, _A>
+_T
 cftal::
 dot_product(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a,
             const vsvec<_T, _A>& b)
@@ -96,7 +98,17 @@ dot_product(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a,
     constexpr const size_t _N=max_vec_size_specialized<_T>();
     constexpr const size_t _N4=4*_N;
 
-    const size_t s= a.size();
+    if (__unlikely(stride_a== 0)) {
+        std::ostringstream s;
+        s << "stride_a==0 in "
+             "cftal::vsvec<_T, _A> cftal::"
+             "dot_product(const vsvec<_T, _A>& a, "
+             "int32_t stride_a, size_t offset_a, "
+             "const vsvec<_T, _A>& b)";
+        throw std::domain_error(s.str());
+    }
+
+    const size_t s= b.size();
     const size_t n1= s & ~(_N-1);
     _T r(0);
     if (n1) {
@@ -146,7 +158,7 @@ dot_product(const vsvec<_T, _A>& b,
 }
 
 template <typename _T, typename _A>
-cftal::vsvec<_T, _A>
+_T
 cftal::
 dot_product(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a,
             const vsvec<_T, _A>& b, int32_t stride_b, size_t offset_b)
@@ -154,7 +166,18 @@ dot_product(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a,
     constexpr const size_t _N=max_vec_size_specialized<_T>();
     constexpr const size_t _N4=4*_N;
 
-    const size_t s= a.size();
+    if (__unlikely(stride_a == 0 || stride_b == 0)) {
+        std::ostringstream s;
+        s << "stride_" << ((stride_a == 0) ? 'a' : 'b')
+          << "==0 in "
+             "cftal::vsvec<_T, _A> cftal::"
+             "dot_product(const vsvec<_T, _A>& a, "
+             "int32_t stride_a, size_t offset_a, "
+             "const vsvec<_T, _A>& b, "
+             "int32_t stride_b, size_t offset_b)";
+        throw std::domain_error(s.str());
+    }
+    const size_t s= a.size()/stride_a;
     const size_t n1= s & ~(_N-1);
     _T r(0);
     if (n1) {
