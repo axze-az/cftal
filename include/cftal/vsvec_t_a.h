@@ -812,7 +812,7 @@ template <typename _T, typename _A>
 cftal::vsvec<_T, _A>::vsvec(const _T& r, size_t n)
     : _A(), _n(n), _dta()
 {
-    _alloc_and_construct(n, r);
+    _alloc_and_construct(_n, r);
 }
 
 template <typename _T, typename _A>
