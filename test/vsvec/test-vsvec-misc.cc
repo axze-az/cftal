@@ -97,8 +97,8 @@ bool cftal::test::
 test_dot_product()
 {
     constexpr const size_t _N = 511;
-    constexpr size_t stride_a=8;
-    constexpr size_t stride_b=16;
+    constexpr size_t _STRIDE_A=15;
+    constexpr size_t _STRIDE_B=31;
 
 
     vsvec<_T> a0(_T(0), _N), b0(_T(0), _N);
@@ -118,46 +118,53 @@ test_dot_product()
         return false;
     }
 
-    vsvec<_T> a1(_T(0), _N*stride_a);
-    for (size_t i=0; i<a1.size(); ++i) {
-        a1[i]= _T(i%10+1);
-    }
-    for (size_t o=0; o<stride_a; ++o) {
-        _T d1=dot_product(a1, stride_a, o, b0);
-        _T dr1=ref_dot_product(b0.size(),
-                               a1.cbegin(), stride_a, o,
-                               b0.cbegin());
-
-        if (d1 != dr1) {
-            std::cout << "dot_product(vsvec, stride, offset, vsvec) failed\n";
-            std::cout << std::setprecision(18) << std::scientific;
-            std::cout << "result= "  << d1
-                        << "\nexpected= " << dr1
-                        << "\ndiff=" << d1 - dr1
-                        << "\noffset=" << o
-                        << std::endl;
-            return false;
+    for (size_t stride_a=2; stride_a< _STRIDE_A; ++stride_a) {
+        vsvec<_T> a1(_T(0), _N*stride_a);
+        for (size_t i=0; i<a1.size(); ++i) {
+            a1[i]= _T(i%10+1);
         }
-    }
-    vsvec<_T> b2(_T(0), _N*stride_b);
-    for (size_t i=0; i<b2.size(); ++i) {
-        b2[i]= _T(i%10+1);
-    }
-    for (size_t oa=0; oa<stride_a; ++oa) {
-        for (size_t ob=0; ob <stride_b; ++ob) {
-            _T d2=dot_product(a1, stride_a, oa, b2, stride_b, ob);
-            _T dr2=ref_dot_product(_N,
-                                   a1.cbegin(), stride_a, oa,
-                                   b2.cbegin(), stride_b, ob);
+        for (size_t o=0; o<stride_a; ++o) {
+            _T d1=dot_product(a1, stride_a, o, b0);
+            _T dr1=ref_dot_product(b0.size(),
+                                a1.cbegin(), stride_a, o,
+                                b0.cbegin());
 
-            if (d2 != dr2) {
-                std::cout << "dot_product(vsvec, stride, offset, vsvec, stride, offset) failed\n";
+            if (d1 != dr1) {
+                std::cout << "dot_product(vsvec, "
+                             "stride, offset, vsvec) failed\n";
                 std::cout << std::setprecision(18) << std::scientific;
-                std::cout << "result= "  << d2
-                          << "\nexpected= " << dr2
-                          << "\ndiff=" << d2 - dr2
-                          << std::endl;
+                std::cout << "result= "  << d1
+                            << "\nexpected= " << dr1
+                            << "\ndiff=" << d1 - dr1
+                            << "\noffset=" << o
+                            << std::endl;
                 return false;
+            }
+        }
+
+        for (size_t stride_b=2; stride_b <_STRIDE_B; ++stride_b) {
+            vsvec<_T> b2(_T(0), _N*stride_b);
+            for (size_t i=0; i<b2.size(); ++i) {
+                b2[i]= _T(i%10+1);
+            }
+            for (size_t oa=0; oa<stride_a; ++oa) {
+                for (size_t ob=0; ob <stride_b; ++ob) {
+                    _T d2=dot_product(a1, stride_a, oa, b2, stride_b, ob);
+                    _T dr2=ref_dot_product(_N,
+                                        a1.cbegin(), stride_a, oa,
+                                        b2.cbegin(), stride_b, ob);
+
+                    if (d2 != dr2) {
+                        std::cout << "dot_product(vsvec, stride, offset, "
+                                     "vsvec, stride, offset) failed\n";
+                        std::cout << std::setprecision(18) << std::scientific;
+                        std::cout << "result= "  << d2
+                                << "\nexpected= " << dr2
+                                << "\ndiff=" << d2 - dr2
+                                << std::endl;
+                        return false;
+                    }
+                }
             }
         }
     }
