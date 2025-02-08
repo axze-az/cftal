@@ -16,3 +16,5 @@ test_prog(test-vsvec-ops-s16)
 test_prog(test-vsvec-ops-u16)
 test_prog(test-vsvec-ops-s8)
 test_prog(test-vsvec-ops-u8)
+
+test_prog(test-vsvec-misc)
