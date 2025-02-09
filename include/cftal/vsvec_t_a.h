@@ -490,8 +490,10 @@ cftal::vsvec<_T, _A>::vsvec::
 _alloc_and_construct(size_t n, const _T* s)
 {
 #pragma GCC diagnostic push
+#if !defined (__clang__)
 #pragma GCC diagnostic ignored "-Warray-bounds="
 #pragma GCC diagnostic ignored "-Wstringop-overflow="
+#endif
     _alloc(n);
     size_t i=0;
     try {
@@ -515,8 +517,10 @@ cftal::vsvec<_T, _A>::vsvec::
 _alloc_and_construct(size_t n, _ITER s)
 {
 #pragma GCC diagnostic push
+#if !defined (__clang__)
 #pragma GCC diagnostic ignored "-Warray-bounds="
 #pragma GCC diagnostic ignored "-Wstringop-overflow="
+#endif
     _alloc(n);
     size_t i=0;
     try {
@@ -540,8 +544,10 @@ cftal::vsvec<_T, _A>::vsvec::
 _alloc_and_construct(size_t n, const _T& s)
 {
 #pragma GCC diagnostic push
+#if !defined (__clang__)
 #pragma GCC diagnostic ignored "-Warray-bounds="
 #pragma GCC diagnostic ignored "-Wstringop-overflow="
+#endif
     _alloc(_n);
     size_t i=0;
     try {
