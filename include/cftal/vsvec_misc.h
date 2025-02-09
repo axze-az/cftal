@@ -44,6 +44,9 @@ namespace cftal {
     dot_product(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a,
                 const vsvec<_T, _A>& b, int32_t stride_b, size_t offset_b);
 
+    template <typename _A>
+    bf16_t
+    dot_product(const vsvec<bf16_t, _A>& a, const vsvec<bf16_t, _A>& b);
 }
 
 template <typename _T, typename _A>
@@ -224,6 +227,50 @@ dot_product(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a,
     }
     return r;
 }
+
+template <typename _A>
+cftal::bf16_t
+cftal::
+dot_product(const vsvec<bf16_t, _A>& a, const vsvec<bf16_t, _A>& b)
+{
+    constexpr const size_t _N=max_vec_size_specialized<float>();
+    constexpr const size_t _N4=4*_N;
+    const size_t s= a.size();
+    const size_t n1= s & ~(_N-1);
+    float r(0);
+    if (n1) {
+        using v_t = vec<float, _N>;
+        const size_t n4= s & ~(_N4-1);
+        v_t r0(0.0f);
+        if (n4) {
+            v_t r1(0.0f), r2(0.0f), r3(0.0f);
+            for (size_t i=0; i<n4; i+=4*_N) {
+                v_t a0 = cvt<v_t>(a.template loadv<_N>(i+0*_N));
+                v_t a1 = cvt<v_t>(a.template loadv<_N>(i+1*_N));
+                v_t a2 = cvt<v_t>(a.template loadv<_N>(i+2*_N));
+                v_t a3 = cvt<v_t>(a.template loadv<_N>(i+3*_N));
+
+                r0 += a0 * cvt<v_t>(b.template loadv<_N>(i+0*_N));
+                r1 += a1 * cvt<v_t>(b.template loadv<_N>(i+1*_N));
+                r2 += a2 * cvt<v_t>(b.template loadv<_N>(i+2*_N));
+                r3 += a3 * cvt<v_t>(b.template loadv<_N>(i+3*_N));
+            }
+            r2 += r3;
+            r0 += r1;
+            r0 += r2;
+        }
+        for (size_t i=n4; i<n1; i+= _N) {
+            r0 += cvt<v_t>(a.template loadv<_N>(i+0*_N))
+                * cvt<v_t>(b.template loadv<_N>(i+0*_N));
+        }
+        r = hadd(r0);
+    }
+    for (size_t i=n1; i<s; ++i) {
+        r += float(a[i]) * float(b[i]);
+    }
+    return bf16_t(r);
+}
+
 
 // Local variables:
 // mode: c++
