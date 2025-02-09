@@ -1459,6 +1459,10 @@ namespace cftal {
     template <size_t _N>
     vec<bf16_t, _N>
     sqrt(const vec<bf16_t, _N>& x);
+
+    template <size_t _N>
+    bf16_t
+    hadd(const vec<bf16_t, _N>& x);
 }
 
 inline
@@ -1868,6 +1872,16 @@ cftal::sqrt(const vec<bf16_t, _N>& a)
     vec<float, _N> af=cvt_bf16_to_f32(a());
     vec<float, _N> rf=sqrt(af);
     return vec<bf16_t, _N>::cvt_from_rep(cvt_f32_to_bf16(rf));
+}
+
+template <cftal::size_t _N>
+inline
+cftal::bf16_t
+cftal::hadd(const vec<bf16_t, _N>& a)
+{
+    vec<float, _N> af=cvt_bf16_to_f32(a());
+    float r=hadd(af);
+    return bf16_t(r);
 }
 
 #undef VBF16_USE_INT_CMP
