@@ -96,15 +96,16 @@ template<typename _T>
 bool cftal::test::
 test_dot_product()
 {
-    constexpr const size_t _N = 511;
-    constexpr size_t _STRIDE_A=15;
-    constexpr size_t _STRIDE_B=31;
+    constexpr const size_t _N = sizeof(_T)==2 ? 255 : 511;
+    constexpr const size_t _STRIDE_A=15;
+    constexpr const size_t _STRIDE_B=31;
+    constexpr const size_t MAX_VAL=sizeof(_T)== 2 ? 1 : 16;
 
 
     vsvec<_T> a0(_T(0), _N), b0(_T(0), _N);
     for (size_t i=0; i<a0.size(); ++i) {
-        a0[i] = _T(i%10+1);
-        b0[i] = _T(i%10+1);
+        a0[i] = _T(i%MAX_VAL+1);
+        b0[i] = _T(i%MAX_VAL+1);
     }
     _T d0=dot_product(a0, b0);
     _T dr0=ref_dot_product(a0.size(), a0.cbegin(), b0.cbegin());
@@ -121,7 +122,7 @@ test_dot_product()
     for (size_t stride_a=2; stride_a< _STRIDE_A; ++stride_a) {
         vsvec<_T> a1(_T(0), _N*stride_a);
         for (size_t i=0; i<a1.size(); ++i) {
-            a1[i]= _T(i%10+1);
+            a1[i]= _T(i%MAX_VAL+1);
         }
         for (size_t o=0; o<stride_a; ++o) {
             _T d1=dot_product(a1, stride_a, o, b0);
@@ -157,7 +158,7 @@ test_dot_product()
         for (size_t stride_b=2; stride_b <_STRIDE_B; ++stride_b) {
             vsvec<_T> b2(_T(0), _N*stride_b);
             for (size_t i=0; i<b2.size(); ++i) {
-                b2[i]= _T(i%10+1);
+                b2[i]= _T(i%MAX_VAL+1);
             }
             for (size_t oa=0; oa<stride_a; ++oa) {
                 for (size_t ob=0; ob <stride_b; ++ob) {
@@ -187,15 +188,31 @@ test_dot_product()
 int main()
 {
     using namespace cftal::test;
+    using cftal::bf16_t;
+    using cftal::f16_t;
     bool r=true;
-    if (test_dot_product<float>()==true) {
-        std::cout << "dot_product for float vectors passed\n";
+    if (test_dot_product<bf16_t>()==true) {
+        std::cout << "dot_product test for bf16_t vectors passed\n";
     } else {
+        std::cout << "dot_product test for bf16_t vectors FAILED\n";
+        r=false;
+    }
+    if (test_dot_product<f16_t>()==true) {
+        std::cout << "dot_product test for f16_t vectors passed\n";
+    } else {
+        std::cout << "dot_product test for f16_t vectors FAILED\n";
+        r=false;
+    }
+    if (test_dot_product<float>()==true) {
+        std::cout << "dot_product test for float vectors passed\n";
+    } else {
+        std::cout << "dot_product test for float vectors FAILED\n";
         r=false;
     }
     if (test_dot_product<double>()==true) {
-        std::cout << "dot_product for double vectors passed\n";
+        std::cout << "dot_product test for double vectors passed\n";
     } else {
+        std::cout << "dot_product test for double vectors FAILED\n";
         r=false;
     }
     return r;
