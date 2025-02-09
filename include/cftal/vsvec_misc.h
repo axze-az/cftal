@@ -149,7 +149,7 @@ dot_product(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a,
 }
 
 template <typename _T, typename _A>
-cftal::vsvec<_T, _A>
+_T
 cftal::
 dot_product(const vsvec<_T, _A>& b,
             const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a)
