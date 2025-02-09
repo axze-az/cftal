@@ -126,12 +126,24 @@ test_dot_product()
         for (size_t o=0; o<stride_a; ++o) {
             _T d1=dot_product(a1, stride_a, o, b0);
             _T dr1=ref_dot_product(b0.size(),
-                                a1.cbegin(), stride_a, o,
-                                b0.cbegin());
+                                   a1.cbegin(), stride_a, o,
+                                   b0.cbegin());
 
             if (d1 != dr1) {
                 std::cout << "dot_product(vsvec, "
                              "stride, offset, vsvec) failed\n";
+                std::cout << std::setprecision(18) << std::scientific;
+                std::cout << "result= "  << d1
+                            << "\nexpected= " << dr1
+                            << "\ndiff=" << d1 - dr1
+                            << "\noffset=" << o
+                            << std::endl;
+                return false;
+            }
+            d1=dot_product(b0, a1, stride_a, o);
+            if (d1 != dr1) {
+                std::cout << "dot_product(vsvec, "
+                             "vsvec, stride, offset) failed\n";
                 std::cout << std::setprecision(18) << std::scientific;
                 std::cout << "result= "  << d1
                             << "\nexpected= " << dr1
