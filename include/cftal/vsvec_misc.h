@@ -55,7 +55,7 @@ _T
 cftal::
 dot_product(const vsvec<_T, _A>& a, const vsvec<_T, _A>& b)
 {
-    return impl::dot_product<_T, _T>(a.size(), a.cbegin(), b.cbegin());
+    return impl::dot_product<_T>(a.size(), a.cbegin(), b.cbegin());
 }
 
 template <typename _T, typename _A>
@@ -64,9 +64,9 @@ cftal::
 dot_product(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a,
             const vsvec<_T, _A>& b)
 {
-    return impl::dot_product<_T, _T>(b.size(),
-                                     a.cbegin(), stride_a, offset_a,
-                                     b.cbegin());
+    return impl::dot_product<_T>(b.size(),
+                                 a.cbegin(), stride_a, offset_a,
+                                 b.cbegin());
 }
 
 template <typename _T, typename _A>
@@ -95,9 +95,9 @@ dot_product(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a,
              "int32_t stride_b, size_t offset_b)";
         throw std::domain_error(s.str());
     }
-    return impl::dot_product<_T, _T>(a.size()/stride_a,
-                                     a.cbegin(), stride_a, offset_a,
-                                     b.cbegin(), stride_b, offset_b);
+    return impl::dot_product<_T>(a.size()/stride_a,
+                                 a.cbegin(), stride_a, offset_a,
+                                 b.cbegin(), stride_b, offset_b);
 }
 
 template <typename _A>

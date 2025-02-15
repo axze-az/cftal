@@ -39,14 +39,14 @@ namespace cftal {
                     const _T* b);
 
         // dot product of _T arrays using type _A as accumulator
-        template <typename _T, typename _A>
+        template <typename _T, typename _A=_T>
         _T
         dot_product(size_t s,
                     const _T* b,
                     const _T* a, int32_t stride_a, size_t offset_a);
 
          // dot product of _T arrays using type _A as accumulator
-       template <typename _T, typename _A>
+       template <typename _T, typename _A=_T>
         _T
         dot_product(size_t s,
                     const _T* a, int32_t stride_a, size_t offset_a,
