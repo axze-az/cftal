@@ -20,8 +20,8 @@
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
+#include <cftal/type_traits.h>
 #include <sstream>
-
 
 namespace cftal {
     namespace impl {
@@ -113,7 +113,7 @@ dot_product(size_t s,
         if constexpr (_A_is_T) {
             r += a[i] * b[i];
         } else {
-            r += A(a[i]) * _A(b[i]);
+            r += _A(a[i]) * _A(b[i]);
         }
     }
     return _T(r);
@@ -237,7 +237,7 @@ dot_product(size_t s,
     _A r(0);
     if (n1) {
         using v_t = vec<_T, _N>;
-        using va_t = vec<_T, _N>;
+        using va_t = vec<_A, _N>;
         using vi_t = vec<int32_t, _N>;
         const size_t n4= s & ~(_N4-1);
         va_t r0(_A(0));
