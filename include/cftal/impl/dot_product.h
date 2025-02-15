@@ -72,7 +72,7 @@ dot_product(size_t s,
         const size_t n4= s & ~(_N4-1);
         va_t r0(_A(0));
         if (n4) {
-            va_t r1(_T(0)), r2(_T(0)), r3(_T(0));
+            va_t r1(_A(0)), r2(_A(0)), r3(_A(0));
             for (size_t i=0; i<n4; i+=4*_N) {
                 v_t a0 = mem<v_t>::load(a+i+0*_N);
                 v_t a1 = mem<v_t>::load(a+i+1*_N);
@@ -146,12 +146,12 @@ dot_product(size_t s,
         using va_t = vec<_A, _N>;
         using vi_t = vec<int32_t, _N>;
         const size_t n4= s & ~(_N4-1);
-        va_t r0(_T(0));
+        va_t r0(_A(0));
         vi_t idx_a=
             impl::indices_from_stride<vi_t, int32_t>::create(stride_a);
         auto lck_a=make_variable_lookup_table<_T>(idx_a);
         if (n4) {
-            va_t r1(_T(0)), r2(_T(0)), r3(_T(0));
+            va_t r1(_A(0)), r2(_A(0)), r3(_A(0));
             for (size_t i=0; i<n4; i+=4*_N) {
                 v_t a0 = lck_a.fromp(a+(i+0*_N)*stride_a+offset_a);
                 v_t a1 = lck_a.fromp(a+(i+1*_N)*stride_a+offset_a);
@@ -240,7 +240,7 @@ dot_product(size_t s,
         using va_t = vec<_T, _N>;
         using vi_t = vec<int32_t, _N>;
         const size_t n4= s & ~(_N4-1);
-        va_t r0(_T(0));
+        va_t r0(_A(0));
         vi_t idx_a=
             impl::indices_from_stride<vi_t, int32_t>::create(stride_a);
         vi_t idx_b=
@@ -248,7 +248,7 @@ dot_product(size_t s,
         auto lck_a=make_variable_lookup_table<_T>(idx_a);
         auto lck_b=make_variable_lookup_table<_T>(idx_b);
         if (n4) {
-            va_t r1(_T(0)), r2(_T(0)), r3(_T(0));
+            va_t r1(_A(0)), r2(_A(0)), r3(_A(0));
             for (size_t i=0; i<n4; i+=4*_N) {
                 v_t a0 = lck_a.fromp(a+(i+0*_N)*stride_a+offset_a);
                 v_t a1 = lck_a.fromp(a+(i+1*_N)*stride_a+offset_a);
