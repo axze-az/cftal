@@ -88,7 +88,7 @@ dot_product(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a,
         std::ostringstream s;
         s << "stride_" << ((stride_a == 0) ? 'a' : 'b')
           << "==0 in "
-             "cftal::vsvec<_T, _A> cftal::"
+             "_T cftal::"
              "dot_product(const vsvec<_T, _A>& a, "
              "int32_t stride_a, size_t offset_a, "
              "const vsvec<_T, _A>& b, "
