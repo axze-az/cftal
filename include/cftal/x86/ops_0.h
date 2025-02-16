@@ -1545,7 +1545,7 @@ namespace cftal {
 
             template <std::size_t _SCALE>
             static _T
-            v(const _T& src, const float* base,
+            v(const _T& src, const uint16_t* base,
               const _I& idx, const _T& msk);
         };
 
@@ -1589,7 +1589,7 @@ namespace cftal {
 
             template <std::size_t _SCALE>
             static _T
-            v(const _T& src, const float* base,
+            v(const _T& src, const uint16_t* base,
               const _I& idx, const _T& msk);
         };
 
@@ -1616,6 +1616,45 @@ namespace cftal {
             static __m256i
             v(__m256i src, const uint16_t* base,
               __m256i idx, __m256i msk);
+        };
+
+        // template for vgatherdph (half) using int32_t indices
+        template <class _T, class _I>
+        struct vgatherdph {
+            template <std::size_t _SCALE>
+            static _T
+            v(const uint16_t* base, const _I& idx);
+
+            template <std::size_t _SCALE>
+            static _T
+            v(const _T& src, const uint16_t* base,
+              const _I& idx, const _T& msk);
+        };
+
+        // returns only valid values in low 4 elements
+        template <>
+        struct vgatherdph<__m128i, __m128i> {
+
+            template <std::size_t _SCALE>
+            static __m128i
+            v(const uint16_t* base, __m128i idx);
+
+            template <std::size_t _SCALE>
+            static __m128i
+            v(__m128i src, const uint16_t* base,
+              __m128i idx, __m128i msk);
+        };
+
+        template <>
+        struct vgatherdph<__m128i, __m256i> {
+            template <std::size_t _SCALE>
+            static __m128i
+            v(const uint16_t* base, __m256i idx);
+
+            template <std::size_t _SCALE>
+            static __m128i
+            v(__m128i src, const uint16_t* base,
+              __m256i idx, __m128i msk);
         };
 
 #endif
@@ -2904,20 +2943,19 @@ v(const uint16_t* base, __m256i i32)
 {
     const float* pf=reinterpret_cast<const float*>(base);
     __m256 f=vgatherdps<__m256, __m256i>::v<_SCALE>(pf, i32);
-    __m256i fi=_mm256_castps_si256(f);
-    const __m256i si=_mm256_setr_epi8(
-        // low half^
-        0, 1, 4, 5, 8, 9, 12, 13,
-        -1, -1, -1, -1, -1, -1, -1, -1,
-        // high half:
-        -1, -1, -1, -1, -1, -1, -1, -1,
-        0, 1, 4, 5, 8, 9, 12, 13
-    );
-    fi=_mm256_shuffle_epi8(fi, si);
-    __m128i fih=_mm256_extractf128_si256(fi, 1);
-    __m128i fil=_mm256_castsi256_si128(fi);
-    __m128i r=_mm_or_si128(fil, fih);
-    return r;
+
+    const __m256i& msk=const_v32u8<   0,    1,    4,    5,
+                                      8,    9,   12,   13,
+                                   0xff, 0xff, 0xff, 0xff,
+                                   0xff, 0xff, 0xff, 0xff,
+                                      0,    1,    4,    5,
+                                      8,    9,   12,   13,
+                                   0xff, 0xff, 0xff, 0xff,
+                                   0xff, 0xff, 0xff, 0xff>::iv();
+    __m256i r=vpshufb::v(_mm256_castps_si256(f), msk);
+    const int sh4=shuffle4<0, 2, 1, 3>::val;
+    r=_mm256_permute4x64_epi64(r, sh4);
+    return _mm256_castsi256_si128(r);
 }
 
 template <std::size_t _SCALE>
@@ -3023,6 +3061,55 @@ v(__m256i src, const uint16_t* base, __m256i idx, __m256i msk)
     return r;
 }
 
+template <std::size_t _SCALE>
+inline
+__m128i
+cftal::x86::
+vgatherdph<__m128i, __m128i>::
+v(const uint16_t* base, __m128i idx)
+{
+    const float* pf=reinterpret_cast<const float*>(base);
+    __m128 f=vgatherdps<__m128, __m128i>::v<_SCALE>(pf, idx);
+    const __m128i& msk=const_v16u8<   0,    1,    4,    5,
+                                      8,    9,   12,   13,
+                                   0xff, 0xff, 0xff, 0xff,
+                                   0xff, 0xff, 0xff, 0xff>::iv();
+    __m128i r=vpshufb::v(_mm_castps_si128(f), msk);
+    return r;
+}
+
+template <std::size_t _SCALE>
+inline
+__m128i
+cftal::x86::
+vgatherdph<__m128i, __m128i>::
+v(__m128i src, const uint16_t* base, __m128i idx, __m128i msk)
+{
+    __m128i r=v<_SCALE>(base, idx);
+    return-select_u16(msk, r, src);
+}
+
+template <std::size_t _SCALE>
+inline
+__m128i
+cftal::x86::
+vgatherdph<__m128i, __m256i>::
+v(const uint16_t* base, __m256i idx)
+{
+    __m128i r=vgatherwph<__m128i, __m128i>::v<_SCALE>(base, idx);
+    return r;
+}
+
+template <std::size_t _SCALE>
+inline
+__m128i
+cftal::x86::
+vgatherdph<__m128i, __m256i>::
+v(__m128i src, const uint16_t* base, __m256i idx, __m128i msk)
+{
+    __m128i r=v<_SCALE>(base, idx);
+    return-select_u16(msk, r, src);
+}
 
 #endif
 
