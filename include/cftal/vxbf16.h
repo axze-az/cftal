@@ -1334,7 +1334,8 @@ namespace cftal {
         class variable_vec_lookup_table<bf16_t, int16_t, 8> {
             vec<int16_t, 8> _idx;
         public:
-            variable_vec_lookup_table(const vec<int16_t, 8>& idx) : _idx(idx) {}
+            variable_vec_lookup_table(const vec<int16_t, 8>& idx)
+                : _idx(idx) {}
             vec<bf16_t, 8>
             fromp(const bf16_t* tbl) const {
                 const uint16_t* p=reinterpret_cast<const uint16_t*>(tbl);
@@ -1347,7 +1348,8 @@ namespace cftal {
         class variable_vec_lookup_table<bf16_t, int16_t, 16> {
             vec<int16_t, 16> _idx;
         public:
-            variable_vec_lookup_table(const vec<int16_t, 16>& idx) : _idx(idx) {}
+            variable_vec_lookup_table(const vec<int16_t, 16>& idx)
+                : _idx(idx) {}
             vec<bf16_t, 16>
             fromp(const bf16_t* tbl) const {
                 const uint16_t* p=reinterpret_cast<const uint16_t*>(tbl);
