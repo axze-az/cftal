@@ -129,7 +129,7 @@ dot_product(size_t s,
     constexpr const size_t _N=max_vec_size_specialized<_T>();
     constexpr const size_t _N4=4*_N;
 
-    if (__unlikely(stride_a== 0)) {
+    if (__unlikely(stride_a==0)) {
         std::ostringstream es;
         es << "stride_a==0 in "
               "_T cftal::impl::"
@@ -137,6 +137,9 @@ dot_product(size_t s,
               "int32_t stride_a, size_t offset_a, "
               "const _T* b)";
         throw std::domain_error(es.str());
+    }
+    if (__unlikely(stride_a==1)) {
+        return dot_product<_T, _A>(s, a+offset_a, b);
     }
     constexpr const bool _A_is_T= std::is_same_v<_A, _T>;
     const size_t n1= s & ~(_N-1);
@@ -231,7 +234,12 @@ dot_product(size_t s,
               "int32_t stride_b, size_t offset_b)";
         throw std::domain_error(es.str());
     }
-
+    if (__unlikely(stride_a==1)) {
+        return dot_product<_T, _A>(s, b, stride_b, offset_b, a+offset_a);
+    }
+    if (__unlikely(stride_b==1)) {
+        return dot_product<_T, _A>(s, a, stride_a, offset_a, b+offset_b);
+    }
     constexpr const bool _A_is_T= std::is_same_v<_A, _T>;
     const size_t n1= s & ~(_N-1);
     _A r(0);
