@@ -1646,7 +1646,8 @@ namespace cftal {
         };
 
         template <>
-        struct vgatherdph<__m128i, __m256i> {
+        struct vgatherdph<__m128i, __m256i>
+            : private vgatherwph<__m128i, __m128i> {
             template <std::size_t _SCALE>
             static __m128i
             v(const uint16_t* base, __m256i idx);
