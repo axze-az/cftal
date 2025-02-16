@@ -1355,6 +1355,37 @@ namespace cftal {
                 return vec<bf16_t, 16>::cvt_from_rep(r);
             }
         };
+
+        template <>
+        class variable_vec_lookup_table<bf16_t, int32_t, 4> {
+            vec<int32_t, 4> _idx;
+        public:
+            variable_vec_lookup_table(const vec<int32_t, 4>& idx)
+                : _idx(idx) {}
+            vec<bf16_t, 4>
+            fromp(const bf16_t* tbl) const {
+                const uint16_t* p=reinterpret_cast<const uint16_t*>(tbl);
+                vec<mf_bf16_t, 8> rlh=
+                    x86::vgatherdph<__m128i, __m128i>::v<2>(p, _idx());
+                vec<mf_bf16_t, 4> r(low_half(rlh));
+                return vec<bf16_t, 4>::cvt_from_rep(r);
+            }
+        };
+
+        template <>
+        class variable_vec_lookup_table<bf16_t, int32_t, 8> {
+            vec<int32_t, 8> _idx;
+        public:
+            variable_vec_lookup_table(const vec<int32_t, 8>& idx)
+                : _idx(idx) {}
+            vec<bf16_t, 8>
+            fromp(const bf16_t* tbl) const {
+                const uint16_t* p=reinterpret_cast<const uint16_t*>(tbl);
+                __m128i r=x86::vgatherdph<__m128i, __m256i>::v<2>(p, _idx());
+                return vec<bf16_t, 8>::cvt_from_rep(r);
+            }
+        };
+
     }
 #endif
     namespace impl {
