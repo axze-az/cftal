@@ -93,8 +93,8 @@ namespace cftal {
     // the default classes defines only the structure of the template
     // with one class/typename arguments
     namespace op {
-        // template class for the different operations
-        // these operation class must export a static member function v
+        // template classes for the different operations
+        // these operation classes must export a static member function v
         // returning and taking the right arguments, the return type of v
         // must be exported as full_type
         // neg: (unary minus) static _T v(const _T&); using full_type=_T;
