@@ -21,7 +21,6 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/type_traits.h>
-#include <sstream>
 
 namespace cftal {
     namespace impl {
@@ -38,12 +37,22 @@ namespace cftal {
                     const _T* a, int32_t stride_a, size_t offset_a,
                     const _T* b);
 
+        // error message for dot_product with one stride greater than 1
+        [[noreturn]]
+        void
+        dot_product_stride_a_zero();
+
         // dot product of _T arrays using type _A as accumulator
         template <typename _T, typename _A=_T>
         _T
         dot_product(size_t s,
                     const _T* b,
                     const _T* a, int32_t stride_a, size_t offset_a);
+
+        // error message for dot_product with two strides greater than 1
+        [[noreturn]]
+        void
+        dot_product_stride_a_or_b_zero(char stride);
 
         // dot product of _T arrays using type _A as accumulator
         template <typename _T, typename _A=_T>
@@ -130,13 +139,7 @@ dot_product(size_t s,
     constexpr const size_t _N4=4*_N;
 
     if (__unlikely(stride_a==0)) {
-        std::ostringstream es;
-        es << "stride_a==0 in "
-              "_T cftal::impl::"
-              "dot_product(size_t s, const _T* a, "
-              "int32_t stride_a, size_t offset_a, "
-              "const _T* b)";
-        throw std::domain_error(es.str());
+        dot_product_stride_a_zero();
     }
     if (__unlikely(stride_a==1)) {
         return dot_product<_T, _A>(s, a+offset_a, b);
@@ -223,16 +226,8 @@ dot_product(size_t s,
     constexpr const size_t _N4=4*_N;
 
     if (__unlikely(stride_a == 0 || stride_b == 0)) {
-        std::ostringstream es;
         char ab=((stride_a == 0) ? 'a' : 'b');
-        es << "stride_" << ab
-           << "==0 in "
-              "_T cftal::impl::"
-              "dot_product(size_t s, const _T*a, "
-              "int32_t stride_a, size_t offset_a, "
-              "const _T* b, "
-              "int32_t stride_b, size_t offset_b)";
-        throw std::domain_error(es.str());
+        dot_product_stride_a_or_b_zero(ab);
     }
     if (__unlikely(stride_a==1)) {
         return dot_product<_T, _A>(s, b, stride_b, offset_b, a+offset_a);
