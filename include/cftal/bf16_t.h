@@ -37,6 +37,7 @@
 
 #if __USE_STDCPP_BFLOAT16_T__==0
 #include <cftal/expr.h>
+#include <cftal/op.h>
 #include <iostream>
 #endif
 

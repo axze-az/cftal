@@ -20,6 +20,7 @@
 
 #include <cftal/config.h>
 #include <cftal/expr.h>
+#include <cftal/op.h>
 #include <cftal/constants.h>
 #include <cftal/init_list.h>
 #include <cftal/arg.h>

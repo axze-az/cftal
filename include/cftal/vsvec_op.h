@@ -21,6 +21,7 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/expr.h>
+#include <cftal/op.h>
 #include <cftal/expr_func.h>
 #include <cftal/vsvec_bit_a.h>
 

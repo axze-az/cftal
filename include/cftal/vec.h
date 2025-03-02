@@ -25,6 +25,7 @@
 #include <cftal/init_list.h>
 #include <cftal/constants.h>
 #include <cftal/expr.h>
+#include <cftal/op.h>
 #include <cftal/mem.h>
 #include <cftal/vec_t_n.h>
 #include <cftal/vec_mask.h>
