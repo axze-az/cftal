@@ -1123,8 +1123,8 @@ __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
 #pragma clang unroll(1)
 #pragma GCC unroll 1
     for (std::size_t i=0; i<N1; ++i) {
-        vf_type ch=mem<vf_type>::load(&(pdci[i][0]), 1);
-        vf_type cl=mem<vf_type>::load(&(pdci[i][1]), 1);
+        vf_type ch{pdci[i][0]};
+        vf_type cl{pdci[i][1]};
         d_ops::add22(ph, pl, ch, cl, ph, pl);
         d_ops::unorm_mul22(ph, pl, xh, xl, ph, pl);
     }
