@@ -319,54 +319,41 @@ vec(const expr<_OP<vec<double, 8> >, _L, _R>& r)
 
 inline
 cftal::vec<double, 8>
-cftal::mem<cftal::vec<double, 8> >::load(const double* p, std::size_t s)
+cftal::mem<cftal::vec<double, 8> >::load(const double* p, ssize_t s)
 {
-    __m512d v;
-    switch (s) {
-    default:
-    case 8:
+    vec<double, 8> v;
+    if (s>=8) {
         v = _mm512_loadu_pd(p);
-        break;
-    case 7:
-        v = _mm512_setr_pd(p[0], p[1], p[2], p[3],
-                           p[4], p[5], p[6], p[6]);
-        break;
-    case 6:
-        v = _mm512_setr_pd(p[0], p[1], p[2], p[3],
-                           p[4], p[5], p[5], p[5]);
-        break;
-    case 5:
-        v = _mm512_setr_pd(p[0], p[1], p[2], p[3],
-                           p[4], p[4], p[4], p[4]);
-        break;
-    case 4:
-        v = _mm512_setr_pd(p[0], p[1], p[2], p[3],
-                           p[3], p[3], p[3], p[3]);
-        break;
-    case 3:
-        v = _mm512_setr_pd(p[0], p[1], p[2], p[2],
-                           p[2], p[2], p[2], p[2]);
-        break;
-    case 2:
-        v = _mm512_setr_pd(p[0], p[1], p[1], p[1],
-                           p[1], p[1], p[1], p[1]);
-        break;
-    case 1:
-        v = _mm512_setr_pd(p[0], p[0], p[0], p[0],
-                           p[0], p[0], p[0], p[0]);
-        break;
-    case 0:
+    } else if (s==1) {
+        v = _mm512_castpd128_pd512(_mm_load_sd(p));
+    } else if (s==2) {
+        v = _mm512_castpd128_pd512(_mm_loadu_pd(p));
+    } else if (s==4) {
+        v = _mm512_castpd256_pd512(_mm256_loadu_pd(p));
+    } else if (s>=2) {
+        auto lh=mem<vec<double, 4> >::load(p, s);
+        auto sh=s>4? s-4 : 0;
+        auto hh=mem<vec<double, 4> >::load(p+4, sh);
+        v = vec<double, 8>(lh, hh);
+    } else {
         v = _mm512_set1_pd(0.0);
-        break;
     }
     return v;
 }
 
 inline
 void
-cftal::mem<cftal::vec<double, 8>>::store(double* p, const vec<double, 8>& v)
+cftal::mem<cftal::vec<double, 8>>::
+store(double* p, const vec<double, 8>& v, ssize_t s)
 {
-    _mm512_storeu_pd(p, v());
+    if (s>=8) {
+        _mm512_storeu_pd(p, v());
+    } else if (s>0) {
+        mem<vec<double, 4> >::store(p, low_half(v), s);
+        if (s > 4) {
+            mem<vec<double, 4> >::store(p+4, high_half(v), s+4);
+        }
+    }
 }
 
 inline

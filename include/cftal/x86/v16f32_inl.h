@@ -301,8 +301,9 @@ cftal::mem<cftal::vec<float, 16> >::load(const float* p, ssize_t s)
         r=_mm512_loadu_ps(reinterpret_cast<const __m512i*>(p));
     } else {
         using vhalf_t = vec<float, 8>;
-        vhalf_t lh=mem<vhalf_t>::load(p, n);
-        vhalf_t hh=mem<vhalf_t>::load(p+8, n-8)
+        vhalf_t lh=mem<vhalf_t>::load(p, s);
+        ssize_t sh= s>=8 ? s-8 : 0;
+        vhalf_t hh=mem<vhalf_t>::load(p+8, sh);
         r=vec<float, 16>(lh, hh);
     }
     return r;
@@ -320,9 +321,10 @@ store(float* p, const vec<float, 16>& v, ssize_t s)
     } else if (s >= 16) {
         _mm512_storeu_ps(p, v());
     } else {
-        using vhalf_t=vec<_T, 8>;
-        mem<vhalf_t>::store(p, low_half(v), n);
-        mem<vhalf_t>::store(p+8, high_half(v), n - 8);
+        using vhalf_t=vec<float, 8>;
+        mem<vhalf_t>::store(p, low_half(v), s);
+        ssize_t sh= s>=8 ? s-8 : 0;
+        mem<vhalf_t>::store(p+8, high_half(v), sh);
     }
 }
 
