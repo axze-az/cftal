@@ -321,57 +321,39 @@ vec<float, 8>::vec(const expr<_OP<vec<float, 8> >, _L, _R>& r)
 
 inline
 cftal::vec<float, 8>
-cftal::mem<cftal::vec<float, 8> >::load(const float* p, std::size_t s)
+cftal::mem<cftal::vec<float, 8> >::load(const float* p, ssize_t s)
 {
-    __m256 v;
-    switch (s) {
-    default:
-    case 8:
+    vec<float, 8> v;
+    if (s>=8) {
         v = _mm256_loadu_ps(p);
-        break;
-    case 7:
-        v = _mm256_setr_ps(p[0], p[1], p[2], p[3],
-                           p[4], p[5], p[6], p[6]);
-        break;
-    case 6:
-        v = _mm256_setr_ps(p[0], p[1], p[2], p[3],
-                           p[4], p[5], p[5], p[5]);
-        break;
-    case 5:
-        v = _mm256_setr_ps(p[0], p[1], p[2], p[3],
-                           p[4], p[4], p[4], p[4]);
-        break;
-    case 4:
-        v = _mm256_setr_ps(p[0], p[1], p[2], p[3],
-                           p[3], p[3], p[3], p[3]);
-        break;
-    case 3:
-        v = _mm256_setr_ps(p[0], p[1], p[2], p[2],
-                           p[2], p[2], p[2], p[2]);
-        break;
-    case 2:
-        v = _mm256_setr_ps(p[0], p[1], p[1], p[1],
-                           p[1], p[1], p[1], p[1]);
-
-        break;
-    case 1:
-        v = _mm256_broadcast_ss(p);
-        // v = _mm256_setr_ps(p[0], p[0], p[0], p[0],
-        //                    p[0], p[0], p[0], p[0]);
-        break;
-    case 0:
-        v = _mm256_setr_ps(0.0f, 0.0f, 0.0f, 0.0f,
-                           0.0f, 0.0f, 0.0f, 0.0f);
-        break;
+    } else if (s==1) {
+        v = _mm256_castps128_ps256(_mm_load_ss(p));
+    } else if (s==4) {
+        v = _mm256_castps128_ps256(_mm_loadu_ps(p));
+    } else if (s>=2) {
+        auto lh=mem<vec<float, 4> >::load(p, s);
+        auto sh=s>4? s-4 : 0;
+        auto hh=mem<vec<float, 4> >::load(p+4, sh);
+        v = vec<float, 8>(lh, hh);
+    } else {
+        v = _mm256_set1_ps(0.0f);
     }
     return v;
 }
 
 inline
 void
-cftal::mem<cftal::vec<float, 8>>::store(float* p, const vec<float, 8>& v)
+cftal::mem<cftal::vec<float, 8>>::
+store(float* p, const vec<float, 8>& v, ssize_t s)
 {
-    _mm256_storeu_ps(p, v());
+    if (s>=8) {
+        _mm256_storeu_ps(p, v());
+    } else if (s>0) {
+        mem<vec<float, 4> >::store(p, low_half(v), s);
+        if (s > 4) {
+            mem<vec<float, 4> >::store(p+4, high_half(v), s+4);
+        }
+    }
 }
 
 inline

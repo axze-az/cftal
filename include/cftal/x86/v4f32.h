@@ -72,9 +72,11 @@ namespace cftal {
     template <>
     struct mem< vec<float, 4> > {
         static
-        vec<float, 4> load(const float* p, std::size_t n=4);
+        vec<float, 4>
+	load(const float* p, ssize_t n=4);
         static
-        void store(float* p, const vec<float, 4>& v);
+        void
+	store(float* p, const vec<float, 4>& v, ssize_t n=4);
     };
 
     vec<float, 2>

@@ -382,30 +382,29 @@ vec<cftal::int64_t, 2>::vec(const expr<_OP<vec<int64_t, 2> >, _L, _R>& r)
 
 inline
 cftal::vec<cftal::int64_t, 2>
-cftal::mem<cftal::vec<int64_t, 2> >::load(const int64_t* p, std::size_t s)
+cftal::mem<cftal::vec<int64_t, 2> >::load(const int64_t* p, ssize_t s)
 {
     __m128i v;
-    switch (s) {
-    default:
-    case 2:
+    if (s>=2) {
         v = _mm_loadu_si128(reinterpret_cast<const __m128i*>(p));
-        break;
-    case 1:
-        v = _mm_set_epi64x(p[0], p[0]);
-        break;
-    case 0:
+    } else if (s==1) {
+        v = _mm_loadu_si64(p);
+    } else {
         v = _mm_set_epi64x(0, 0);
-        break;
     }
     return v;
 }
 
 inline
 void
-cftal::mem<cftal::vec<int64_t, 2> >::store(int64_t* p,
-                                           const vec<int64_t, 2>& v)
+cftal::mem<cftal::vec<int64_t, 2> >::
+store(int64_t* p, const vec<int64_t, 2>& v, ssize_t s)
 {
-    _mm_storeu_si128(reinterpret_cast<__m128i*>(p), v());
+    if (s >= 2) {
+        _mm_storeu_si128(reinterpret_cast<__m128i*>(p), v());
+    } else if (s==1) {
+        _mm_storeu_si64(p, v());
+    }
 }
 
 inline

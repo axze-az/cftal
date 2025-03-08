@@ -384,36 +384,39 @@ vec<cftal::uint32_t, 4>::vec(const expr<_OP<vec<uint32_t, 4> >, _L, _R>& r)
 
 inline
 cftal::vec<cftal::uint32_t, 4>
-cftal::mem<cftal::vec<uint32_t, 4> >::load(const uint32_t* p, std::size_t s)
+cftal::mem<cftal::vec<uint32_t, 4> >::load(const uint32_t* p, ssize_t s)
 {
     __m128i v;
-    switch (s) {
-    default:
-    case 4:
+    if (s>=4) {
         v = _mm_loadu_si128(reinterpret_cast<const __m128i*>(p));
-        break;
-    case 3:
-        v = _mm_setr_epi32(p[0], p[1], p[2], p[2]);
-        break;
-    case 2:
-        v = _mm_setr_epi32(p[0], p[1], p[1], p[1]);
-        break;
-    case 1:
-        v = _mm_setr_epi32(p[0], p[0], p[0], p[0]);
-        break;
-    case 0:
+    } else if (s==3) {
+        v = _mm_setr_epi32(p[0], p[1], p[2], 0);
+    } else if (s==2) {
+        v = _mm_setr_epi32(p[0], p[1], 0, 0);
+    } else if (s==1) {
+        v = _mm_loadu_si32(p);
+    } else {
         v = _mm_setr_epi32(0, 0, 0, 0);
-        break;
     }
     return v;
 }
 
 inline
 void
-cftal::mem<cftal::vec<uint32_t, 4> >::store(uint32_t* p,
-                                            const vec<uint32_t, 4>& v)
+cftal::mem<cftal::vec<uint32_t, 4> >::
+store(uint32_t* p, const vec<uint32_t, 4>& v, ssize_t s)
 {
-    _mm_storeu_si128(reinterpret_cast<__m128i*>(p), v());
+    if (s>=4) {
+        _mm_storeu_si128(reinterpret_cast<__m128i*>(p), v());
+    } else if (s==3) {
+        _mm_storeu_si64(p, v());
+        vec<uint32_t, 4> t=permute<2, 3, 0, 1>(v);
+        _mm_storeu_si32(p+2, t());
+    } else if (s==2) {
+        _mm_storeu_si64(p, v());
+    } else if (s==1) {
+        _mm_storeu_si32(p, v());
+    }
 }
 
 inline

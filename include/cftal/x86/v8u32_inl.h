@@ -372,45 +372,20 @@ vec<cftal::uint32_t, 8>::vec(const expr<_OP<vec<uint32_t, 8> >, _L, _R>& r)
 
 inline
 cftal::vec<cftal::uint32_t, 8>
-cftal::mem<cftal::vec<uint32_t, 8> >::load(const uint32_t* p, std::size_t s)
+cftal::mem<cftal::vec<uint32_t, 8> >::load(const uint32_t* p, ssize_t s)
 {
-    __m256i v;
-    switch (s) {
-    default:
-    case 8:
+    vec<uint32_t, 8> v;
+    if (s >= 8) {
         v = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(p));
-        break;
-    case 7:
-        v = _mm256_setr_epi32(p[0], p[1], p[2], p[3],
-                              p[4], p[5], p[6], p[6]);
-        break;
-    case 6:
-        v = _mm256_setr_epi32(p[0], p[1], p[2], p[3],
-                              p[4], p[5], p[5], p[5]);
-        break;
-    case 5:
-        v = _mm256_setr_epi32(p[0], p[1], p[2], p[3],
-                              p[4], p[4], p[4], p[4]);
-        break;
-    case 4:
-        v = _mm256_setr_epi32(p[0], p[1], p[2], p[3],
-                              p[3], p[3], p[3], p[3]);
-        break;
-    case 3:
-        v = _mm256_setr_epi32(p[0], p[1], p[2], p[2],
-                              p[2], p[2], p[2], p[2]);
-        break;
-    case 2:
-        v = _mm256_setr_epi32(p[0], p[1], p[1], p[1],
-                              p[1], p[1], p[1], p[1]);
-        break;
-    case 1:
-        v = _mm256_setr_epi32(p[0], p[0], p[0], p[0],
-                              p[0], p[0], p[0], p[0]);
-        break;
-    case 0:
+    } else if (s==1) {
+        v = _mm256_castsi128_si256(_mm_loadu_si32(p));
+    } else if (s>=2) {
+        auto lh=mem<vec<uint32_t, 4> >::load(p, s);
+        ssize_t sh= s>=4 ? s-4 : 0;
+        auto hh=mem<vec<uint32_t, 4> >::load(p+4, sh);
+        v = vec<uint32_t, 8>(lh, hh);
+    } else {
         v = _mm256_set1_epi32(0);
-        break;
     }
     return v;
 }
@@ -418,9 +393,16 @@ cftal::mem<cftal::vec<uint32_t, 8> >::load(const uint32_t* p, std::size_t s)
 inline
 void
 cftal::mem<cftal::vec<uint32_t, 8> >::
-store(uint32_t* p, const vec<uint32_t, 8>& v)
+store(uint32_t* p, const vec<uint32_t, 8>& v, ssize_t s)
 {
-    _mm256_storeu_si256(reinterpret_cast<__m256i*>(p), v());
+    if (s>=8) {
+        _mm256_storeu_si256(reinterpret_cast<__m256i*>(p), v());
+    } else if (s>0) {
+        mem<vec<uint32_t, 4> >::store(p, low_half(v), s);
+        if (s>4) {
+            mem<vec<uint32_t, 4> >::store(p+4, high_half(v), s-4);
+        }
+    }
 }
 
 inline

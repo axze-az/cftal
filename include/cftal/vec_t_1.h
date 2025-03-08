@@ -83,12 +83,13 @@ namespace cftal {
     template <class _T>
     struct mem< vec<_T, 1> > {
         static
-        vec<_T, 1> load(const _T* p, std::size_t n=1) {
-            return vec<_T, 1>(*p);
+        vec<_T, 1> load(const _T* p, ssize_t n=1) {
+            return n <= 0 ? vec<_T, 1>(_T(0)) : vec<_T, 1>(*p);
         }
         static
-        void store(_T* p, const vec<_T, 1>& v) {
-            *p = v();
+        void store(_T* p, const vec<_T, 1>& v, ssize_t n=1) {
+            if (n >= 1)
+                *p = v();
         }
     };
 

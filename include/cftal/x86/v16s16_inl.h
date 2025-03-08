@@ -373,40 +373,37 @@ vec<cftal::int16_t, 16>::vec(const expr<_OP<vec<int16_t, 16> >, _L, _R>& r)
 
 inline
 cftal::vec<cftal::int16_t, 16>
-cftal::mem<cftal::vec<int16_t, 16> >::load(const int16_t* p, std::size_t s)
+cftal::mem<cftal::vec<int16_t, 16> >::load(const int16_t* p, ssize_t s)
 {
-    __m256i v;
-    switch (s) {
-    case 16:
+    vec<int16_t, 16> v;
+    if (s >= 16) {
         v = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(p));
-        break;
-    case 0:
+    } else if (s==1) {
+        v = _mm256_castsi128_si256(_mm_loadu_si16(p));
+    } else if (s>=2) {
+        auto lh=mem<vec<int16_t, 8> >::load(p, s);
+        ssize_t sh= s>=8 ? s-8 : 0;
+        auto hh=mem<vec<int16_t, 8> >::load(p+8, sh);
+        v = vec<int16_t, 16>(lh, hh);
+    } else {
         v = _mm256_set1_epi32(0);
-        break;
-    default: {
-            x86::vecunion<int16_t, 16, __m256, __m256d, __m256i> st;
-            std::uint32_t si=s & 15;
-            int16_t pi=p[0];
-            st._s[0]=pi;
-            for (uint32_t i=1; i<si; ++i) {
-                pi=p[i];
-                st._s[i]=pi;
-            }
-            for (uint32_t i=si; i<16; ++i) {
-                st._s[i]=pi;
-            }
-            v=_mm256_loadu_si256(&st._vi);
-            break;
-    }}
+    }
     return v;
 }
 
 inline
 void
-cftal::mem<cftal::vec<int16_t, 16> >::store(int16_t* p,
-                                           const vec<int16_t, 16>& v)
+cftal::mem<cftal::vec<int16_t, 16> >::
+store(int16_t* p, const vec<int16_t, 16>& v, ssize_t s)
 {
-    _mm256_storeu_si256(reinterpret_cast<__m256i*>(p), v());
+    if (s>=16) {
+        _mm256_storeu_si256(reinterpret_cast<__m256i*>(p), v());
+    } else if (s>0) {
+        mem<vec<int16_t, 8> >::store(p, low_half(v), s);
+        if (s>8) {
+            mem<vec<int16_t, 8> >::store(p+8, high_half(v), s-8);
+        }
+    }
 }
 
 inline

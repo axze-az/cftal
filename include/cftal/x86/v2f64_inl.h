@@ -319,33 +319,29 @@ vec<double, 2>::vec(const expr<_OP<vec<double, 2> >, _L, _R>& r)
 
 inline
 cftal::vec<double, 2>
-cftal::mem<cftal::vec<double, 2>>::load(const double* p, std::size_t s)
+cftal::mem<cftal::vec<double, 2>>::load(const double* p, ssize_t s)
 {
     __m128d v;
-    switch (s) {
-    default:
-    case 2:
+    if (s>=2) {
         v = _mm_loadu_pd(p);
-        break;
-    case 1:
-#if defined (__SSE3__)
-        v = _mm_loaddup_pd(p);
-#else
-        v = _mm_setr_pd(p[0], p[0]);
-#endif
-        break;
-    case 0:
-        v = _mm_setr_pd(0, 0);
-        break;
+    } else if (s==1) {
+        v = _mm_load_sd(p);
+    } else {
+        v = _mm_set1_pd(0.0);
     }
     return v;
 }
 
 inline
 void
-cftal::mem<cftal::vec<double, 2>>::store(double* p, const vec<double, 2>& v)
+cftal::mem<cftal::vec<double, 2>>::
+store(double* p, const vec<double, 2>& v, ssize_t s)
 {
-    _mm_storeu_pd(p, v());
+    if (s >= 2) {
+        _mm_storeu_pd(p, v());
+    } else if (s==1) {
+        _mm_store_sd(p, v());
+    }
 }
 
 inline

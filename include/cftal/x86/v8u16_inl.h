@@ -397,55 +397,65 @@ vec<cftal::uint16_t, 8>::vec(const expr<_OP<vec<uint16_t, 8> >, _L, _R>& r)
 
 inline
 cftal::vec<cftal::uint16_t, 8>
-cftal::mem<cftal::vec<uint16_t, 8> >::load(const uint16_t* p, std::size_t s)
+cftal::mem<cftal::vec<uint16_t, 8> >::load(const uint16_t* p, ssize_t s)
 {
-    __m128i v;
-    switch (s) {
-    default:
-    case 8:
+    vec<uint16_t, 8> v;
+    if (s >= 8) {
         v = _mm_loadu_si128(reinterpret_cast<const __m128i*>(p));
-        break;
-    case 7:
-        v = _mm_setr_epi16(p[0], p[1], p[2], p[3],
-                           p[4], p[5], p[6], p[6]);
-        break;
-    case 6:
-        v = _mm_setr_epi16(p[0], p[1], p[2], p[3],
-                           p[4], p[5], p[5], p[5]);
-        break;
-    case 5:
-        v = _mm_setr_epi16(p[0], p[1], p[2], p[3],
-                           p[4], p[4], p[4], p[4]);
-        break;
-    case 4:
-        v = _mm_setr_epi16(p[0], p[1], p[2], p[3],
-                           p[3], p[3], p[3], p[3]);
-        break;
-    case 3:
-        v = _mm_setr_epi16(p[0], p[1], p[2], p[2],
-                           p[2], p[2], p[2], p[2]);
-        break;
-    case 2:
-        v = _mm_setr_epi16(p[0], p[1], p[1], p[1],
-                           p[1], p[1], p[1], p[1]);
-        break;
-    case 1:
-        v = _mm_setr_epi16(p[0], p[0], p[0], p[0],
-                           p[0], p[0], p[0], p[0]);
-        break;
-    case 0:
+    } else if (s >= 4) {
+        v = _mm_loadu_si64(p);
+        if (s == 5) {
+            v = _mm_insert_epi16(v(), p[4], 4);
+        } else if (s >= 6) {
+#if defined (__SSE4_1__)
+            const uint32_t* p32=reinterpret_cast<const uint32_t*>(p+4);
+            v = _mm_insert_epi32(v(), *p32, 2);
+#else
+            v = _mm_insert_epi16(v(), p[4], 4);
+            v = _mm_insert_epi16(v(), p[5], 5);
+#endif
+            if ( s>= 7) {
+                v = _mm_insert_epi16(v(), p[6], 6);
+            }
+        }
+    } else if (s == 1) {
+        v = _mm_loadu_si16(p);
+    } else if (s <= 0) {
         v = _mm_setr_epi32(0, 0, 0, 0);
-        break;
     }
     return v;
 }
 
 inline
 void
-cftal::mem<cftal::vec<uint16_t, 8> >::store(uint16_t* p,
-                                            const vec<uint16_t, 8>& v)
+cftal::mem<cftal::vec<uint16_t, 8> >::
+store(uint16_t* p, const vec<uint16_t, 8>& v, ssize_t s)
 {
-    _mm_storeu_si128(reinterpret_cast<__m128i*>(p), v());
+    if (s >= 8) {
+        _mm_storeu_si128(reinterpret_cast<__m128i*>(p), v());
+    } else if (s >= 4) {
+        _mm_storeu_si64(p, v());
+        if (s > 4) {
+            vec<uint16_t, 8> t=permute<4, 5, 6, 7, 0, 1, 2, 3>(v);
+            if ( s == 5) {
+                _mm_storeu_si16(p+4, t());
+            } else if (s>=6) {
+                _mm_storeu_si32(p+4, t());
+                if (s>=7) {
+                    uint16_t e6=extract<6>(v);
+                    p[6] = e6;
+                }
+            }
+        }
+    } else if (s >= 2) {
+        _mm_storeu_si32(p, v());
+        if (s > 2) {
+            uint16_t e2=extract<2>(v);
+            p[2] = e2;
+        }
+    } else if (s == 1) {
+        _mm_storeu_si16(p, v());
+    }
 }
 
 inline

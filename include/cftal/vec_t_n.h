@@ -632,13 +632,27 @@ namespace cftal {
     template <class _T, std::size_t _N>
     struct mem< vec<_T, _N> > {
         static
-        vec<_T, _N> load(const _T* p, std::size_t n=_N) {
-            return vec<_T,_N>(init_list<_T>(p, p+n));
+        vec<_T, _N> load(const _T* p, ssize_t n=_N) {
+            constexpr const ssize_t _N2=_N/2;
+            using v_t=vec<_T, _N>;
+            using vhalf_t=vec<_T, _N2>;
+            if (n <= 0)
+                return v_t(_T(0));
+            vhalf_t lh=mem<vhalf_t>::load(p, n);
+            ssize_t nh=n > _N2 ? n-_N2 : 0;
+            vhalf_t hh=mem<vhalf_t>::load(p+_N2, nh);
+            return v_t(lh, hh);
         }
         static
-        void store(_T* p, const vec<_T, _N>& v) {
-            mem< vec<_T, _N/2> >::store(p, low_half(v));
-            mem< vec<_T, _N/2> >::store(p+_N/2, high_half(v));
+        void store(_T* p, const vec<_T, _N>& v, ssize_t n=_N) {
+            constexpr const ssize_t _N2=_N/2;
+            using vhalf_t=vec<_T, _N2>;
+            if (n > 0) {
+                mem<vhalf_t>::store(p, low_half(v), n);
+                if (n > _N2) {
+                    mem<vhalf_t>::store(p+_N/2, high_half(v), n-_N2);
+                }
+            }
         }
     };
 

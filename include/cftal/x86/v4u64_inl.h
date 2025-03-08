@@ -366,36 +366,35 @@ vec<cftal::uint64_t, 4>::vec(const expr<_OP<vec<uint64_t, 4> >, _L, _R>& r)
 
 inline
 cftal::vec<cftal::uint64_t, 4>
-cftal::mem<cftal::vec<uint64_t, 4> >::load(const uint64_t* p, std::size_t s)
+cftal::mem<cftal::vec<uint64_t, 4> >::load(const uint64_t* p, ssize_t s)
 {
-    __m256i v;
-    switch (s) {
-    default:
-    case 4:
+    vec<uint64_t, 4> v;
+    if (s>=4) {
         v = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(p));
-        break;
-    case 3:
-        v = _mm256_setr_epi64x(p[0], p[1], p[2], p[2]);
-        break;
-    case 2:
-        v = _mm256_setr_epi64x(p[0], p[1], p[1], p[1]);
-        break;
-    case 1:
-        v = _mm256_setr_epi64x(p[0], p[0], p[0], p[0]);
-        break;
-    case 0:
-        v = _mm256_set_epi64x(0, 0, 0,0 );
-        break;
+    } else if (s<=0) {
+        v = _mm256_set1_epi64x(0);
+    } else {
+        auto lh= mem<vec<uint64_t, 2> >::load(p, s);
+        ssize_t sh = s > 2 ? s-2 : 0;
+        auto hh= mem<vec<uint64_t, 2> >::load(p+2, sh);
+        v=vec<uint64_t, 4>(lh, hh);
     }
     return v;
 }
 
 inline
 void
-cftal::mem<cftal::vec<uint64_t, 4> >::store(uint64_t* p,
-                                            const vec<uint64_t, 4>& v)
+cftal::mem<cftal::vec<uint64_t, 4> >::
+store(uint64_t* p, const vec<uint64_t, 4>& v, ssize_t s)
 {
-    _mm256_storeu_si256(reinterpret_cast<__m256i*>(p), v());
+    if (s>=4) {
+        _mm256_storeu_si256(reinterpret_cast<__m256i*>(p), v());
+    } else if (s>2) {
+        mem<cftal::vec<uint64_t, 2> >::store(p, low_half(v), s);
+        mem<cftal::vec<uint64_t, 2> >::store(p+2, high_half(v), s-2);
+    } else if (s>0) {
+        mem<cftal::vec<uint64_t, 2> >::store(p, low_half(v), s);
+    }
 }
 
 inline

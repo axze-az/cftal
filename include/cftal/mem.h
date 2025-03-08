@@ -29,20 +29,19 @@ namespace cftal {
         // load from memory
         static
         _T
-        load(const _T* p, std::size_t s = 1) {
-            static_cast<void>(s);
-            return *p;
+        load(const _T* p, ssize_t s = 1) {
+            return s<=0 ? _T(0) : _T(*p);
         }
         // store to memory
         static
         void
-        store(_T* p, const _T& v) {
-            *p = v;
+        store(_T* p, const _T& v, ssize_t s =1) {
+            if (s >= 1)
+                *p = v;
         }
     };
 
 }
-
 
 // Local variables:
 // mode: c++

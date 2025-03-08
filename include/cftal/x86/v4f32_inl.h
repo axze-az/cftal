@@ -321,39 +321,41 @@ vec<float, 4>::vec(const expr<_OP<vec<float, 4> >, _L, _R>& r)
 
 inline
 cftal::vec<float, 4>
-cftal::mem<cftal::vec<float, 4> >::load(const float* p, std::size_t s)
+cftal::mem<cftal::vec<float, 4> >::load(const float* p, ssize_t s)
 {
     __m128 v;
-    switch (s) {
-    default:
-    case 4:
+    if (s>=4) {
         v = _mm_loadu_ps(p);
-        break;
-    case 3:
-        v = _mm_setr_ps(p[0], p[1], p[2], p[2]);
-        break;
-    case 2:
-        v = _mm_setr_ps(p[0], p[1], p[1], p[1]);
-        break;
-    case 1:
-#if defined (__AVX__)
-        v = _mm_broadcast_ss(p);
-#else
-        v = _mm_setr_ps(p[0], p[0], p[0], p[0]);
-#endif
-        break;
-    case 0:
-        v = _mm_setr_ps(0, 0, 0, 0);
-        break;
+    } else if (s==3) {
+        v = _mm_setr_ps(p[0], p[1], p[2], 0.0f);
+    } else if (s==2) {
+        v = _mm_setr_ps(p[0], p[1], 0.0f, 0.0f);
+    } else if (s==1) {
+        v = _mm_load_ss(p);
+    } else {
+        v = _mm_setr_ps(0.0f, 0.0f, 0.0f, 0.0f);
     }
     return v;
 }
 
 inline
 void
-cftal::mem<cftal::vec<float, 4>>::store(float* p, const vec<float, 4>& v)
+cftal::mem<cftal::vec<float, 4>>::
+store(float* p, const vec<float, 4>& v, ssize_t s)
 {
-    _mm_storeu_ps(p, v());
+    if (s>=4) {
+        _mm_storeu_ps(p, v());
+    } else if (s==3) {
+        auto pp=reinterpret_cast<__m64*>(p);
+        _mm_storel_pi(pp, v());
+        vec<float, 4> t=permute<2, 3, 0, 1>(v);
+        _mm_store_ss(p+2, t());
+    } else if (s==2) {
+        auto pp=reinterpret_cast<__m64*>(p);
+        _mm_storel_pi(pp, v());
+    } else if (s==1) {
+        _mm_store_ss(p, v());
+    }
 }
 
 inline

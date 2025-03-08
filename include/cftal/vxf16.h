@@ -152,28 +152,29 @@ namespace cftal {
     struct mem< vec<f16_t, 1> > {
         static
         vec<f16_t, 1> load(const f16_t* p, std::size_t n=1) {
-            auto pp=reinterpret_cast<const mf_f16_t*>(p);
-            return vec<f16_t, 1>::cvt_from_rep(*pp);
+            using v_t= vec<mf_f16_t, 1>;
+            v_t r(mem<v_t>::load(reinterpret_cast<const mf_f16_t*>(p), n));
+            return vec<f16_t, 1>::cvt_from_rep(r);
         }
         static
-        void store(f16_t* p, const vec<f16_t, 1>& v) {
+        void store(f16_t* p, const vec<f16_t, 1>& v, ssize_t n=1) {
             using v_t = vec<mf_f16_t, 1>;
-            mem<v_t>::store(reinterpret_cast<mf_f16_t*>(p), v());
+            mem<v_t>::store(reinterpret_cast<mf_f16_t*>(p), v(), n);
         }
     };
 
     template <size_t _N>
     struct mem< vec<f16_t, _N> > {
         static
-        vec<f16_t, _N> load(const f16_t* p, std::size_t n=_N) {
+        vec<f16_t, _N> load(const f16_t* p, ssize_t n=_N) {
             using v_t= vec<mf_f16_t, _N>;
             v_t r(mem<v_t>::load(reinterpret_cast<const mf_f16_t*>(p), n));
             return vec<f16_t, _N>::cvt_from_rep(r);
         }
         static
-        void store(f16_t* p, const vec<f16_t, _N>& v) {
+        void store(f16_t* p, const vec<f16_t, _N>& v, ssize_t n=_N) {
             using v_t = vec<mf_f16_t, _N>;
-            mem<v_t>::store(reinterpret_cast<mf_f16_t*>(p), v());
+            mem<v_t>::store(reinterpret_cast<mf_f16_t*>(p), v(), n);
         }
     };
 

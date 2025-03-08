@@ -325,36 +325,35 @@ vec<double, 4>::vec(const expr<_OP<vec<double, 4> >, _L, _R>& r)
 
 inline
 cftal::vec<double, 4>
-cftal::mem<cftal::vec<double, 4> >::load(const double* p, std::size_t s)
+cftal::mem<cftal::vec<double, 4> >::load(const double* p, ssize_t s)
 {
-    __m256d v;
-    switch (s) {
-    default:
-    case 4:
+    vec<double, 4> v;
+    if (s>=4) {
         v = _mm256_loadu_pd(p);
-        break;
-    case 3:
-        v = _mm256_setr_pd(p[0], p[1], p[2], p[2]);
-        break;
-    case 2:
-        v = _mm256_setr_pd(p[0], p[1], p[1], p[1]);
-        break;
-    case 1:
-        // v = _mm256_setr_pd(p[0], p[0], p[0], p[0]);
-        v = _mm256_broadcast_sd(p);
-        break;
-    case 0:
+    } else if (s<=0) {
         v = _mm256_setr_pd(0, 0, 0, 0);
-        break;
+    } else {
+        auto lh= mem<vec<double, 2> >::load(p, s);
+        ssize_t sh = s > 2 ? s-2 : 0;
+        auto hh= mem<vec<double, 2> >::load(p+2, sh);
+        v=vec<double, 4>(lh, hh);
     }
     return v;
 }
 
 inline
 void
-cftal::mem<cftal::vec<double, 4>>::store(double* p, const vec<double, 4>& v)
+cftal::mem<cftal::vec<double, 4>>::
+store(double* p, const vec<double, 4>& v, ssize_t s)
 {
-    _mm256_storeu_pd(p, v());
+    if (s>=4) {
+        _mm256_storeu_pd(p, v());
+    } else if (s>2) {
+        mem<cftal::vec<double, 2> >::store(p, low_half(v), s);
+        mem<cftal::vec<double, 2> >::store(p+2, high_half(v), s-2);
+    } else if (s>0) {
+        mem<cftal::vec<double, 2> >::store(p, low_half(v), s);
+    }
 }
 
 inline

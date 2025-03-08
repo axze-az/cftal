@@ -290,39 +290,40 @@ vec<float, 16>::vec(const expr<_OP<vec<float, 16> >, _L, _R>& r)
 
 inline
 cftal::vec<float, 16>
-cftal::mem<cftal::vec<float, 16> >::load(const float* p, std::size_t s)
+cftal::mem<cftal::vec<float, 16> >::load(const float* p, ssize_t s)
 {
-    __m512 v;
-    switch (s) {
-    case 16:
-        v = _mm512_loadu_ps(reinterpret_cast<const __m512i*>(p));
-        break;
-    case 0:
-        v = _mm512_set1_ps(0.0f);
-        break;
-    default: {
-            x86::vecunion<uint16_t, 16, __m512, __m512d, __m512i> st;
-            std::uint32_t si=s & 15;
-            float pi=p[0];
-            st._s[0]=pi;
-            for (uint32_t i=1; i<si; ++i) {
-                pi=p[i];
-                st._s[i]=pi;
-            }
-            for (uint32_t i=si; i<16; ++i) {
-                st._s[i]=pi;
-            }
-            v=_mm512_loadu_ps(&st._vi);
-            break;
-    }}
-    return v;
+    vec<float, 16> r;
+    if (s <=0) {
+        r=_mm512_set1_ps(0.0f);
+    } else if (s == 1) {
+        r=_mm512_castps128_ps512(_mm_load_ss(p));
+    } else if (s >= 16) {
+        r=_mm512_loadu_ps(reinterpret_cast<const __m512i*>(p));
+    } else {
+        using vhalf_t = vec<float, 8>;
+        vhalf_t lh=mem<vhalf_t>::load(p, n);
+        vhalf_t hh=mem<vhalf_t>::load(p+8, n-8)
+        r=vec<float, 16>(lh, hh);
+    }
+    return r;
 }
 
 inline
 void
-cftal::mem<cftal::vec<float, 16>>::store(float* p, const vec<float, 16>& v)
+cftal::mem<cftal::vec<float, 16>>::
+store(float* p, const vec<float, 16>& v, ssize_t s)
 {
-    _mm512_storeu_ps(p, v());
+    if (s <= 0) {
+        return;
+    } else if (s==1) {
+        _mm_store_ss(p, _mm512_castps512_ps128(v()));
+    } else if (s >= 16) {
+        _mm512_storeu_ps(p, v());
+    } else {
+        using vhalf_t=vec<_T, 8>;
+        mem<vhalf_t>::store(p, low_half(v), n);
+        mem<vhalf_t>::store(p+8, high_half(v), n - 8);
+    }
 }
 
 inline

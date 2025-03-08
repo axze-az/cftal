@@ -69,9 +69,11 @@ namespace cftal {
     template <>
     struct mem< vec<uint16_t, 8> > {
         static
-        vec<uint16_t, 8> load(const uint16_t* p, std::size_t n=8);
+        vec<uint16_t, 8>
+	load(const uint16_t* p, ssize_t n=8);
         static
-        void store(uint16_t* p, const vec<uint16_t, 8>& v);
+        void
+	store(uint16_t* p, const vec<uint16_t, 8>& v, ssize_t n=8);
     };
 
     vec<uint16_t, 4> low_half(const vec<uint16_t, 8>& a);

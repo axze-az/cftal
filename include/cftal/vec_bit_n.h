@@ -140,16 +140,18 @@ namespace cftal {
     template <>
     struct mem< vec<bit, 1> > {
         static
-        vec<bit, 1> load(const bit* p, std::size_t n=1) {
-            uint32_t ui=(*p)();
+        vec<bit, 1> load(const bit* p, ssize_t n=1) {
+            uint32_t ui=n>=1 ? (*p)() : 0;
             return vec<bit, 1>(ui& 1);
         }
         static
-        void store(bit* p, const vec<bit, 1>& v) {
-            if (v())
-                *p = bit::_1;
-            else
-                *p = bit::_0;
+        void store(bit* p, const vec<bit, 1>& v, ssize_t n=1) {
+            if (n >= 1) {
+                if (v())
+                    *p = bit::_1;
+                else
+                    *p = bit::_0;
+            }
         }
     };
 

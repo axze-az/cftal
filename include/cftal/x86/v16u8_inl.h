@@ -367,117 +367,57 @@ vec<cftal::uint8_t, 16>::vec(const expr<_OP<vec<uint8_t, 16> >, _L, _R>& r)
 
 inline
 cftal::vec<cftal::uint8_t, 16>
-cftal::mem<cftal::vec<uint8_t, 16> >::load(const uint8_t* p, std::size_t s)
+cftal::mem<cftal::vec<uint8_t, 16> >::load(const uint8_t* p, ssize_t s)
 {
-    __m128i v;
-    switch (s) {
-    default:
-    case 16:
+    vec<uint8_t, 16> v;
+    if (s>=16) {
         v = _mm_loadu_si128(reinterpret_cast<const __m128i*>(p));
-        break;
-    case 15:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
-                          p[4], p[5], p[6], p[7],
-                          p[8], p[9], p[10], p[11],
-                          p[12], p[13], p[14], p[14]);
-        break;
-    case 14:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
-                          p[4], p[5], p[6], p[7],
-                          p[8], p[9], p[10], p[11],
-                          p[12], p[13], p[13], p[13]);
-        break;
-    case 13:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
-                          p[4], p[5], p[6], p[7],
-                          p[8], p[9], p[10], p[11],
-                          p[12], p[12], p[12], p[12]);
-        break;
-    case 12:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
-                          p[4], p[5], p[6], p[7],
-                          p[8], p[9], p[10], p[11],
-                          p[11], p[11], p[11], p[11]);
-        break;
-    case 11:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
-                          p[4], p[5], p[6], p[7],
-                          p[8], p[9], p[10], p[10],
-                          p[10], p[10], p[10], p[10]);
-        break;
-    case 10:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
-                          p[4], p[5], p[6], p[7],
-                          p[8], p[9], p[9], p[9],
-                          p[9], p[9], p[9], p[9]);
-        break;
-    case 9:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
-                          p[4], p[5], p[6], p[7],
-                          p[8], p[8], p[8], p[8],
-                          p[8], p[8], p[8], p[8]);
-        break;
-    case 8:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
-                          p[4], p[5], p[6], p[7],
-                          p[7], p[7], p[7], p[7],
-                          p[7], p[7], p[7], p[7]);
-        break;
-    case 7:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
-                          p[4], p[5], p[6], p[6],
-                          p[6], p[6], p[6], p[6],
-                          p[6], p[6], p[6], p[6]);
-        break;
-    case 6:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
-                          p[4], p[5], p[5], p[5],
-                          p[5], p[5], p[5], p[5],
-                          p[5], p[5], p[5], p[5]);
-        break;
-    case 5:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
-                          p[4], p[4], p[4], p[4],
-                          p[4], p[4], p[4], p[4],
-                          p[4], p[4], p[4], p[4]);
-        break;
-    case 4:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
-                          p[3], p[3], p[3], p[3],
-                          p[3], p[3], p[3], p[3],
-                          p[3], p[3], p[3], p[3]);
-        break;
-    case 3:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[2],
-                          p[2], p[2], p[2], p[2],
-                          p[2], p[2], p[2], p[2],
-                          p[2], p[2], p[2], p[2]);
-        break;
-    case 2:
-        v = _mm_setr_epi8(p[0], p[1], p[1], p[1],
-                          p[1], p[1], p[1], p[1],
-                          p[1], p[1], p[1], p[1],
-                          p[1], p[1], p[1], p[1]);
-        break;
-    case 1:
-        v = _mm_setr_epi8(p[0], p[0], p[0], p[0],
-                          p[0], p[0], p[0], p[0],
-                          p[0], p[0], p[0], p[0],
-                          p[0], p[0], p[0], p[0]);
-        break;
-    case 0:
+    } else if (s==8) {
+        uint32_t l64=*reinterpret_cast<const uint64_t*>(p);
+        v = _mm_cvtsi64_si128(l64);
+    } else if (s==4) {
+        uint32_t l32=*reinterpret_cast<const uint32_t*>(p);
+        v = _mm_cvtsi32_si128(l32);
+    } else if (s==2) {
+        uint16_t l16=*reinterpret_cast<const uint16_t*>(p);
+        uint32_t l32=l16;
+        v = _mm_cvtsi32_si128(l32);
+    } else if (s==1) {
+        uint8_t l8=*p;
+        uint32_t l32=l8;
+        v = _mm_cvtsi32_si128(l32);
+    } else if (s==0) {
         v = _mm_setr_epi32(0, 0, 0, 0);
-        break;
+    } else {
+        auto lh=mem<vec<uint8_t, 8> >::load(p, s);
+        ssize_t sh= s>=8 ? s-8 : 0;
+        auto hh=mem<vec<uint8_t, 8> >::load(p+8, sh);
+        v = vec<uint8_t, 16>(lh, hh);
     }
     return v;
 }
 
 inline
 void
-cftal::mem<cftal::vec<uint8_t, 16> >::store(uint8_t* p,
-                                            const vec<uint8_t, 16>& v)
+cftal::mem<cftal::vec<uint8_t, 16> >::
+store(uint8_t* p, const vec<uint8_t, 16>& v, ssize_t s)
 {
-    _mm_storeu_si128(reinterpret_cast<__m128i*>(p), v());
+    if (s>=16) {
+        _mm_storeu_si128(reinterpret_cast<__m128i*>(p), v());
+    } else if (s==8) {
+        _mm_storeu_si64(p, v());
+    } else if (s==4) {
+        _mm_storeu_si32(p, v());
+    } else if (s==2) {
+        _mm_storeu_si16(p, v());
+    } else if (s==1) {
+        uint32_t t=_mm_cvtsi128_si32(v()) & 0xff;
+        *p=t;
+    } else if (s!=0) {
+        mem<vec<uint8_t, 8> >::store(p, s);
+        ssize_t sh= s>=8 ? s-8 : 0;
+        mem<vec<uint8_t, 8> >::store(p+8, sh);
+    }
 }
 
 inline
