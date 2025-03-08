@@ -1458,6 +1458,8 @@ template <unsigned _IDX>
 inline
 __m512i cftal::x86::insert_u64(__m512i v, uint64_t d)
 {
+    const bool cond = _IDX < 8;
+    static_assert(cond, "cftal::x86::insert_u64 _IDX < 8");
     __m512i vf=_mm512_set1_epi64(d);
     constexpr const __mmask16 msk=1U<<_IDX;
     return select_u32(msk, vf, v);
