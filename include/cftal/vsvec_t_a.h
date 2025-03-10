@@ -1077,6 +1077,16 @@ std::ostream&
 cftal::operator<<(std::ostream& s, const vsvec<_T, _A>& v)
 {
     bool first=true;
+#if 1
+    for (size_t i=0; i<size(v); ++i) {
+        if (first==true) {
+            first = false;
+        } else {
+            s << ' ';
+        }
+        s << v[i];
+    }
+#else
     for (const auto& e: v) {
         if (first==true) {
             first = false;
@@ -1085,6 +1095,7 @@ cftal::operator<<(std::ostream& s, const vsvec<_T, _A>& v)
         }
         s << e;
     }
+#endif
     return s;
 }
 
