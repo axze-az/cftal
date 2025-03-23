@@ -17,6 +17,8 @@ test_prog(test-vsvec-ops-u16)
 test_prog(test-vsvec-ops-s8)
 test_prog(test-vsvec-ops-u8)
 
+test_prog(test-vsvec-flops)
+
 test_prog(test-vsvec-misc)
 
 add_executable(dev-vsvec dev-vsvec.cc)
