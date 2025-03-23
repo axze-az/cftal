@@ -39,8 +39,8 @@ cftal::test::gflops_st()
         coeffs[i]= (i & 1)==1 ? -ci : ci;
         // ci *= 0.75;
     }
-    constexpr const size_t elem_count=(512*1024ULL)/sizeof(_T);
-    constexpr const size_t _N=32;
+    constexpr const size_t elem_count=(8*1024ULL)/sizeof(_T);
+    constexpr const size_t _N=8192;
     float gflops=0.0f;
     try {
         for (size_t i=0; i<_N; ++i) {
@@ -55,7 +55,7 @@ cftal::test::gflops_st()
             auto ns_elapsed=(end - start).count();
             // std::cout << ns_elapsed << std::endl;
             float gflops_i=(elem_count * (COEFF_COUNT-1)*2)/float(ns_elapsed);
-            std::cout << gflops_i << '\n';
+            // std::cout << gflops_i << '\n';
             gflops += gflops_i;
         }
         gflops *= 1.0f/float(_N);
