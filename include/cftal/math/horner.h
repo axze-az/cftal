@@ -58,7 +58,7 @@ namespace cftal {
         _X
         horner2(const _X& x, const _X& x2, const _C* pa);
 
-        // a_n in a[0], xx = x*x
+        // a_n in a[0]
         // computes the even and odd parts of the polynomial
         // in parallel
         template <std::size_t _N, typename _X, typename _C>
@@ -582,6 +582,15 @@ horner2(const _X& x, const _X& x2, const _C* pa)
     return r;
 }
 
+template <std::size_t _N, typename _X, typename _C>
+_X
+cftal::math::
+horner2(const _X& x, const _C* pa)
+{
+    _X x2=x*x;
+    return horner2<_N>(x, x2, pa);
+}
+
 template <typename _X, typename _C, std::size_t _N>
 _X
 cftal::math::
@@ -590,6 +599,16 @@ horner2(const _X& x, const _X& x2, const _C (&a)[_N])
     static_assert(_N > 1, "invalid call to horner2(x, x2, array)");
     const _C* pa=a;
     return horner2<_N>(x, x2, pa);
+}
+
+template <typename _X, typename _C, std::size_t _N>
+_X
+cftal::math::
+horner2(const _X& x, const _C (&a)[_N])
+{
+    static_assert(_N > 1, "invalid call to horner2(x, array)");
+    const _C* pa=a;
+    return horner2<_N>(x, pa);
 }
 
 template <std::size_t _N, typename _X, typename _C>
