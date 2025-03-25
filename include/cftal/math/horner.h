@@ -85,11 +85,23 @@ namespace cftal {
         _X
         horner3(const _X& x, const _X& x3, const _C* pa);
 
+        // a_n in a[0], computes 3 parts of the
+        // polynomial in parallel
+        template <std::size_t _N, typename _X, typename _C>
+        _X
+        horner3(const _X& x, const _C* pa);
+
         // a_n in a[0], x3 = x*x*x, computes 3 parts of the
         // polynomial in parallel
         template <typename _X, typename _C, std::size_t _N>
         _X
         horner3(const _X& x, const _X& x3, const _C (&a)[_N]);
+
+        // a_n in a[0], computes 3 parts of the
+        // polynomial in parallel
+        template <typename _X, typename _C, std::size_t _N>
+        _X
+        horner3(const _X& x, const _C (&a)[_N]);
 
         // a_n in a[0], x3 = x*x*x, computes 4 parts of the
         // polynomial in parallel
@@ -643,14 +655,33 @@ horner3(const _X& x, const _X& x3, const _C* pa)
     return r;
 }
 
+template <std::size_t _N, typename _X, typename _C>
+_X
+cftal::math::
+horner3(const _X& x, const _C* pa)
+{
+    _X x3=x*x*x;
+    return horner3<_N>(x, x3, pa);
+}
+
 template <typename _X, typename _C, std::size_t _N>
 _X
 cftal::math::
 horner3(const _X& x, const _X& x3, const _C (&a)[_N])
 {
-    static_assert(_N > 2, "invalid call to horner3(x, x2, array)");
+    static_assert(_N > 2, "invalid call to horner3(x, x3, array)");
     const _C* pa=a;
     return horner3<_N>(x, x3, pa);
+}
+
+template <typename _X, typename _C, std::size_t _N>
+_X
+cftal::math::
+horner3(const _X& x, const _C (&a)[_N])
+{
+    static_assert(_N > 2, "invalid call to horner3(x, array)");
+    const _C* pa=a;
+    return horner3<_N>(x, pa);
 }
 
 template <std::size_t _N, typename _X, typename _C>
