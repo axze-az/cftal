@@ -611,6 +611,7 @@ _X
 cftal::math::
 horner2(const _X& x, const _C* pa)
 {
+    static_assert(_N > 1, "invalid call to horner2(x, ptr)");
     _X x2=x*x;
     return horner2<_N>(x, x2, pa);
 }
@@ -640,7 +641,7 @@ _X
 cftal::math::
 horner3(const _X& x, const _X& x3, const _C* pa)
 {
-    static_assert(_N > 2, "invalid call to horner3(x, x2, ptr)");
+    static_assert(_N > 2, "invalid call to horner3(x, x3, ptr)");
     _X r0= _X(pa[0]);
     _X r1= _X(pa[1]);
     _X r2= _X(pa[2]);
@@ -672,6 +673,7 @@ _X
 cftal::math::
 horner3(const _X& x, const _C* pa)
 {
+    static_assert(_N > 2, "invalid call to horner3(x, ptr)");
     _X x3=x*x*x;
     return horner3<_N>(x, x3, pa);
 }
