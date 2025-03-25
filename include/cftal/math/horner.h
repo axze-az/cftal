@@ -58,7 +58,7 @@ namespace cftal {
         _X
         horner2(const _X& x, const _X& x2, const _C* pa);
 
-        // a_n in a[0]
+        // a_n in a[0],
         // computes the even and odd parts of the polynomial
         // in parallel
         template <std::size_t _N, typename _X, typename _C>
@@ -72,7 +72,7 @@ namespace cftal {
         _X
         horner2(const _X& x, const _X& x2, const _C (&a)[_N]);
 
-        // a_n in a[0]
+        // a_n in a[0],
         // computes the even and odd parts of the polynomial
         // in parallel
         template <typename _X, typename _C, std::size_t _N>
@@ -103,17 +103,29 @@ namespace cftal {
         _X
         horner3(const _X& x, const _C (&a)[_N]);
 
-        // a_n in a[0], x3 = x*x*x, computes 4 parts of the
-        // polynomial in parallel
+        // a_n in a[0], x2=x*x, x4=x*x*x,
+        // computes 4 parts of the polynomial in parallel
         template <std::size_t _N, typename _X, typename _C>
         _X
         horner4(const _X& x, const _X& x2, const _X& x4, const _C* pa);
 
-        // a_n in a[0], x3 = x*x*x, computes 4 parts of the
-        // polynomial in parallel
+        // a_n in a[0],
+        // computes 4 parts of the polynomial in parallel
+        template <std::size_t _N, typename _X, typename _C>
+        _X
+        horner4(const _X& x, const _C* pa);
+
+        // a_n in a[0], x2=x*x, x4=x*x*x,
+        // computes 4 parts of the polynomial in parallel
         template <typename _X, typename _C, std::size_t _N>
         _X
         horner4(const _X& x, const _X& x2, const _X& x4, const _C (&a)[_N]);
+
+        // a_n in a[0],
+        // computes 4 parts of the polynomial in parallel
+        template <typename _X, typename _C, std::size_t _N>
+        _X
+        horner4(const _X& x, const _C (&a)[_N]);
 
         template <typename _F, typename _C, std::size_t _N>
         d_real<_F>
@@ -722,6 +734,17 @@ horner4(const _X& x, const _X& x2, const _X& x4, const _C* pa)
     return r;
 }
 
+template <std::size_t _N, typename _X, typename _C>
+_X
+cftal::math::
+horner4(const _X& x, const _C* pa)
+{
+    static_assert(_N > 3, "invalid call to horner4(x, ptr)");
+    _X x2=x*x;
+    _X x4=x2*x2;
+    return horner<_N>(x, x2, x4, pa);
+}
+
 template <typename _X, typename _C, std::size_t _N>
 _X
 cftal::math::
@@ -730,6 +753,16 @@ horner4(const _X& x, const _X& x2, const _X& x4, const _C (&a)[_N])
     static_assert(_N > 3, "invalid call to horner4(x, x2, x4, array)");
     const _C* pa=a;
     return horner4<_N>(x, x2, x4, pa);
+}
+
+template <typename _X, typename _C, std::size_t _N>
+_X
+cftal::math::
+horner4(const _X& x, const _C (&a)[_N])
+{
+    static_assert(_N > 3, "invalid call to horner4(x, array)");
+    const _C* pa=a;
+    return horner4<_N>(x, pa);
 }
 
 template <typename _F, typename _C, std::size_t _N>
