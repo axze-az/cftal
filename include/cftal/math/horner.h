@@ -51,7 +51,7 @@ namespace cftal {
         _X
         horner(const _X& x, const _C (&a)[_N]);
 
-        // a_n in a[0], xx = x*x
+        // a_n in a[0], x2 = x*x
         // computes the even and odd parts of the polynomial
         // in parallel
         template <std::size_t _N, typename _X, typename _C>
@@ -61,9 +61,23 @@ namespace cftal {
         // a_n in a[0], xx = x*x
         // computes the even and odd parts of the polynomial
         // in parallel
+        template <std::size_t _N, typename _X, typename _C>
+        _X
+        horner2(const _X& x, const _C* pa);
+
+        // a_n in a[0], x2 = x*x
+        // computes the even and odd parts of the polynomial
+        // in parallel
         template <typename _X, typename _C, std::size_t _N>
         _X
         horner2(const _X& x, const _X& x2, const _C (&a)[_N]);
+
+        // a_n in a[0]
+        // computes the even and odd parts of the polynomial
+        // in parallel
+        template <typename _X, typename _C, std::size_t _N>
+        _X
+        horner2(const _X& x, const _C (&a)[_N]);
 
         // a_n in a[0], x3 = x*x*x, computes 3 parts of the
         // polynomial in parallel
