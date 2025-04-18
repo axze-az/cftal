@@ -114,7 +114,7 @@ hadd(size_t s,
         hadd_stride_zero();
     }
     if (__unlikely(stride_a==1)) {
-        return hadd<_T, _A>(s, a+offset_a);
+        return impl::hadd<_T, _A>(s, a+offset_a);
     }
     constexpr const bool _A_is_T= std::is_same_v<_A, _T>;
     const size_t n1= s & ~(_N-1);
