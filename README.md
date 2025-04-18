@@ -51,12 +51,13 @@ short vectors of the library for their implementation.
 
 ### Configuration
 
-create a build directory in the root directory of the project, configure and
-build
+Create a build directory in the root directory of the project, change to it,
+configure the build system and build:
 
 1. `mkdir build`
 2. `cd build`
 3. `CC=clang-18 CXX=clang++-18 cmake -DCMAKE_BUILD_TYPE=release ..`
+4. `make -j XX` 
 
 You may also use gcc instead of clang:
 
