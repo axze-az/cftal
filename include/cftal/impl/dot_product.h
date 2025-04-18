@@ -37,7 +37,7 @@ namespace cftal {
                     const _T* a, int32_t stride_a, size_t offset_a,
                     const _T* b);
 
-        // error message for dot_product with one stride greater than 1
+        // error message for dot_product with one stride being equal to zero
         [[noreturn]]
         void
         dot_product_stride_a_zero();
@@ -49,7 +49,8 @@ namespace cftal {
                     const _T* b,
                     const _T* a, int32_t stride_a, size_t offset_a);
 
-        // error message for dot_product with two strides greater than 1
+        // error message for dot_product with two strides where at
+        // least one stride is equal to zero
         [[noreturn]]
         void
         dot_product_stride_a_or_b_zero(char stride);

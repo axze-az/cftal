@@ -110,8 +110,9 @@ set (CSRCS
     # vec<bf16_t, 16>
     v16bf16_ef.cc
     v16bf16_sf.cc
-    # dot_product.cc
+    # error messages for implementations:
     dot_product.cc
+    hadd.cc
 )
 
 # only for ides

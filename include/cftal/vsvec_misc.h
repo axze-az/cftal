@@ -21,10 +21,19 @@
 #include <cftal/config.h>
 #include <cftal/vec_load_strided.h>
 #include <cftal/impl/dot_product.h>
+#include <cftal/impl/hadd.h>
 #include <stdexcept>
 #include <sstream>
 
 namespace cftal {
+
+    template <typename _T, typename _A>
+    _T
+    hadd(const vsvec<_T, _A>& a);
+
+    template <typename _T, typename _A>
+    _T
+    hadd(const vsvec<_T, _A>& a, int32_t stride_a);
 
     template <typename _T, typename _A>
     _T
@@ -78,6 +87,25 @@ namespace cftal {
 template <typename _T, typename _A>
 _T
 cftal::
+hadd(const vsvec<_T, _A>& a)
+{
+    return impl::hadd<_T>(a.size(), a.cbegin());
+}
+
+template <typename _T, typename _A>
+_T
+cftal::
+hadd(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a)
+{
+    if (stride_a==0)
+        impl::hadd_stride_zero();
+    return impl::hadd<_T>(a.size()/stride_a,
+                          a.cbegin(), stride_a, offset_a);
+}
+
+template <typename _T, typename _A>
+_T
+cftal::
 dot_product(const vsvec<_T, _A>& a, const vsvec<_T, _A>& b)
 {
     return impl::dot_product<_T>(a.size(), a.cbegin(), b.cbegin());
@@ -110,15 +138,8 @@ dot_product(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a,
             const vsvec<_T, _A>& b, int32_t stride_b, size_t offset_b)
 {
     if (__unlikely(stride_a == 0 || stride_b == 0)) {
-        std::ostringstream s;
-        s << "stride_" << ((stride_a == 0) ? 'a' : 'b')
-          << "==0 in "
-             "_T cftal::"
-             "dot_product(const vsvec<_T, _A>& a, "
-             "int32_t stride_a, size_t offset_a, "
-             "const vsvec<_T, _A>& b, "
-             "int32_t stride_b, size_t offset_b)";
-        throw std::domain_error(s.str());
+        char ab=((stride_a == 0) ? 'a' : 'b');
+        impl::dot_product_stride_a_or_b_zero(ab);
     }
     return impl::dot_product<_T>(a.size()/stride_a,
                                  a.cbegin(), stride_a, offset_a,
