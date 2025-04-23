@@ -280,8 +280,8 @@ namespace cftal {
         struct div_sel {
             using type = 
                 select_t<cftal::is_signed<_V>::value,
-			 sdiv<_U, _V>,
-			 udiv<_U, _V> >;
+                         sdiv<_U, _V>,
+                         udiv<_U, _V> >;
         };
     }
 
