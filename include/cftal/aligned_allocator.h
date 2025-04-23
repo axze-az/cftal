@@ -25,6 +25,7 @@
 
 namespace cftal {
 
+    // an allocator returning memory aligned at leat to _MIN_ALIGN
     template <typename _T, size_t _MIN_ALIGN>
     class aligned_allocator : public std::allocator<_T> {
         static_assert((_MIN_ALIGN & (_MIN_ALIGN-1)) == 0,
@@ -39,6 +40,7 @@ namespace cftal {
         using const_reference = const _T&;
         using value_type=_T;
 
+        // determine the minimum alignment for _T
         static constexpr size_t min_align() {
             return alignof(_T) < _MIN_ALIGN ? _MIN_ALIGN : alignof(_T);
         }
