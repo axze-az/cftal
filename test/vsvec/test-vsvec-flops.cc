@@ -18,6 +18,7 @@
 
 #include <cftal/as.h>
 #include <cftal/vsvec.h>
+#include <cftal/test/cpu_times.h>
 #include <iomanip>
 #include <chrono>
 
@@ -71,6 +72,7 @@ cftal::test::gflops_st()
 int main()
 {
     using namespace cftal::test;
+    cpu_times_to_stdout tt;
     std::cout << "testing single thread float gflops\n";
     gflops_st<float>();
     std::cout << "testing single thread double gflops\n";

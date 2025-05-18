@@ -16,6 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
 #include <cftal/vsvec.h>
+#include <cftal/test/cpu_times.h>
 #include <iostream>
 #include <iomanip>
 #include <array>
@@ -80,6 +81,7 @@ int main()
 {
     using namespace cftal;
     using namespace cftal::test;
+    cpu_times_to_stdout tt;
     bool r=vsvec_strided_loads();
     return r==true ? 0 : 1;
 }
