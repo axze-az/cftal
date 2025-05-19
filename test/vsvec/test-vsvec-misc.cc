@@ -18,6 +18,7 @@
 
 #include <cftal/as.h>
 #include <cftal/vsvec.h>
+#include <cftal/test/cpu_times.h>
 #include <iomanip>
 
 namespace cftal {
@@ -270,6 +271,7 @@ test_hadd()
 int main()
 {
     using namespace cftal::test;
+    cpu_times_to_stdout tt;
     using cftal::bf16_t;
     using cftal::f16_t;
     bool r=true;

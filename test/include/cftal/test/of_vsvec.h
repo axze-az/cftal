@@ -28,6 +28,7 @@
 #include <cftal/test/check_erfc.h>
 #include <cftal/test/check_tgamma.h>
 #include <cftal/test/uniform_distribution.h>
+#include <cftal/test/cpu_times.h>
 #include <iostream>
 #include <iomanip>
 #include <random>
@@ -486,6 +487,7 @@ template <typename _T, typename _A>
 bool
 cftal::test::of_vsvec<_T, _A>::execute()
 {
+    cpu_times_to_stdout tt;
     auto make_val=[](const _T& v) ->auto {
         if constexpr (is_floating_point_v<_T>) {
             return v;
