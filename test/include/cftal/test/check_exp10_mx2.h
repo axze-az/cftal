@@ -110,7 +110,7 @@ namespace cftal {
             f16_t _s(const f16_t& a) {
                 f16_t ma2=-a*a;
                 float f=static_cast<float>(ma2);
-                f16_t r=static_cast<f16_t>(::exp10(f));
+                f16_t r=static_cast<f16_t>(::exp10f(f));
                 return r;
             }
 
@@ -118,7 +118,7 @@ namespace cftal {
             bf16_t _s(const bf16_t& a) {
                 bf16_t ma2=-a*a;
                 float f=static_cast<float>(ma2);
-                bf16_t r=static_cast<bf16_t>(::exp10(f));
+                bf16_t r=static_cast<bf16_t>(::exp10f(f));
                 return r;
             }
 
