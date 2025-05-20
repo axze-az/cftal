@@ -107,13 +107,47 @@ namespace cftal {
 #endif
                 return std::make_tuple(v, i.first, i.second);
             }
+
             static
             _T
             s(const _T& a) {
-                const _T log10=_T(+2.3025850929940459010936e+00);
-                using std::expm1;
-                return expm1(a*log10);
+                return _s(a);
             }
+
+            template <typename _M>
+            static
+            _M
+            _s(const _M& a) {
+                // const _T log10=_T(+2.3025850929940459010936e+00);
+                // using std::expm1;
+                // return expm1(a*log10);
+                return ::exp10m1(a);
+            }
+
+            static
+            float
+            _s(const float& a) {
+                return ::exp10m1f(a);
+            }
+
+            static
+            double
+            _s(const double& a) {
+                return ::exp10m1(a);
+            }
+
+            static
+            bf16_t
+            _s(const bf16_t& a) {
+                return static_cast<bf16_t>(_s(static_cast<float>(a)));
+            }
+
+            static
+            f16_t
+            _s(const f16_t& a) {
+                return static_cast<f16_t>(_s(static_cast<float>(a)));
+            }
+
             static
             const char* fname() { return "exp10m1"; }
         };
