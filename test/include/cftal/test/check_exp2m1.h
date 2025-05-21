@@ -102,17 +102,44 @@ namespace cftal {
                 _T v=call_mpfr::func(a, mpfr_exp2m1, &i);
                 return std::make_tuple(v, i.first, i.second);
             }
+
             static
             _T
             s(const _T& a) {
-#if 0
-		return std::exp2(a)-1;
-#else
-                const _T ln2=M_LN2;
-                using std::expm1;
-                return expm1(a*ln2);
-#endif
+                return _s(a);
             }
+
+            template <typename _M>
+            static
+            _M
+            _s(const _M& a) {
+                return ::exp2m1(a);
+            }
+
+            static
+            float
+            _s(const float& a) {
+                return ::exp2m1f(a);
+            }
+
+            static
+            double
+            _s(const double& a) {
+                return ::exp2m1(a);
+            }
+
+            static
+            bf16_t
+            _s(const bf16_t& a) {
+                return static_cast<bf16_t>(_s(static_cast<float>(a)));
+            }
+
+            static
+            f16_t
+            _s(const f16_t& a) {
+                return static_cast<f16_t>(_s(static_cast<float>(a)));
+            }
+
             static
             const char* fname() { return "exp2m1"; }
         };
