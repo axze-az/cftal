@@ -95,6 +95,7 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 return exp2m1(a);
             }
+
             static
             auto
             r(const _T& a) {

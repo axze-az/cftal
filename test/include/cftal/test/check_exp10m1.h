@@ -87,7 +87,7 @@ namespace cftal {
             };
         };
 
-	
+
         template <typename _T>
         struct check_exp10m1 {
             template <std::size_t _N>
@@ -96,6 +96,7 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 return exp10m1(a);
             }
+
             static
             auto
             r(const _T& a) {

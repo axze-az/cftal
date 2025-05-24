@@ -91,15 +91,15 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 return exp10(a);
             }
+
             static
             auto
             r(const _T& a) {
                 std::pair<_T, _T> i;
                 _T v=call_mpfr::func(a, mpfr_exp10, &i);
                 return std::make_tuple(v, i.first, i.second);
-                // return call_mpfr::func(a, mpfr_exp10);
             }
-	    
+
             static
             _T
             s(const _T& a) {
@@ -129,8 +129,8 @@ namespace cftal {
             __exp10(const bf16_t& a) {
                 return static_cast<bf16_t>(::exp10f(static_cast<float>(a)));
             }
-	    
-            static    
+
+            static
             const char* fname() { return "exp10"; }
         };
     }

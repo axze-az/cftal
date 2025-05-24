@@ -40,14 +40,15 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 return log10p1(a);
             }
+
             static
             auto
             r(const _T& a) {
                 std::pair<_T, _T> i;
                 _T v=call_mpfr::func(a, mpfr_log10p1, &i);
                 return std::make_tuple(v, i.first, i.second);
-                // return call_mpfr::func(a, mpfr_log);
             }
+
             static
             _T
             s(const _T& a) {
