@@ -26,8 +26,8 @@ precision.
 
 Specializations for x86 processors with instructions set extensions up to AVX2
 are implemented and tested.
-The specializations for processors with AVX512 extensions are not much tested
-yet.
+The vector specializations for processors with AVX512 extensions are not 
+well tested yet.
 AArch64 code is not tested.
 
 The library also contains vectors with variable sizes. These use the
