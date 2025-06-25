@@ -55,7 +55,8 @@ namespace cftal {
     }
 
 #else
-    // a 16 bit IEEE floating point number
+    // a 16 bit floating point number with a range similiar to float32
+    // and shorter mantissa
     class bf16_t {
     private:
         mf_bf16_t _f;
