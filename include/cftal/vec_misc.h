@@ -26,11 +26,11 @@ namespace cftal {
 
     // horizontal add 
     template <typename _T, std::size_t _N>
-    _T hadd(const vec<_T, _N>& n);
+    _T hsum(const vec<_T, _N>& n);
 
     // horizontal add 
     template <typename _T>
-    _T hadd(const vec<_T, 1>& n);
+    _T hsum(const vec<_T, 1>& n);
 
     // dot product
     template <typename _T, std::size_t _N>
@@ -102,16 +102,16 @@ namespace cftal {
 template <typename _T, std::size_t _N>
 inline
 _T
-cftal::hadd(const vec<_T, _N>& v)
+cftal::hsum(const vec<_T, _N>& v)
 {
     vec<_T, _N/2> t=high_half(v)+low_half(v);
-    return hadd(t);
+    return hsum(t);
 }
 
 template <typename _T>
 inline
 _T
-cftal::hadd(const vec<_T, 1>& v)
+cftal::hsum(const vec<_T, 1>& v)
 {
     return v();
 }
@@ -128,7 +128,7 @@ cftal::dot_product(const vec<_T, _N>& a, const vec<_T, _N>& b)
     vec<_T, _N/4> b3=high_half(b23), b2=low_half(b23),
         b1=high_half(b01), b0=low_half(b01);
     vec<_T, _N/4> t=a3*b3+a2*b2+a1*b1+a0*b0;
-    return hadd(t);
+    return hsum(t);
 }
 
 template <typename _T>
@@ -137,7 +137,7 @@ _T
 cftal::dot_product(const vec<_T, 4>& a, const vec<_T, 4>& b)
 {
     vec<_T, 4> t=a*b;
-    return hadd(t);
+    return hsum(t);
 }
 
 template <typename _T>
@@ -146,7 +146,7 @@ _T
 cftal::dot_product(const vec<_T, 2>& a, const vec<_T, 2>& b)
 {
     vec<_T, 2> t=a*b;
-    return hadd(t);
+    return hsum(t);
 }
 
 template <typename _T>

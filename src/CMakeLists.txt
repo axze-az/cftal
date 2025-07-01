@@ -112,7 +112,7 @@ set (CSRCS
     v16bf16_sf.cc
     # error messages for implementations:
     dot_product.cc
-    hadd.cc
+    hsum.cc
 )
 
 # only for ides

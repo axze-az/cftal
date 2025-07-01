@@ -48,17 +48,17 @@ namespace cftal {
 
         template <typename _T>
         _T
-        ref_hadd(size_t n,
+        ref_hsum(size_t n,
                  const _T* a, int32_t stride_a, size_t offset_a);
 
         template <typename _T>
         _T
-        ref_hadd(size_t n,
+        ref_hsum(size_t n,
                  const _T* a);
 
         template <typename _T>
         bool
-        test_hadd();
+        test_hsum();
     }
 }
 
@@ -199,7 +199,7 @@ test_dot_product()
 template <typename _T>
 _T
 cftal::test::
-ref_hadd(size_t n,
+ref_hsum(size_t n,
          const _T* a, int32_t stride_a, size_t offset_a)
 {
     _T r=_T(0);
@@ -212,7 +212,7 @@ ref_hadd(size_t n,
 template <typename _T>
 _T
 cftal::test::
-ref_hadd(size_t n,
+ref_hsum(size_t n,
          const _T* a)
 {
     _T r=_T(0);
@@ -224,7 +224,7 @@ ref_hadd(size_t n,
 
 template<typename _T>
 bool cftal::test::
-test_hadd()
+test_hsum()
 {
     constexpr const size_t _N = sizeof(_T)==2 ? 255 : 511;
     constexpr const size_t _STRIDE_A=15;
@@ -234,10 +234,10 @@ test_hadd()
     for (size_t i=0; i<a0.size(); ++i) {
         a0[i] = _T(i%MAX_VAL+1);
     }
-    _T d0=hadd(a0);
-    _T dr0=ref_hadd(a0.size(), a0.cbegin());
+    _T d0=hsum(a0);
+    _T dr0=ref_hsum(a0.size(), a0.cbegin());
     if (d0 != dr0) {
-        std::cout << "hadd(vsvec) failed\n";
+        std::cout << "hsum(vsvec) failed\n";
         std::cout << std::setprecision(18) << std::fixed;
         std::cout << "result= "  << d0
                   << "\nexpected= " << dr0
@@ -248,11 +248,11 @@ test_hadd()
 
     for (size_t stride_a=2; stride_a< _STRIDE_A; ++stride_a) {
         for (size_t o=0; o<stride_a; ++o) {
-            _T d1=hadd(a0, stride_a, o);
-            _T dr1=ref_hadd(a0.size()/stride_a,
+            _T d1=hsum(a0, stride_a, o);
+            _T dr1=ref_hsum(a0.size()/stride_a,
                             a0.cbegin(), stride_a, o);
             if (d1 != dr1) {
-                std::cout << "hadd(vsvec, "
+                std::cout << "hsum(vsvec, "
                              "stride, offset) failed\n";
                 std::cout << std::setprecision(18) << std::scientific;
                 std::cout << "result= "  << d1
@@ -300,28 +300,28 @@ int main()
         r=false;
     }
 
-    if (test_hadd<bf16_t>()==true) {
-        std::cout << "hadd test for bf16_t vectors passed\n";
+    if (test_hsum<bf16_t>()==true) {
+        std::cout << "hsum test for bf16_t vectors passed\n";
     } else {
-        std::cout << "hadd test for bf16_t vectors FAILED\n";
+        std::cout << "hsum test for bf16_t vectors FAILED\n";
         r=false;
     }
-    if (test_hadd<f16_t>()==true) {
-        std::cout << "hadd test for f16_t vectors passed\n";
+    if (test_hsum<f16_t>()==true) {
+        std::cout << "hsum test for f16_t vectors passed\n";
     } else {
-        std::cout << "hadd test for f16_t vectors FAILED\n";
+        std::cout << "hsum test for f16_t vectors FAILED\n";
         r=false;
     }
-    if (test_hadd<float>()==true) {
-        std::cout << "hadd test for float vectors passed\n";
+    if (test_hsum<float>()==true) {
+        std::cout << "hsum test for float vectors passed\n";
     } else {
-        std::cout << "hadd test for float vectors FAILED\n";
+        std::cout << "hsum test for float vectors FAILED\n";
         r=false;
     }
-    if (test_hadd<double>()==true) {
-        std::cout << "hadd test for double vectors passed\n";
+    if (test_hsum<double>()==true) {
+        std::cout << "hsum test for double vectors passed\n";
     } else {
-        std::cout << "hadd test for double vectors FAILED\n";
+        std::cout << "hsum test for double vectors FAILED\n";
         r=false;
     }
     return r;
