@@ -15,8 +15,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
-#if !defined (__CFTAL_IMPL_HADD_H__)
-#define __CFTAL_IMPL_HADD_H__ 1
+#if !defined (__CFTAL_IMPL_HSUM_H__)
+#define __CFTAL_IMPL_HSUM_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
@@ -28,17 +28,17 @@ namespace cftal {
         // horizontal addition _T arrays using type _A as accumulator
         template <typename _T, typename _A=_T>
         _T
-        hadd(size_t s, const _T* a);
+        hsum(size_t s, const _T* a);
 
         // error message for dot_product with stride equal to zero
         [[noreturn]]
         void
-        hadd_stride_zero();
+        hsum_stride_zero();
 
         // horizontal addition of_T arrays using type _A as accumulator
         template <typename _T, typename _A=_T>
         _T
-        hadd(size_t s,
+        hsum(size_t s,
 	     const _T* a, int32_t stride_a, size_t offset_a);
     }
 }
@@ -46,7 +46,7 @@ namespace cftal {
 template <typename _T, typename _A>
 _T
 cftal::impl::
-hadd(size_t s, const _T* a)
+hsum(size_t s, const _T* a)
 {
     constexpr const size_t _N=max_vec_size_specialized<_T>();
     constexpr const size_t _N4=4*_N;
@@ -89,7 +89,7 @@ hadd(size_t s, const _T* a)
                 r0 += cftal::cvt<va_t>(a0);
             }
         }
-        r = hadd(r0);
+        r = hsum(r0);
     }
     for (size_t i=n1; i<s; ++i) {
         if constexpr (_A_is_T) {
@@ -104,17 +104,17 @@ hadd(size_t s, const _T* a)
 template <typename _T, typename _A>
 _T
 cftal::impl::
-hadd(size_t s,
+hsum(size_t s,
      const _T* a, int32_t stride_a, size_t offset_a)
 {
     constexpr const size_t _N=max_vec_size_specialized<_T>();
     constexpr const size_t _N4=4*_N;
 
     if (__unlikely(stride_a==0)) {
-        hadd_stride_zero();
+        hsum_stride_zero();
     }
     if (__unlikely(stride_a==1)) {
-        return impl::hadd<_T, _A>(s, a+offset_a);
+        return impl::hsum<_T, _A>(s, a+offset_a);
     }
     constexpr const bool _A_is_T= std::is_same_v<_A, _T>;
     const size_t n1= s & ~(_N-1);
@@ -160,7 +160,7 @@ hadd(size_t s,
                 r0 += cftal::cvt<va_t>(a0);
             }
         }
-        r = hadd(r0);
+        r = hsum(r0);
     }
     for (size_t i=n1; i<s; ++i) {
         if constexpr (_A_is_T) {

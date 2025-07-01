@@ -117,7 +117,7 @@ dot_product(size_t s,
                 r0 += cftal::cvt<va_t>(a0) * cftal::cvt<va_t>(b0);
             }
         }
-        r = hadd(r0);
+        r = hsum(r0);
     }
     for (size_t i=n1; i<s; ++i) {
         if constexpr (_A_is_T) {
@@ -194,7 +194,7 @@ dot_product(size_t s,
                 r0 += cftal::cvt<va_t>(a0) * cftal::cvt<va_t>(b0);
             }
         }
-        r = hadd(r0);
+        r = hsum(r0);
     }
     for (size_t i=n1; i<s; ++i) {
         if constexpr (_A_is_T) {
@@ -288,7 +288,7 @@ dot_product(size_t s,
                 r0 += cftal::cvt<va_t>(a0) * cftal::cvt<va_t>(b0);
             }
         }
-        r = hadd(r0);
+        r = hsum(r0);
     }
     for (size_t i=n1; i<s; ++i) {
         if constexpr (_A_is_T) {

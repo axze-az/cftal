@@ -1494,7 +1494,7 @@ namespace cftal {
 
     template <size_t _N>
     f16_t
-    hadd(const vec<f16_t, _N>& r);
+    hsum(const vec<f16_t, _N>& r);
 }
 
 inline
@@ -1908,10 +1908,10 @@ cftal::sqrt(const vec<f16_t, _N>& a)
 template <cftal::size_t _N>
 inline
 cftal::f16_t
-cftal::hadd(const vec<f16_t, _N>& a)
+cftal::hsum(const vec<f16_t, _N>& a)
 {
     vec<float, _N> af=cvt_f16_to_f32(a());
-    float r=hadd(af);
+    float r=hsum(af);
     return f16_t(r);
 }
 

@@ -21,7 +21,7 @@
 #include <cftal/config.h>
 #include <cftal/vec_load_strided.h>
 #include <cftal/impl/dot_product.h>
-#include <cftal/impl/hadd.h>
+#include <cftal/impl/hsum.h>
 #include <stdexcept>
 #include <sstream>
 
@@ -29,11 +29,11 @@ namespace cftal {
 
     template <typename _T, typename _A>
     _T
-    hadd(const vsvec<_T, _A>& a);
+    hsum(const vsvec<_T, _A>& a);
 
     template <typename _T, typename _A>
     _T
-    hadd(const vsvec<_T, _A>& a, int32_t stride_a);
+    hsum(const vsvec<_T, _A>& a, int32_t stride_a);
 
     template <typename _T, typename _A>
     _T
@@ -87,19 +87,19 @@ namespace cftal {
 template <typename _T, typename _A>
 _T
 cftal::
-hadd(const vsvec<_T, _A>& a)
+hsum(const vsvec<_T, _A>& a)
 {
-    return impl::hadd<_T>(a.size(), a.cbegin());
+    return impl::hsum<_T>(a.size(), a.cbegin());
 }
 
 template <typename _T, typename _A>
 _T
 cftal::
-hadd(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a)
+hsum(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a)
 {
     if (stride_a==0)
-        impl::hadd_stride_zero();
-    return impl::hadd<_T>(a.size()/stride_a,
+        impl::hsum_stride_zero();
+    return impl::hsum<_T>(a.size()/stride_a,
                           a.cbegin(), stride_a, offset_a);
 }
 

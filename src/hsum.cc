@@ -15,16 +15,16 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
-#include "cftal/impl/hadd.h"
+#include "cftal/impl/hsum.h"
 #include <sstream>
 
 void
-cftal::impl::hadd_stride_zero()
+cftal::impl::hsum_stride_zero()
 {
     const char* pe=
         "stride_a==0 in "
         "_T cftal::impl::"
-        "hadd(size_t s, const _T* a, "
+        "hsum(size_t s, const _T* a, "
         "int32_t stride_a, size_t offset_a);";
     throw std::domain_error(pe);
 }
