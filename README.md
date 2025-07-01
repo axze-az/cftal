@@ -41,9 +41,11 @@ short vectors of the library for their implementation.
   sollya (https://www.sollya.org), libsollya-dev to build
   extensions to sollya and the maxima (https://maxima.sourceforge.io)
   computer algebra system
-- the test code uses mpfr (https://www.mpfr.org) and requires
-  libmpfr-dev to compile the programs testing the precision (and speed)
-  of the vectorized elementary and special functions
+- the test code uses mpfr (https://www.mpfr.org) and requires the 
+  debian package libmpfr-dev to compile the programs testing the 
+  precision (and speed) of the vectorized elementary and special functions, 
+  it requires also liblzma-dev for compression of pre-calculated results
+  of libmpfr
 - the documentation in the doc directory requires pdflatex
 - cmake ist the used build system
 - only linux as host and target system was tested and
