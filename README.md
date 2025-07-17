@@ -73,7 +73,7 @@ and special functions for single precision, use
 as additional cmake argument.
 
 If you want to use vectors of float16's for the calculation of all elementary
-for half precision, use
+functions for half precision, use
 
 `-DCFTAL_CONFIG_USE_VF32_FOR_VF16=0`
 
