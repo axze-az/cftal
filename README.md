@@ -78,7 +78,7 @@ functions for half precision, use
 `-DCFTAL_CONFIG_USE_VF32_FOR_VF16=0`
 
 as additional cmake argument. The default is to calculate half precision
-functions using vectors of float's-
+functions using vectors of float's.
 
 The compilation to a specific ABI is requested by configuring the library with
 
