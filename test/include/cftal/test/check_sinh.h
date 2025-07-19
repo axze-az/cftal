@@ -44,7 +44,6 @@ namespace cftal {
                 std::pair<_T, _T> i;
                 _T v=call_mpfr::func(a, mpfr_sinh, &i);
                 return std::make_tuple(v, i.first, i.second);
-                // return call_mpfr::func(a, mpfr_sinh);
             }
 
             static

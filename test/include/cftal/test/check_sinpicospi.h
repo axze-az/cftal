@@ -46,11 +46,6 @@ namespace cftal {
                 _T v1=call_mpfr::func(a, mpfr_cospi, &i1);
                 auto r0=std::make_tuple(v0, i0.first, i0.second);
                 auto r1=std::make_tuple(v1, i1.first, i1.second);
-#if 0
-                r=call_mpfr::func(a, mpfr_sin_cos, &i0, &i1);
-                auto r0=std::make_tuple(r.first, i0.first, i0.second);
-                auto r1=std::make_tuple(r.second, i1.first, i1.second);
-#endif
                 return std::make_pair(r0, r1);
             }
 
@@ -117,7 +112,6 @@ namespace cftal {
                     std::pair<_T, _T> i;
                     _T v=call_mpfr::func(a, mpfr_sinpi, &i);
                     return std::make_tuple(v, i.first, i.second);
-                    // return call_mpfr::func(a, mpfr_log2);
                 }
                 static
                 _T
@@ -143,7 +137,6 @@ namespace cftal {
                     std::pair<_T, _T> i;
                     _T v=call_mpfr::func(a, mpfr_cospi, &i);
                     return std::make_tuple(v, i.first, i.second);
-                    // return call_mpfr::func(a, mpfr_log2);
                 }
                 static
                 _T

@@ -51,7 +51,6 @@ namespace cftal {
                 using std::sqrt;
                 using std::cbrt;
                 return sqrt(sqrt(cbrt(a)));
-                // return std::pow(a, 1.0/12.0);
             }
             static
             const char* fname() {
