@@ -33,7 +33,7 @@ namespace cftal {
 
     template <typename _T, typename _A>
     _T
-    hsum(const vsvec<_T, _A>& a, int32_t stride_a);
+    hsum(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a);
 
     template <typename _T, typename _A>
     _T
