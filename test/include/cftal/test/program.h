@@ -29,6 +29,11 @@
 #include <iostream>
 #include <iomanip>
 
+#define TEST_F64_VLEN (cftal::max_vec_size_specialized<double>()*2)
+#define TEST_F32_VLEN (cftal::max_vec_size_specialized<float>()*2)
+#define TEST_F16_VLEN (cftal::max_vec_size_specialized<float>()*4)
+#define TEST_BF16_VLEN (cftal::max_vec_size_specialized<float>()*4)
+
 namespace cftal {
     namespace test {
 
