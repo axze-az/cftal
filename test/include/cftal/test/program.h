@@ -37,6 +37,7 @@
 namespace cftal {
     namespace test {
 
+        // arguments for the test programs
         struct pgm_args {
             // speed test only
             bool _speed_only;
@@ -54,12 +55,14 @@ namespace cftal {
             std::string _data_dir;
             // the count of tests to perform
             std::size_t _cnt;
+            // default constructor
             pgm_args(std::size_t c=0x80000);
         };
 
         std::ostream&
         operator<<(std::ostream& s, const pgm_args& ags);
 
+        // parse argv and return a pgm_args object
         pgm_args
         parse(int argc, char** argv, std::size_t cnt);
 
