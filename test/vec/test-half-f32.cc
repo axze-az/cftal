@@ -21,6 +21,7 @@
 #include <iomanip>
 #include <memory>
 
+#define TEST_HALF_VLEN (cftal::max_vec_size_specialized<float>()*4)
 
 namespace cftal {
 
@@ -307,7 +308,7 @@ int main_exp(const cftal::test::pgm_args& ags)
     std::cerr << std::setprecision(18) << std::scientific;
 
     const int ulp=8;
-    const int _N=32;
+    const int _N=TEST_HALF_VLEN;
     bool rc=true;
     using ftype = float;
     func_domain<ftype> d=std::make_pair(-16.5f, 10.4f);
@@ -334,7 +335,7 @@ int main_exp2(const cftal::test::pgm_args& ags)
     std::cerr << std::setprecision(18) << std::scientific;
 
     const int ulp=8;
-    const int _N=32;
+    const int _N=TEST_HALF_VLEN;
     bool rc=true;
     using ftype = float;
     func_domain<ftype> d=std::make_pair(-24.5f, 15.1f);
@@ -361,7 +362,7 @@ int main_exp10(const cftal::test::pgm_args& ags)
     std::cerr << std::setprecision(18) << std::scientific;
 
     const int ulp=8;
-    const int _N=32;
+    const int _N=TEST_HALF_VLEN;
     bool rc=true;
 
     using ftype = float;
@@ -389,7 +390,7 @@ int main_log(const cftal::test::pgm_args& ags)
     std::cerr << std::setprecision(18) << std::scientific;
 
     const int ulp=8;
-    const int _N=32;
+    const int _N=TEST_HALF_VLEN;
     bool rc=true;
 
     using ftype = float;
@@ -419,7 +420,7 @@ int main_log2(const cftal::test::pgm_args& ags)
     std::cerr << std::setprecision(18) << std::scientific;
 
     const int ulp=8;
-    const int _N=32;
+    const int _N=TEST_HALF_VLEN;
     bool rc=true;
 
     using ftype = float;
@@ -450,7 +451,7 @@ int main_log10(const cftal::test::pgm_args& ags)
     std::cerr << std::setprecision(18) << std::scientific;
 
     const int ulp=8;
-    const int _N=32;
+    const int _N=TEST_HALF_VLEN;
     bool rc=true;
     using ftype = float;
 
@@ -482,7 +483,7 @@ int main_sin(const cftal::test::pgm_args& ags)
     std::cerr << std::setprecision(18) << std::scientific;
 
     const int ulp=8;
-    const int _N=32;
+    const int _N=TEST_HALF_VLEN;
     bool rc=true;
 
     auto dp=std::make_pair(-0x1p16f, 0x1p16f);
@@ -512,7 +513,7 @@ int main_cos(const cftal::test::pgm_args& ags)
     std::cerr << std::setprecision(18) << std::scientific;
 
     const int ulp=8;
-    const int _N=32;
+    const int _N=TEST_HALF_VLEN;
     bool rc=true;
     auto dp=std::make_pair(-0x1p16f, 0x1p16f);
     auto us=std::make_shared<ulp_stats>();
@@ -539,7 +540,7 @@ int main_tan(const cftal::test::pgm_args& ags)
     std::cerr << std::setprecision(18) << std::scientific;
 
     const int ulp=8;
-    const int _N=32;
+    const int _N=TEST_HALF_VLEN;
     bool rc=true;
     auto dp=std::make_pair(-0x1p16f, 0x1p16f);
     // auto dp=std::make_pair(M_PI/2, M_PI/2);
@@ -567,7 +568,7 @@ int main_rsqrt(const cftal::test::pgm_args& ags)
     std::cerr << std::setprecision(18) << std::scientific;
 
     const int ulp=8;
-    const int _N=32;
+    const int _N=TEST_HALF_VLEN;
     bool rc=true;
     func_domain<float> d=std::make_pair(-1.0e-38f,
                                         // std::numeric_limits< float >::max()
@@ -596,7 +597,7 @@ int main_sqrt(const cftal::test::pgm_args& ags)
     std::cerr << std::setprecision(18) << std::scientific;
 
     const int ulp=8;
-    const int _N=32;
+    const int _N=TEST_HALF_VLEN;
     bool rc=true;
     func_domain<float> d=std::make_pair(-1.0e-38f,
                                         // std::numeric_limits< float >::max()

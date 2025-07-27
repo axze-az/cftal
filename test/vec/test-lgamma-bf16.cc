@@ -38,7 +38,7 @@ int main(int argc, char** argv)
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
     const int ulp_pos=1;
-    const int _N=32;
+    const int _N=TEST_BF16_VLEN;
     bool rc=true;
 
     // func_domain<bf16_t> d=std::make_pair(-186.0, +172.0);

@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     pgm_args ags=parse(argc, argv, 0x4000);
 
     const int ulp=1;
-    const int _N=32;
+    const int _N=TEST_BF16_VLEN;
     bool rc=true;
 
     using ftype = bf16_t;

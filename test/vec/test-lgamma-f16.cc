@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
     const int ulp_pos=1;
-    const int _N=32;
+    const int _N=TEST_F16_VLEN;
     bool rc=true;
 
     func_domain<f16_t> d=std::make_pair(-0x1p11_f16, 1.75e+02_f16);

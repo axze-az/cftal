@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
-    const int _N=32;
+    const int _N=TEST_BF16_VLEN;
 
     bool rc=true;
     auto dp=std::make_pair(-0x1.5p25_bf16, 0x1.5p25_bf16);
