@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
     using cftal::bf16_t;
-    int r=program<check_cbrt<bf16_t>, 32, 1, 0x4000>(
+    int r=program<check_cbrt<bf16_t>, TEST_BF16_VLEN, 1, 0x4000>(
         argc,
         argv,
         mpfr_cbrt,

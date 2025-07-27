@@ -22,14 +22,14 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
     using cftal::f16_t;
-    int r=program<check_tan<f16_t>, 32, 1, 0x4000>(
+    int r=program<check_tan<f16_t>, TEST_F16_VLEN, 1, 0x4000>(
         argc,
         argv,
         mpfr_tan,
         domain_tan<f16_t>::domains,
         domain_tan<f16_t>::shifts);
 
-    r |=program<check_tan<f16_t>, 32, 1, 0x4000>(
+    r |=program<check_tan<f16_t>, TEST_F16_VLEN, 1, 0x4000>(
         argc,
         argv,
         mpfr_tan,

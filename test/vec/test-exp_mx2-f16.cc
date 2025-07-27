@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
     using cftal::f16_t;
-    int r=program<check_exp_mx2<f16_t>, 32, 1, 0x4000>(
+    int r=program<check_exp_mx2<f16_t>, TEST_F16_VLEN, 1, 0x4000>(
         argc,
         argv,
         mpfr_ext::exp_mx2,

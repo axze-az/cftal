@@ -22,14 +22,14 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
     using namespace cftal::test;
-    int r=program<check_sin<double>, 8, 1, 0x8000>(
+    int r=program<check_sin<double>, TEST_F64_VLEN, 1, 0x8000>(
         argc,
         argv,
         mpfr_sin,
         domain_sin<double>::domains,
         domain_sin<double>::shifts);
 
-    r |=program<check_sin<double>, 8, 1, 0x8000>(
+    r |=program<check_sin<double>, TEST_F64_VLEN, 1, 0x8000>(
         argc,
         argv,
         mpfr_sin,

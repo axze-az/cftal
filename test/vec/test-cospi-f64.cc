@@ -23,7 +23,7 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    int r=program<check_cospi<double>, 8, 1, 0x8000>(
+    int r=program<check_cospi<double>, TEST_F64_VLEN, 1, 0x8000>(
         argc,
         argv,
         mpfr_cospi,

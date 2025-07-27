@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 {
 #if 1
     using namespace cftal::test;
-    int r=program<check_tanh<double>, 8, 1, 0x8000>(
+    int r=program<check_tanh<double>, TEST_F64_VLEN, 1, 0x8000>(
         argc,
         argv,
         mpfr_tanh,

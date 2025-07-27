@@ -26,7 +26,7 @@ int main(int argc, char** argv)
         std::make_pair(-710.0, +39.0)
     };
     const int shifts[]={0};
-    int r=program<check_sig<double>, 8, 1, 0x8000>(argc,
+    int r=program<check_sig<double>, TEST_F64_VLEN, 1, 0x8000>(argc,
                                                    argv,
                                                    mpfr_ext::sig,
                                                    di,

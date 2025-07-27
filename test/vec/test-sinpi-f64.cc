@@ -23,7 +23,7 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    int r=program<check_sinpi<double>, 8, 1, 0x8000>(
+    int r=program<check_sinpi<double>, TEST_F64_VLEN, 1, 0x8000>(
         argc,
         argv,
         mpfr_sinpi,

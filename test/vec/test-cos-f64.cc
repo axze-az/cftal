@@ -21,14 +21,14 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    int r=program<check_cos<double>, 8, 1, 0x8000>(
+    int r=program<check_cos<double>, TEST_F64_VLEN, 1, 0x8000>(
         argc,
         argv,
         mpfr_cos,
         domain_cos<double>::domains,
         domain_cos<double>::shifts);
 
-    r |=program<check_cos<double>, 8, 1, 0x8000>(
+    r |=program<check_cos<double>, TEST_F64_VLEN, 1, 0x8000>(
         argc,
         argv,
         mpfr_cos,

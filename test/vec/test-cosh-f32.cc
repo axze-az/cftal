@@ -21,7 +21,7 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    int r=program<check_cosh<float>, 16, 1, 0x8000>(
+    int r=program<check_cosh<float>, TEST_F32_VLEN, 1, 0x8000>(
         argc,
         argv,
         mpfr_cosh,
