@@ -40,7 +40,7 @@ int main(int argc, char** argv)
     pgm_args ags=parse(argc, argv, 0x8000);
 
     const int ulp=1;
-    const int _N=8;
+    const int _N=TEST_F64_VLEN;
     bool rc=true;
 
     using ftype = double;

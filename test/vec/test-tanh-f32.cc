@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
-    const int _N=16;
+    const int _N=TEST_F32_VLEN;
     bool rc=true;
     bool speed_only=false;
     std::size_t cnt=update_cnt(0x8000);

@@ -33,7 +33,7 @@ int main(int argc, char** argv)
         }
     }
     const int ulp=1;
-    const int _N=8;
+    const int _N=TEST_F64_VLEN;
     bool rc=true;
 
     func_domain<double> d=std::make_pair(-186.0, +172.0);

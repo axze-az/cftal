@@ -24,11 +24,11 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
     cpu_times_to_stdout tt;
-    
+
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
-    const int _N=8;
+    const int _N=TEST_F64_VLEN;
     bool rc=true;
 
     pgm_args ags=parse(argc, argv, 0x8000);

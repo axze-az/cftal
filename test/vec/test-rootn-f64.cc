@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 
     const int ulp2=1;
     const int ulp=1;
-    const int _N=8;
+    const int _N=TEST_F64_VLEN;
     bool rc=true;
 
     std::cout << std::setprecision(18) << std::scientific;
