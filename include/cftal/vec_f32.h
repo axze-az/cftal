@@ -27,12 +27,18 @@
 
 #define V2F32_FUNCS 1
 #if 1
-#define V4F32_FUNCS                                                     \
-    ((V4F32_SPECIALIZED>0) || ((V2F32_SPECIALIZED>0) && (V2S32_SPECIALIZED>0)))
-#define V8F32_FUNCS                                                     \
-    ((V8F32_SPECIALIZED>0) || ((V4F32_SPECIALIZED>0) && (V4S32_SPECIALIZED>0)))
-#define V16F32_FUNCS                                                    \
-    ((V16F32_SPECIALIZED>0) || ((V8F32_SPECIALIZED>0) && (V8S32_SPECIALIZED>0)))
+#define V4F32_FUNCS                                     \
+    ((V4F32_SPECIALIZED>0) ||                           \
+     ((V2F32_SPECIALIZED>0) && (V2S32_SPECIALIZED>0)))
+#define V8F32_FUNCS                                     \
+    ((V8F32_SPECIALIZED>0) ||                           \
+     ((V4F32_SPECIALIZED>0) && (V4S32_SPECIALIZED>0)))
+#define V16F32_FUNCS                                    \
+    ((V16F32_SPECIALIZED>0) ||                          \
+     ((V8F32_SPECIALIZED>0) && (V8S32_SPECIALIZED>0)))
+#define V32F32_FUNCS                                            \
+    ((V32F32_SPECIALIZED>0) ||                                  \
+     ((V16F32_SPECIALIZED>0) && (V16S32_SPECIALIZED>0)))
 #else
 #define V4F32_FUNCS                                     \
     ((V4F32_SPECIALIZED>0) || ((V2F32_SPECIALIZED>0)))
@@ -48,6 +54,8 @@
     ((V8F32_SPECIALIZED>0))
 #define V16F32_SLOW_SPEC_FUNCS                  \
     ((V16F32_SPECIALIZED>0))
+#define V32F32_SLOW_SPEC_FUNCS                  \
+    ((V32F32_SPECIALIZED>0))
 
 namespace cftal {
 

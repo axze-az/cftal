@@ -30,6 +30,8 @@
     ((V8BF16_SPECIALIZED>0) || ((V4BF16_SPECIALIZED>0) && (V4S16_SPECIALIZED>0)))
 #define V16BF16_FUNCS                                                    \
     ((V16BF16_SPECIALIZED>0) || ((V8BF16_SPECIALIZED>0) && (V8S16_SPECIALIZED>0)))
+#define V32BF16_FUNCS                                                    \
+    ((V32BF16_SPECIALIZED>0) || ((V16BF16_SPECIALIZED>0) && (V16S16_SPECIALIZED>0)))
 
 namespace cftal {
 

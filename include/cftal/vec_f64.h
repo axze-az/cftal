@@ -27,20 +27,27 @@
 
 #define V2F64_FUNCS 1
 #if 1
-#define V4F64_FUNCS                                                     \
-    ((V4F64_SPECIALIZED>0) || ((V2F64_SPECIALIZED>0) && (V4S32_SPECIALIZED>0)))
-#define V8F64_FUNCS                                                     \
-    ((V8F64_SPECIALIZED>0) || ((V4F64_SPECIALIZED>0) && (V8S32_SPECIALIZED>0)))
+#define V4F64_FUNCS                                     \
+    ((V4F64_SPECIALIZED>0) ||                           \
+     ((V2F64_SPECIALIZED>0) && (V4S32_SPECIALIZED>0)))
+#define V8F64_FUNCS                                     \
+    ((V8F64_SPECIALIZED>0) ||                           \
+     ((V4F64_SPECIALIZED>0) && (V8S32_SPECIALIZED>0)))
+#define V16F64_FUNCS                                    \
+    ((V16F64_SPECIALIZED>0) ||                          \
+     ((V8F64_SPECIALIZED>0) && (V16S32_SPECIALIZED>0)))
 #else
-#define V4F64_FUNCS                                                     \
+#define V4F64_FUNCS                                     \
     ((V4F64_SPECIALIZED>0) || ((V2F64_SPECIALIZED>0)))
-#define V8F64_FUNCS                                                     \
+#define V8F64_FUNCS                                     \
     ((V8F64_SPECIALIZED>0) || ((V4F64_SPECIALIZED>0)))
 #endif
 
-#define V4F64_SLOW_SPEC_FUNCS                                           \
+#define V4F64_SLOW_SPEC_FUNCS                   \
     ((V4F64_SPECIALIZED>0))
-#define V8F64_SLOW_SPEC_FUNCS                                           \
+#define V8F64_SLOW_SPEC_FUNCS                   \
+    ((V8F64_SPECIALIZED>0))
+#define V16F64_SLOW_SPEC_FUNCS                  \
     ((V8F64_SPECIALIZED>0))
 
 namespace cftal {
