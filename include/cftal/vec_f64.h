@@ -48,7 +48,7 @@
 #define V8F64_SLOW_SPEC_FUNCS                   \
     ((V8F64_SPECIALIZED>0))
 #define V16F64_SLOW_SPEC_FUNCS                  \
-    ((V8F64_SPECIALIZED>0))
+    ((V16F64_SPECIALIZED>0))
 
 namespace cftal {
 
@@ -1190,6 +1190,187 @@ namespace cftal {
 
     vec<double, 8>
     sig(arg_t<vec<double, 8> > x);
+
+#endif
+
+#if V16F64_FUNCS>0
+    vec<double, 16>
+    frexp(arg_t<vec<double, 16> > x, vec<int32_t, 16>* e);
+
+    vec<double, 16>
+    ldexp(arg_t<vec<double, 16> > a, arg_t<vec<int32_t, 16> > e);
+
+    vec<double, 16>
+    nextafter(arg_t<vec<double, 16> > x, arg_t<vec<double, 16> > y);
+
+    vec<int32_t, 16>
+    ilogb(arg_t<vec<double, 16> > a);
+
+    vec<int32_t, 16>
+    ilogbp1(arg_t<vec<double, 16> > v);
+
+    vec<double, 16>
+    rsqrt(arg_t<vec<double, 16> > v);
+
+    vec<double, 16>
+    cbrt(arg_t<vec<double, 16> > v);
+
+    vec<double, 16>
+    rcbrt(arg_t<vec<double, 16> > v);
+
+    vec<double, 16>
+    root12(arg_t<vec<double, 16> > v);
+
+    vec<double, 16>
+    hypot(arg_t<vec<double, 16> > x, arg_t<vec<double, 16> > y);
+
+    vec<double, 16>
+    exp(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    expm1(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    exp2(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    exp2m1(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    exp10(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    exp10m1(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    sinh(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    cosh(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    tanh(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    log(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    log1p(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    log10(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    log10p1(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    log2(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    log2p1(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    pow(arg_t<vec<double, 16> > b, arg_t<vec<double, 16> > e);
+
+    vec<double, 16>
+    pow(arg_t<vec<double, 16> > b, arg_t<vec<int32_t, 16> > e);
+
+    vec<double, 16>
+    rootn(arg_t<vec<double, 16> > b, arg_t<vec<int32_t, 16> > n);
+
+    vec<double, 16>
+    atan(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    asin(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    acos(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    atan2(arg_t<vec<double, 16> > y, arg_t<vec<double, 16> > x);
+
+    vec<double, 16>
+    sin(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    cos(arg_t<vec<double, 16> > d);
+
+    void
+    sincos(arg_t<vec<double, 16> > d,
+           vec<double, 16> * psin, vec<double, 16> * pcos);
+
+    vec<double, 16>
+    tan(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    sinpi(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    cospi(arg_t<vec<double, 16> > d);
+
+    void
+    sinpicospi(arg_t<vec<double, 16> > d,
+               vec<double, 16> * psin, vec<double, 16> * pcos);
+
+    vec<double, 16>
+    tanpi(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    asinh(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    acosh(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    atanh(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    erf(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    erfc(arg_t<vec<double, 16> > d);
+
+#if V16F64_SLOW_SPEC_FUNCS>0
+    vec<double, 16>
+    tgamma(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    lgamma(arg_t<vec<double, 16> > d, vec<int32_t, 16>* signp);
+#endif
+
+    vec<double, 16>
+    j0(arg_t<vec<double, 16> > x);
+
+    vec<double, 16>
+    j1(arg_t<vec<double, 16> > x);
+
+    vec<double, 16>
+    y0(arg_t<vec<double, 16> > x);
+
+    vec<double, 16>
+    y1(arg_t<vec<double, 16> > x);
+
+    vec<double, 16>
+    exp_mx2(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    exp_px2(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    exp2_mx2(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    exp2_px2(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    exp10_mx2(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    exp10_px2(arg_t<vec<double, 16> > d);
+
+    vec<double, 16>
+    sig(arg_t<vec<double, 16> > x);
 
 #endif
 

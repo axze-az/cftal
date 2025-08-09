@@ -1367,6 +1367,183 @@ namespace cftal {
 
 #endif
 
+#if V32F32_FUNCS>0
+    vec<float, 32>
+    frexp(arg_t<vec<float, 32> > x, vec<int32_t, 32>* e);
+
+    vec<float, 32>
+    ldexp(arg_t<vec<float, 32> > a, arg_t<vec<int32_t, 32> > e);
+
+    vec<float, 32>
+    nextafter(arg_t<vec<float, 32> > x, arg_t<vec<float, 32> > y);
+
+    vec<int32_t, 32>
+    ilogb(arg_t<vec<float, 32> > a);
+
+    vec<float, 32>
+    rsqrt(arg_t<vec<float, 32> > v);
+
+    vec<float, 32>
+    cbrt(arg_t<vec<float, 32> > v);
+
+    vec<float, 32>
+    rcbrt(arg_t<vec<float, 32> > v);
+
+    vec<float, 32>
+    root12(arg_t<vec<float, 32> > v);
+
+    vec<float, 32>
+    hypot(arg_t<vec<float, 32> > x, arg_t<vec<float, 32> > y);
+
+    vec<float, 32>
+    exp(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    expm1(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    exp2(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    exp2m1(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    exp10(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    exp10m1(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    sinh(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    cosh(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    tanh(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    log(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    log1p(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    log10(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    log10p1(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    log2(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    log2p1(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    pow(arg_t<vec<float, 32> > b, arg_t<vec<float, 32> > e);
+
+    vec<float, 32>
+    pow(arg_t<vec<float, 32> > b, arg_t<vec<int32_t, 32> > e);
+
+    vec<float, 32>
+    rootn(arg_t<vec<float, 32> > b, arg_t<vec<int32_t, 32> > n);
+
+    vec<float, 32>
+    atan(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    asin(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    acos(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    atan2(arg_t<vec<float, 32> > y, arg_t<vec<float, 32> > x);
+
+    vec<float, 32>
+    sin(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    cos(arg_t<vec<float, 32> > d);
+
+    void
+    sincos(arg_t<vec<float, 32> > d,
+           vec<float, 32> * psin, vec<float, 32> * pcos);
+
+    vec<float, 32>
+    tan(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    sinpi(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    cospi(arg_t<vec<float, 32> > d);
+
+    void
+    sinpicospi(arg_t<vec<float, 32> > d,
+               vec<float, 32> * psin, vec<float, 32> * pcos);
+
+    vec<float, 32>
+    tanpi(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    asinh(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    acosh(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    atanh(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    erf(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    erfc(arg_t<vec<float, 32> > d);
+
+#if V32F32_SLOW_SPEC_FUNCS>0
+    vec<float, 32>
+    tgamma(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    lgamma(arg_t<vec<float, 32> > d, vec<int32_t, 32>* signp);
+#endif
+    vec<float, 32>
+    j0(arg_t<vec<float, 32> > x);
+
+    vec<float, 32>
+    j1(arg_t<vec<float, 32> > x);
+
+    vec<float, 32>
+    y0(arg_t<vec<float, 32> > x);
+
+    vec<float, 32>
+    y1(arg_t<vec<float, 32> > x);
+
+    vec<float, 32>
+    exp_mx2(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    exp_px2(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    exp2_mx2(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    exp2_px2(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    exp10_mx2(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    exp10_px2(arg_t<vec<float, 32> > d);
+
+    vec<float, 32>
+    sig(arg_t<vec<float, 32> > x);
+
+#endif
+
     namespace native {
 #if defined (__SSE__)
         vec<float, 1>

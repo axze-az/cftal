@@ -106,12 +106,14 @@ namespace cftal {
     using v2f64 = vec<double, 2>;
     using v4f64 = vec<double, 4>;
     using v8f64 = vec<double, 8>;
+    using v16f64 = vec<double, 16>;
 
     using v1f32 = vec<float, 1>;
     using v2f32 = vec<float, 2>;
     using v4f32 = vec<float, 4>;
     using v8f32 = vec<float, 8>;
     using v16f32= vec<float, 16>;
+    using v32f32= vec<float, 32>;
 
     using v1s8= vec<int8_t, 1>;
     using v1u8= vec<uint8_t, 1>;
@@ -147,6 +149,8 @@ namespace cftal {
     using v8u32 = vec<uint32_t, 8>;
     using v16s32 = vec<int32_t, 16>;
     using v16u32 = vec<uint32_t, 16>;
+    using v32s32 = vec<int32_t, 32>;
+    using v32u32 = vec<uint32_t, 32>;
 
     using v1s64 = vec<int64_t, 1>;
     using v1u64 = vec<uint64_t, 1>;
@@ -156,6 +160,8 @@ namespace cftal {
     using v4u64 = vec<uint64_t, 4>;
     using v8s64 = vec<int64_t, 8>;
     using v8u64 = vec<uint64_t, 8>;
+    using v16s64 = vec<int64_t, 16>;
+    using v16u64 = vec<uint64_t, 16>;
 
     // return the size of the vector
     template <typename _T, std::size_t _N>
