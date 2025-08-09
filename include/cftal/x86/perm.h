@@ -1784,7 +1784,7 @@ cftal::x86::permute_v4f32_v4s32(__m128 l, __m128 h, __m128i idx)
     return _mm_andnot_ps(_mm_castsi128_ps(idx_lt_z), r);
 #else
     return _mm_castsi128_ps(
-        permute_v4u32_v4s32(_mm_castps_si128(s), idx));
+        permute_v4u32_v4s32(_mm_castps_si128(l), _mm_castps_si128(h), idx));
 #endif
 }
 
@@ -1828,7 +1828,7 @@ cftal::x86::permute_v2f64_v2s64(__m128d l, __m128d h, __m128i idx)
     return _mm_andnot_pd(_mm_castsi128_pd(idx_lt_z), r);
 #else
     return _mm_castsi128_pd(
-        permute_v2u64_v2s64(_mm_castpd_si128(s), idx));
+        permute_v2u64_v2s64(_mm_castpd_si128(l), _mm_castpd_si128(h), idx));
 #endif
 }
 
