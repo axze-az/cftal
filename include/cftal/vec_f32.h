@@ -1795,6 +1795,41 @@ namespace cftal {
         tan(arg_t<vec<float, 16> > v);
 #endif
 
+#if V32F32_FUNCS>0
+        vec<float, 32>
+        cos(arg_t<vec<float, 32> > v);
+
+        vec<float, 32>
+        exp(arg_t<vec<float, 32> > v);
+
+        vec<float, 32>
+        exp2(arg_t<vec<float, 32> > v);
+
+        vec<float, 32>
+        exp10(arg_t<vec<float, 32> > v);
+
+        vec<float, 32>
+        log(arg_t<vec<float, 32> > v);
+
+        vec<float, 32>
+        log2(arg_t<vec<float, 32> > v);
+
+        vec<float, 32>
+        log10(arg_t<vec<float, 32> > v);
+
+        vec<float, 32>
+        rsqrt(arg_t<vec<float, 32> > v);
+
+        vec<float, 32>
+        sin(arg_t<vec<float, 32> > v);
+
+        vec<float, 32>
+        sqrt(arg_t<vec<float, 32> > v);
+
+        vec<float, 32>
+        tan(arg_t<vec<float, 32> > v);
+#endif
+
     };
 }
 

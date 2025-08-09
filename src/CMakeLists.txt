@@ -68,7 +68,7 @@ set (CSRCS
     # vec <float, 32>
     v32f32_ef.cc
     v32f32_sf.cc
-    # v16f32_hf.cc
+    v32f32_hf.cc
     # f16 data
     f16_erf_data.cc
     f16_erfc_data.cc
