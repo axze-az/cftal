@@ -1419,26 +1419,39 @@ namespace cftal {
         __m128i perm_v2u64(__m128i a, __m128i b);
 
 #if defined (__AVX__)
+        // generic permutation of one v4f64 vector
         template <int _P0, int _P1, int _P2, int _P3>
         __m256d perm_v4f64(__m256d a);
+
+        // generic permutation of two v4f64 vectors
         template <int _P0, int _P1, int _P2, int _P3>
         __m256d perm_v4f64(__m256d a, __m256d b);
 
+        // generic permutation of one v8uf32 vector
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         __m256 perm_v8f32(__m256 a);
+
+        // generic permutation of two v8f32 vectors
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         __m256 perm_v8f32(__m256 a, __m256 b);
 #endif
 #if defined (__AVX2__)
+        // generic permutation of one v4u64 vector
         template <int _P0, int _P1, int _P2, int _P3>
         __m256i perm_v4u64(__m256i a);
+
+        // generic permutation of two v4u64 vectors
         template <int _P0, int _P1, int _P2, int _P3>
         __m256i perm_v4u64(__m256i a, __m256i b);
+
+        // generic permutation of one v8u32 vector
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         __m256i perm_v8u32(__m256i a);
+
+        // generic permutation of two v8u32 vectors
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         __m256i perm_v8u32(__m256i a, __m256i b);
@@ -1450,7 +1463,7 @@ namespace cftal {
                   int _P12, int _P13, int _P14, int _P15>
         __m256i perm_v16u16(__m256i a);
 
-        // generic permutation of one v16u16 vector
+        // generic permutation of two v16u16 vectors
         template <int _P00, int _P01, int _P02, int _P03,
                   int _P04, int _P05, int _P06, int _P07,
                   int _P08, int _P09, int _P10, int _P11,
@@ -1459,27 +1472,36 @@ namespace cftal {
 
 #endif
 #if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+        // generic permutation of one v16f32 vector
         template <int _P00, int _P01, int _P02, int _P03,
                   int _P04, int _P05, int _P06, int _P07,
                   int _P08, int _P09, int _P10, int _P11,
                   int _P12, int _P13, int _P14, int _P15>
         __m512 perm_v16f32(__m512 a);
+
+        // generic permutation of two v16f32 vectors
         template <int _P00, int _P01, int _P02, int _P03,
                   int _P04, int _P05, int _P06, int _P07,
                   int _P08, int _P09, int _P10, int _P11,
                   int _P12, int _P13, int _P14, int _P15>
         __m512 perm_v16f32(__m512 a, __m512 b);
 
+        // generic permutation of one v8f64 vector
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         __m512d perm_v8f64(__m512d a);
+
+        // generic permutation of two v8f64 vectors
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         __m512d perm_v8f64(__m512d a, __m512d b);
 
+        // generic permutation of one v8u64 vector
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         __m512i perm_v8u64(__m512i a);
+
+        // generic permutation of two v8u64 vectors
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         __m512i perm_v8u64(__m512i a, __m512i b);
@@ -1491,7 +1513,7 @@ namespace cftal {
                   int _P12, int _P13, int _P14, int _P15>
         __m512i perm_v16u32(__m512i a);
 
-        // generic permutation of one v16u32 vector
+        // generic permutation of two v16u32 vectors
         template <int _P00, int _P01, int _P02, int _P03,
                   int _P04, int _P05, int _P06, int _P07,
                   int _P08, int _P09, int _P10, int _P11,
@@ -1506,7 +1528,7 @@ namespace cftal {
                   int _P12, int _P13, int _P14, int _P15>
         __m128i perm_v16u8(__m128i a);
 
-        // generic permutation of one v16u8 vector
+        // generic permutation of two v16u8 vectors
         template <int _P00, int _P01, int _P02, int _P03,
                   int _P04, int _P05, int _P06, int _P07,
                   int _P08, int _P09, int _P10, int _P11,
@@ -1514,6 +1536,7 @@ namespace cftal {
         __m128i perm_v16u8(__m128i a, __m128i b);
 
 #if defined (__AVX2__)
+        // generic permutation of one v32u8 vector
         template <int _P00, int _P01, int _P02, int _P03,
                   int _P04, int _P05, int _P06, int _P07,
                   int _P08, int _P09, int _P10, int _P11,
@@ -1524,6 +1547,7 @@ namespace cftal {
                   int _P28, int _P29, int _P30, int _P31>
         __m256i perm_v32u8(__m256i a);
 
+        // generic permutation of two v32u8 vectors
         template <int _P00, int _P01, int _P02, int _P03,
                   int _P04, int _P05, int _P06, int _P07,
                   int _P08, int _P09, int _P10, int _P11,
