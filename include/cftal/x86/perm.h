@@ -1389,32 +1389,45 @@ namespace cftal {
         };
 
 #endif
-
-
+        // generic permutation of one v2f64 vector
         template <int _P0, int _P1>
         __m128d perm_v2f64(__m128d a);
+
+        // generic permutation of two v2f64 vectors
         template <int _P0, int _P1>
         __m128d perm_v2f64(__m128d a, __m128d b);
 
+        // generic permutation of one v4f32 vector
         template <int _P0, int _P1, int _P2, int _P3>
         __m128 perm_v4f32(__m128 a);
+
+        // generic permutation of two v4f32 vectors
         template <int _P0, int _P1, int _P2, int _P3>
         __m128 perm_v4f32(__m128 a, __m128 b);
 
+        // generic permutation of one v4u32 vector
         template <int _P0, int _P1, int _P2, int _P3>
         __m128i perm_v4u32(__m128i a);
+
+        // generic permutation of two v4u32 vectors
         template <int _P0, int _P1, int _P2, int _P3>
         __m128i perm_v4u32(__m128i a, __m128i b);
 
+        // generic permutation of one v8u16 vector
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         __m128i perm_v8u16(__m128i a);
+
+        // generic permutation of two v8u16 vectors
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         __m128i perm_v8u16(__m128i a, __m128i b);
 
+        // generic permutation of one v2u64 vector
         template <int _P0, int _P1>
         __m128i perm_v2u64(__m128i a);
+
+        // generic permutation of two v2u64 vectors
         template <int _P0, int _P1>
         __m128i perm_v2u64(__m128i a, __m128i b);
 
@@ -1427,7 +1440,7 @@ namespace cftal {
         template <int _P0, int _P1, int _P2, int _P3>
         __m256d perm_v4f64(__m256d a, __m256d b);
 
-        // generic permutation of one v8uf32 vector
+        // generic permutation of one v8f32 vector
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         __m256 perm_v8f32(__m256 a);
