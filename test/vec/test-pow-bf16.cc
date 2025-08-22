@@ -25,7 +25,7 @@ int main(int argc, char** argv)
     using namespace cftal::test;
     cpu_times_to_stdout tt;
     using cftal::bf16_t;
-    using cftal::operator "" _bf16;
+    using cftal::operator ""_bf16;
 
     const int ulp3=1;
     const int ulp=1;
