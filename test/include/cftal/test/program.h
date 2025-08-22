@@ -42,7 +42,7 @@ namespace cftal {
             // speed test only
             bool _speed_only;
             // multi thread: thread count, 0 means no mt, 1 one worker thread
-            // the thread count is maximized with the number of logical cores
+            // the thread count is minimized with the number of logical cores
             // in the test programs
             uint32_t _mt;
             // use cache
