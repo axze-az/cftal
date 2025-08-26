@@ -17,33 +17,58 @@
 //
 #include <iostream>
 #include <iomanip>
+#include <vector>
 #include <cftal/vec.h>
+#include <cftal/d_real.h>
+
+namespace cftal { namespace devel {
+    double bessel_j(int n, double x);
+}}
+
+
+// j(n-1, x) = 2*n/x * j(n, x) - j(n+1, x)
+// 1 = j(0, x) + 2*j(2, x) + 2 * j(4, x) + ....
+double
+cftal::devel::
+bessel_j(int n, double x)
+{
+    constexpr const int _N=30;
+    using v_t = double;
+    std::vector<v_t> vj(_N+2, v_t(0.0));
+    v_t rec_x=v_t(1.0)/x;
+    vj[_N] = 1.0;
+    vj[_N+1] = 0.0;
+    v_t norm=0.0;
+    v_t vi(_N);
+    for (ssize_t i=_N; i > 0; --i) {
+        v_t vj_im1=(2.0*vi)*rec_x * vj[i] - vj[i+1];
+        if (i && (i&1)==0) {
+            norm += 2.0*vj[i];
+        }
+        vj[i-1] = vj_im1;
+        vi -= 1.0;
+    }
+    norm += vj[0];
+    v_t jn=vj[n]/norm;
+    return jn;
+}
+
 
 using namespace cftal;
-
-vec<int32_t, 8>
-insert_exp(arg_t<vec<int32_t, 4> > v)
-{
-    vec<int32_t, 4> vs= v  << 20;
-    vec<int32_t, 8> r=combine_zeroeven_odd(vs);
-    return r;
-}
 
 int main(int argc, char** argv)
 {
     using namespace cftal;
+    using namespace cftal::devel;
 
-    v4f64 x4=0x1p-1;
-    v4f64 fx4=erfc(x4);
-    std::cout << std::hexfloat;
-    std::cout << "x:\t" << x4 << std::endl
-	      << "fx:\t" << fx4 << std::endl;
-
-
-    v2f64 x2=0x1p-1;
-    v2f64 fx2=erfc(x2);
-    std::cout << std::hexfloat;
-    std::cout << "x:\t" << x2 << std::endl
-	      << "fx:\t" << fx2 << std::endl;
+    std::cout << std::scientific << std::setprecision(18);
+    const double x=2.5;
+    const int n=1;
+    double j1nv= bessel_j(n, x);
+    std::cout << j1nv << std::endl;
+    double j1v= j1(v1f64(x))();
+    std::cout << j1v << std::endl;
+    double jnx=::jn(n, x);
+    std::cout << jnx << std::endl;
     return 0;
 }
