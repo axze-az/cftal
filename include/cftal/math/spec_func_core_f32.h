@@ -172,12 +172,12 @@ namespace cftal {
 
 
             // handle large arguments greater than ~128 to inf
-            // calc_y01 select the calculation of y0/y1 or j0/j1
-            // calc_j01 selects j0/y0 or j1/y1
+            // calc_yn select the calculation of y if true or j if false
+            // calc_jy1 selects order 1 if true and order 0 if false
             static
             vf_type
             __j01y01_large_phase_amplitude_k(arg_t<vf_type> xc,
-                                             bool calc_y01,
+                                             bool calc_yn,
                                              bool calc_jy1);
 
             static
