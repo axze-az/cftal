@@ -18,13 +18,41 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <cstdlib>
+#include <limits>
 #include <cftal/vec.h>
 #include <cftal/d_real.h>
 
 namespace cftal { namespace devel {
+    int
+    calc_m_kahan(int nm1, double x, double rcp_eps);
+
     double bessel_j(int n, double x);
 }}
 
+int
+cftal::devel::
+calc_m_kahan(int nm1, double x, double rcp_eps)
+{
+    using std::max;
+    using std::rint;
+    int k= max(nm1+1, static_cast<int>(rint(x)));
+    const auto beta=1.0;
+    double yk = 0.0, ykp1=beta;
+    double _2_x= 2.0/x;
+    int m=k+1;
+    double md=static_cast<double>(m);
+    for (;m<std::numeric_limits<int>::max(); ++m) {
+        double t= md * _2_x * ykp1 - yk;
+        yk   = ykp1;
+        ykp1 = t;
+        // because beta == 1.0
+        if (ykp1 >= rcp_eps)
+            break;
+        md += 2.0;
+    }
+    return m;
+}
 
 // j(n-1, x) = 2*n/x * j(n, x) - j(n+1, x)
 // 1 = j(0, x) + 2*j(2, x) + 2 * j(4, x) + ....
@@ -32,8 +60,9 @@ double
 cftal::devel::
 bessel_j(int n, double x)
 {
-    constexpr const int _N=30;
-    using v_t = double;
+    using v_t = d_real<double>;
+    size_t _N=calc_m_kahan(n-1, x, 0x1.0p54);
+    std::cout << "jn(" << n << ", " << x << ") _N=" << _N  <<'\n';
     std::vector<v_t> vj(_N+2, v_t(0.0));
     v_t rec_x=v_t(1.0)/x;
     vj[_N] = 1.0;
@@ -50,7 +79,7 @@ bessel_j(int n, double x)
     }
     norm += vj[0];
     v_t jn=vj[n]/norm;
-    return jn;
+    return jn[0];
 }
 
 
@@ -62,8 +91,8 @@ int main(int argc, char** argv)
     using namespace cftal::devel;
 
     std::cout << std::scientific << std::setprecision(18);
-    const double x=2.5;
-    const int n=1;
+    const double x=10000;
+    const int n=2;
     double j1nv= bessel_j(n, x);
     std::cout << j1nv << std::endl;
     double j1v= j1(v1f64(x))();
