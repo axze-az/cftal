@@ -60,6 +60,12 @@ namespace cftal {
                                    long int,
                                    mpfr_rnd_t);
 
+            // mpfr function returning a float with one float and one
+            // integer argument
+	    using f_if_t = int (*)(mpfr_t, long int,
+				   const mpfr_t,
+                                   mpfr_rnd_t);
+	    
             // call f(a), returns also the interval
             // containing the unrounded result
             double
@@ -79,6 +85,12 @@ namespace cftal {
             func(double a, int ib, f_fi_t f,
                  std::pair<double, double>* ulp1i= nullptr);
 
+            // call f(a, b), returns also the interval
+            // containing the unrounded result
+            double
+            func(int a, double b, f_if_t f,
+                 std::pair<double, double>* ulp1i= nullptr);
+	    
             // call f(a, i), returns also the interval
             // containing the unrounded result
             double
@@ -124,6 +136,12 @@ namespace cftal {
 
             // call f(a), returns also the interval
             // containing the unrounded result
+            float
+            func(int a, float b, f_if_t f,
+                 std::pair<float, float>* ulp1i= nullptr);
+	    
+            // call f(a), returns also the interval
+            // containing the unrounded result
             f16_t
             func(f16_t a, f_f_t f,
                  std::pair<f16_t, f16_t>* ulp1i= nullptr);
@@ -155,6 +173,12 @@ namespace cftal {
 
             // call f(a), returns also the interval
             // containing the unrounded result
+            f16_t
+            func(int a, f16_t b, f_if_t f,
+                 std::pair<f16_t, f16_t>* ulp1i= nullptr);
+	    
+            // call f(a), returns also the interval
+            // containing the unrounded result
             bf16_t
             func(bf16_t a, f_f_t f,
                  std::pair<bf16_t, bf16_t>* ulp1i= nullptr);
@@ -184,6 +208,11 @@ namespace cftal {
             func(bf16_t a, int ib, f_fi_t f,
                  std::pair<bf16_t, bf16_t>* ulp1i= nullptr);
 
+            // call f(a), returns also the interval
+            // containing the unrounded result
+            bf16_t
+            func(int a, bf16_t b, f_if_t f,
+                 std::pair<bf16_t, bf16_t>* ulp1i= nullptr);
 
             namespace impl {
 
