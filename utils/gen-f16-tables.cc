@@ -49,22 +49,22 @@ namespace cftal {
         // generate a table for f with f16 numbers between
         // [b, e) if e != inf and [b, e] if e == inf
         std::map<int16_t, std::pair<f16_t, uint16_t>>
-        gen_f16_tbl(test::call_mpfr::f1_t f,
+        gen_f16_tbl(test::call_mpfr::f_f_t f,
                     f16_t b, f16_t e);
 
         void
-        gen_f16_tbl(test::call_mpfr::f1_t f,
+        gen_f16_tbl(test::call_mpfr::f_f_t f,
                     const std::string& tblname, std::ostream& h,
                     f16_t b, f16_t e);
 
         // generate a table for f with f16 numbers between
         // [b, e) if e != inf and [b, e] if e == inf
         std::map<int16_t, std::pair<f16_t, uint32_t>>
-        gen_f16_tbl(test::call_mpfr::f1i_t f,
+        gen_f16_tbl(test::call_mpfr::fi_f_t f,
                     f16_t b, f16_t e);
 
         void
-        gen_f16_tbl(test::call_mpfr::f1i_t f,
+        gen_f16_tbl(test::call_mpfr::fi_f_t f,
                     const std::string& tblname, std::ostream& h,
                     f16_t b, f16_t e);
 
@@ -134,7 +134,7 @@ cftal::utils::table_offset(f16_t f)
 
 std::map<int16_t, std::pair<cftal::f16_t, uint16_t>>
 cftal::utils::
-gen_f16_tbl(test::call_mpfr::f1_t f,
+gen_f16_tbl(test::call_mpfr::f_f_t f,
             f16_t b, f16_t e)
 {
     auto cmp_lt= [](f16_t a, f16_t b)->bool {
@@ -170,7 +170,7 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
 
 void
 cftal::utils::
-gen_f16_tbl(test::call_mpfr::f1_t f,
+gen_f16_tbl(test::call_mpfr::f_f_t f,
             const std::string& tblname, std::ostream& h,
             f16_t b, f16_t e)
 {
@@ -243,7 +243,7 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
 
 std::map<int16_t, std::pair<cftal::f16_t, uint32_t>>
 cftal::utils::
-gen_f16_tbl(test::call_mpfr::f1i_t f,
+gen_f16_tbl(test::call_mpfr::fi_f_t f,
             f16_t b, f16_t e)
 {
     auto cmp_lt= [](f16_t a, f16_t b)->bool {
@@ -281,7 +281,7 @@ gen_f16_tbl(test::call_mpfr::f1i_t f,
 
 void
 cftal::utils::
-gen_f16_tbl(test::call_mpfr::f1i_t f,
+gen_f16_tbl(test::call_mpfr::fi_f_t f,
             const std::string& tblname, std::ostream& h,
             f16_t b, f16_t e)
 {

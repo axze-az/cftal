@@ -73,7 +73,7 @@ namespace cftal {
                   std::size_t _M>
         int
         program(int argc, char** argv,
-                call_mpfr::f1_t func,
+                call_mpfr::f_f_t func,
                 const func_domain<double> (&d)[_M],
                 const int (&count_shift)[_M],
                 bool table_check=true);
@@ -85,7 +85,7 @@ namespace cftal {
                   std::size_t _M>
         int
         program(int argc, char** argv,
-                call_mpfr::f1_t func,
+                call_mpfr::f_f_t func,
                 const func_domain<float> (&d)[_M],
                 const int (&count_shift)[_M]);
 
@@ -96,7 +96,7 @@ namespace cftal {
                   std::size_t _M>
         int
         program(int argc, char** argv,
-                call_mpfr::f1_t func,
+                call_mpfr::f_f_t func,
                 const func_domain<f16_t> (&d)[_M],
                 const int (&count_shift)[_M]);
 
@@ -107,7 +107,7 @@ namespace cftal {
                   std::size_t _M>
         int
         program(int argc, char** argv,
-                call_mpfr::f1_t func,
+                call_mpfr::f_f_t func,
                 const func_domain<bf16_t> (&d)[_M],
                 const int (&count_shift)[_M]);
 
@@ -122,7 +122,7 @@ template <typename _CHECK,
           std::size_t _M>
 int
 cftal::test::program(int argc, char** argv,
-                     call_mpfr::f1_t func,
+                     call_mpfr::f_f_t func,
                      const func_domain<double> (&d)[_M],
                      const int (&count_shift)[_M],
                      bool table_check)
@@ -188,7 +188,7 @@ template <typename _CHECK,
           std::size_t _M>
 int
 cftal::test::program(int argc, char** argv,
-                     call_mpfr::f1_t func,
+                     call_mpfr::f_f_t func,
                      const func_domain<float> (&d)[_M],
                      const int (&count_shift)[_M])
 {
@@ -235,7 +235,7 @@ template <typename _CHECK,
           std::size_t _M>
 int
 cftal::test::program(int argc, char** argv,
-                     call_mpfr::f1_t func,
+                     call_mpfr::f_f_t func,
                      const func_domain<f16_t> (&d)[_M],
                      const int (&count_shift)[_M])
 {
@@ -283,7 +283,7 @@ template <typename _CHECK,
           std::size_t _M>
 int
 cftal::test::program(int argc, char** argv,
-                     call_mpfr::f1_t func,
+                     call_mpfr::f_f_t func,
                      const func_domain<bf16_t> (&d)[_M],
                      const int (&count_shift)[_M])
 {

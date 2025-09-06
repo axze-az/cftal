@@ -36,151 +36,152 @@ namespace cftal {
     namespace test {
 
         namespace call_mpfr {
-            // mpfr function with one argument
-            using f1_t = int (*)(mpfr_t, const mpfr_t,
+            // mpfr function returning a float and one float argument
+            using f_f_t = int (*)(mpfr_t, const mpfr_t,
                                  mpfr_rnd_t);
 
-            // mpfr function with one argument and two results
-            using f1p_t = int (*)(mpfr_t, mpfr_t,
+            // mpfr function returning two floats and one float
+            // argument
+            using ff_f_t = int (*)(mpfr_t, mpfr_t,
                                   const mpfr_t, mpfr_rnd_t);
 
-            // mpfr function with one argument returning an
-            // additional integer via pointer
-            using f1i_t = int (*)(mpfr_t, int32_t*, const mpfr_t,
-                                  mpfr_rnd_t);
+            // mpfr function returning a float and a integer and one
+            // float argument
+            using fi_f_t = int (*)(mpfr_t, int32_t*, const mpfr_t,
+				   mpfr_rnd_t);
 
-            // mpfr function with two arguments
-            using f2_t = int (*)(mpfr_t, const mpfr_t,
+            // mpfr function returning a float with two float arguments
+            using f_ff_t = int (*)(mpfr_t, const mpfr_t,
                                  const mpfr_t, mpfr_rnd_t);
 
-            // mpfr function with one floating point and one integer
-            // argument
-            using f2fi_t = int (*)(mpfr_t, const mpfr_t,
+            // mpfr function returning a float with one float and one
+            // integer argument
+            using f_fi_t = int (*)(mpfr_t, const mpfr_t,
                                    long int,
                                    mpfr_rnd_t);
 
             // call f(a), returns also the interval
             // containing the unrounded result
             double
-            func(double a, f1_t f,
+            func(double a, f_f_t f,
                  std::pair<double, double>* ulp1i= nullptr);
 
             // call f(a), returns also the intervals
             // containing the unrounded results
             std::pair<double, double>
-            func(double a, f1p_t f,
+            func(double a, ff_f_t f,
                  std::pair<double, double>* ulp1i0 = nullptr,
                  std::pair<double, double>* ulp1i1 = nullptr);
 
             // call f(a, ib), returns also the interval
             // containing the unrounded result
             double
-            func(double a, int ib, f2fi_t f,
+            func(double a, int ib, f_fi_t f,
                  std::pair<double, double>* ulp1i= nullptr);
 
             // call f(a, i), returns also the interval
             // containing the unrounded result
             double
-            func(int32_t* ip, double a, f1i_t f,
+            func(int32_t* ip, double a, fi_f_t f,
                  std::pair<double, double>* ulp1i= nullptr);
 
             // call f(a, b), returns also the interval
             // containing the unrounded result
             double
-            func(double a, double b, f2_t f,
+            func(double a, double b, f_ff_t f,
                  std::pair<double, double>* ulp1i= nullptr);
 
             // call f(a), returns also the interval
             // containing the unrounded result
             float
-            func(float a, f1_t f,
+            func(float a, f_f_t f,
                  std::pair<float, float>* ulp1i= nullptr);
 
             // call f(a), returns also the intervals
             // containing the unrounded results
             std::pair<float, float>
-            func(float a, f1p_t f,
+            func(float a, ff_f_t f,
                  std::pair<float, float>* ulp1i0 = nullptr,
                  std::pair<float, float>* ulp1i1 = nullptr);
 
             // call f(a, i), returns also the interval
             // containing the unrounded result
             float
-            func(int32_t* ip, float a, f1i_t f,
+            func(int32_t* ip, float a, fi_f_t f,
                  std::pair<float, float>* ulp1i= nullptr);
 
             // call f(a, b), returns also the interval
             // containing the unrounded result
             float
-            func(float a, float b, f2_t f,
+            func(float a, float b, f_ff_t f,
                  std::pair<float, float>* ulp1i= nullptr);
 
             // call f(a), returns also the interval
             // containing the unrounded result
             float
-            func(float a, int ib, f2fi_t f,
+            func(float a, int ib, f_fi_t f,
                  std::pair<float, float>* ulp1i= nullptr);
 
             // call f(a), returns also the interval
             // containing the unrounded result
             f16_t
-            func(f16_t a, f1_t f,
+            func(f16_t a, f_f_t f,
                  std::pair<f16_t, f16_t>* ulp1i= nullptr);
 
             // call f(a), returns also the intervals
             // containing the unrounded results
             std::pair<f16_t, f16_t>
-            func(f16_t a, f1p_t f,
+            func(f16_t a, ff_f_t f,
                  std::pair<f16_t, f16_t>* ulp1i0 = nullptr,
                  std::pair<f16_t, f16_t>* ulp1i1 = nullptr);
 
             // call f(a, i), returns also the interval
             // containing the unrounded result
             f16_t
-            func(int32_t* ip, f16_t a, f1i_t f,
+            func(int32_t* ip, f16_t a, fi_f_t f,
                  std::pair<f16_t, f16_t>* ulp1i= nullptr);
 
             // call f(a, b), returns also the interval
             // containing the unrounded result
             f16_t
-            func(f16_t a, f16_t b, f2_t f,
+            func(f16_t a, f16_t b, f_ff_t f,
                  std::pair<f16_t, f16_t>* ulp1i= nullptr);
 
             // call f(a), returns also the interval
             // containing the unrounded result
             f16_t
-            func(f16_t a, int ib, f2fi_t f,
+            func(f16_t a, int ib, f_fi_t f,
                  std::pair<f16_t, f16_t>* ulp1i= nullptr);
 
             // call f(a), returns also the interval
             // containing the unrounded result
             bf16_t
-            func(bf16_t a, f1_t f,
+            func(bf16_t a, f_f_t f,
                  std::pair<bf16_t, bf16_t>* ulp1i= nullptr);
 
             // call f(a), returns also the intervals
             // containing the unrounded results
             std::pair<bf16_t, bf16_t>
-            func(bf16_t a, f1p_t f,
+            func(bf16_t a, ff_f_t f,
                  std::pair<bf16_t, bf16_t>* ulp1i0 = nullptr,
                  std::pair<bf16_t, bf16_t>* ulp1i1 = nullptr);
 
             // call f(a, i), returns also the interval
             // containing the unrounded result
             bf16_t
-            func(int32_t* ip, bf16_t a, f1i_t f,
+            func(int32_t* ip, bf16_t a, fi_f_t f,
                  std::pair<bf16_t, bf16_t>* ulp1i= nullptr);
 
             // call f(a, b), returns also the interval
             // containing the unrounded result
             bf16_t
-            func(bf16_t a, bf16_t b, f2_t f,
+            func(bf16_t a, bf16_t b, f_ff_t f,
                  std::pair<bf16_t, bf16_t>* ulp1i= nullptr);
 
             // call f(a), returns also the interval
             // containing the unrounded result
             bf16_t
-            func(bf16_t a, int ib, f2fi_t f,
+            func(bf16_t a, int ib, f_fi_t f,
                  std::pair<bf16_t, bf16_t>* ulp1i= nullptr);
 
 

@@ -436,7 +436,7 @@ namespace cftal { namespace test { namespace mpfr_cache {
         using pmutex::unlock_shared;
     };
 
-    using f1_64_cache_map=std::map<f1_t, f1_64_cache_entry>;
+    using f1_64_cache_map=std::map<f_f_t , f1_64_cache_entry>;
     extern f1_64_cache_map f1_64_entries;
     extern std::mutex f1_64_mtx;
 
@@ -459,7 +459,7 @@ namespace cftal { namespace test { namespace mpfr_cache {
         using pmutex::unlock_shared;
     };
 
-    using f1_32_cache_map=std::map<f1_t, f1_32_cache_entry>;
+    using f1_32_cache_map=std::map<f_f_t , f1_32_cache_entry>;
     extern f1_32_cache_map f1_32_entries;
     extern std::mutex f1_32_mtx;
 
@@ -482,7 +482,7 @@ namespace cftal { namespace test { namespace mpfr_cache {
         using pmutex::unlock_shared;
     };
 
-    using f2_64_cache_map=std::map<f2_t, f2_64_cache_entry>;
+    using f2_64_cache_map=std::map<f_ff_t, f2_64_cache_entry>;
     extern f2_64_cache_map f2_64_entries;
     extern std::mutex f2_64_mtx;
 
@@ -505,7 +505,7 @@ namespace cftal { namespace test { namespace mpfr_cache {
         using pmutex::unlock_shared;
     };
 
-    using f2_32_cache_map=std::map<f2_t, f2_32_cache_entry>;
+    using f2_32_cache_map=std::map<f_ff_t, f2_32_cache_entry>;
     extern f2_32_cache_map f2_32_entries;
     extern std::mutex f2_32_mtx;
 
@@ -528,7 +528,7 @@ namespace cftal { namespace test { namespace mpfr_cache {
         using pmutex::unlock_shared;
     };
 
-    using f1i_64_cache_map=std::map<f1i_t, f1i_64_cache_entry>;
+    using f1i_64_cache_map=std::map<fi_f_t, f1i_64_cache_entry>;
     extern f1i_64_cache_map f1i_64_entries;
     extern std::mutex f1i_64_mtx;
 
@@ -551,7 +551,7 @@ namespace cftal { namespace test { namespace mpfr_cache {
         using pmutex::unlock_shared;
     };
 
-    using f1i_32_cache_map=std::map<f1i_t, f1i_32_cache_entry>;
+    using f1i_32_cache_map=std::map<fi_f_t, f1i_32_cache_entry>;
     extern f1i_32_cache_map f1i_32_entries;
     extern std::mutex f1i_32_mtx;
 
@@ -792,7 +792,7 @@ file_name(const std::string& a, const std::string& t)
 
 const cftal::test::mpfr_cache::f1_mpfr_result<double>*
 cftal::test::mpfr_cache::
-result(double a, f1_t f, f1_mpfr_result<double>& r)
+result(double a, f_f_t  f, f1_mpfr_result<double>& r)
 {
     f1_mpfr_result<double>* p=nullptr;
     auto i= f1_64_entries.find(f);
@@ -812,7 +812,7 @@ result(double a, f1_t f, f1_mpfr_result<double>& r)
 
 const cftal::test::mpfr_cache::f1_mpfr_result<float>*
 cftal::test::mpfr_cache::
-result(float a, f1_t f, f1_mpfr_result<float>& r)
+result(float a, f_f_t  f, f1_mpfr_result<float>& r)
 {
     f1_mpfr_result<float>* p=nullptr;
     auto i= f1_32_entries.find(f);
@@ -832,7 +832,7 @@ result(float a, f1_t f, f1_mpfr_result<float>& r)
 
 const cftal::test::mpfr_cache::f2_mpfr_result<double>*
 cftal::test::mpfr_cache::
-result(double a, double b, f2_t f, f2_mpfr_result<double>& r)
+result(double a, double b, f_ff_t f, f2_mpfr_result<double>& r)
 {
     f2_mpfr_result<double>* p=nullptr;
     auto i= f2_64_entries.find(f);
@@ -854,7 +854,7 @@ result(double a, double b, f2_t f, f2_mpfr_result<double>& r)
 
 const cftal::test::mpfr_cache::f2_mpfr_result<float>*
 cftal::test::mpfr_cache::
-result(float a, float b, f2_t f, f2_mpfr_result<float>& r)
+result(float a, float b, f_ff_t f, f2_mpfr_result<float>& r)
 {
     f2_mpfr_result<float>* p=nullptr;
     auto i= f2_32_entries.find(f);
@@ -876,7 +876,7 @@ result(float a, float b, f2_t f, f2_mpfr_result<float>& r)
 
 const cftal::test::mpfr_cache::f1i_mpfr_result<std::pair<double, int32_t> >*
 cftal::test::mpfr_cache::
-result(double a, f1i_t f, f1i_mpfr_result<std::pair<double, int32_t> >& r)
+result(double a, fi_f_t f, f1i_mpfr_result<std::pair<double, int32_t> >& r)
 {
     f1i_mpfr_result<std::pair<double, int32_t> >* p=nullptr;
     auto i= f1i_64_entries.find(f);
@@ -897,7 +897,7 @@ result(double a, f1i_t f, f1i_mpfr_result<std::pair<double, int32_t> >& r)
 
 const cftal::test::mpfr_cache::f1i_mpfr_result<std::pair<float, int32_t> >*
 cftal::test::mpfr_cache::
-result(float a, f1i_t f, f1i_mpfr_result<std::pair<float, int32_t> >& r)
+result(float a, fi_f_t f, f1i_mpfr_result<std::pair<float, int32_t> >& r)
 {
     f1i_mpfr_result<std::pair<float, int32_t> >* p=nullptr;
     auto i= f1i_32_entries.find(f);
@@ -917,7 +917,7 @@ result(float a, f1i_t f, f1i_mpfr_result<std::pair<float, int32_t> >& r)
 }
 
 void
-cftal::test::mpfr_cache::update(double a, f1_t f,
+cftal::test::mpfr_cache::update(double a, f_f_t  f,
                                 const f1_mpfr_result<double>& r)
 {
     auto i= f1_64_entries.find(f);
@@ -933,7 +933,7 @@ cftal::test::mpfr_cache::update(double a, f1_t f,
 }
 
 void
-cftal::test::mpfr_cache::update(float a, f1_t f,
+cftal::test::mpfr_cache::update(float a, f_f_t  f,
                                 const f1_mpfr_result<float>& r)
 {
     auto i= f1_32_entries.find(f);
@@ -949,7 +949,7 @@ cftal::test::mpfr_cache::update(float a, f1_t f,
 }
 
 void
-cftal::test::mpfr_cache::update(double a, double b, f2_t f,
+cftal::test::mpfr_cache::update(double a, double b, f_ff_t f,
                                 const f2_mpfr_result<double>& r)
 {
     auto i= f2_64_entries.find(f);
@@ -967,7 +967,7 @@ cftal::test::mpfr_cache::update(double a, double b, f2_t f,
 }
 
 void
-cftal::test::mpfr_cache::update(float a, float b, f2_t f,
+cftal::test::mpfr_cache::update(float a, float b, f_ff_t f,
                                 const f2_mpfr_result<float>& r)
 {
     auto i= f2_32_entries.find(f);
@@ -986,7 +986,7 @@ cftal::test::mpfr_cache::update(float a, float b, f2_t f,
 
 void
 cftal::test::mpfr_cache::
-update(double a, f1i_t f,
+update(double a, fi_f_t f,
        const f1i_mpfr_result<std::pair<double, int32_t> >& r)
 {
     auto i= f1i_64_entries.find(f);
@@ -1005,7 +1005,7 @@ update(double a, f1i_t f,
 
 void
 cftal::test::mpfr_cache::
-update(float a, f1i_t f,
+update(float a, fi_f_t f,
        const f1i_mpfr_result<std::pair<float, int32_t> >& r)
 {
     auto i= f1i_32_entries.find(f);
@@ -1024,7 +1024,7 @@ update(float a, f1i_t f,
 
 void
 cftal::test::mpfr_cache::
-use(f1_t f, const std::string& fn, double v)
+use(f_f_t f, const std::string& fn, double v)
 {
     // if (env_use_cache()==false)
     //    return;
@@ -1035,7 +1035,7 @@ use(f1_t f, const std::string& fn, double v)
 
 void
 cftal::test::mpfr_cache::
-use(f1_t f, const std::string& fn, float v)
+use(f_f_t  f, const std::string& fn, float v)
 {
     // if (env_use_cache()==false)
     //    return;
@@ -1046,7 +1046,7 @@ use(f1_t f, const std::string& fn, float v)
 
 void
 cftal::test::mpfr_cache::
-use(f2_t f, const std::string& fn, double v)
+use(f_ff_t f, const std::string& fn, double v)
 {
     // if (env_use_cache()==false)
     //    return;
@@ -1057,7 +1057,7 @@ use(f2_t f, const std::string& fn, double v)
 
 void
 cftal::test::mpfr_cache::
-use(f2_t f, const std::string& fn, float v)
+use(f_ff_t f, const std::string& fn, float v)
 {
     // if (env_use_cache()==false)
     //    return;
@@ -1068,7 +1068,7 @@ use(f2_t f, const std::string& fn, float v)
 
 void
 cftal::test::mpfr_cache::
-use(f1i_t f, const std::string& fn, double v)
+use(fi_f_t f, const std::string& fn, double v)
 {
     // if (env_use_cache()==false)
     //    return;
@@ -1079,7 +1079,7 @@ use(f1i_t f, const std::string& fn, double v)
 
 void
 cftal::test::mpfr_cache::
-use(f1i_t f, const std::string& fn, float v)
+use(fi_f_t f, const std::string& fn, float v)
 {
     // if (env_use_cache()==false)
     //    return;

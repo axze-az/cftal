@@ -32,7 +32,7 @@
 
 double
 cftal::test::call_mpfr::
-func(double a, f1_t f, std::pair<double, double>* ulp1i)
+func(double a, f_f_t f, std::pair<double, double>* ulp1i)
 {
     mpfr_cache::f1_mpfr_result<double> c;
     auto pf= mpfr_cache::result(a, f, c);
@@ -58,7 +58,7 @@ func(double a, f1_t f, std::pair<double, double>* ulp1i)
 
 std::pair<double, double>
 cftal::test::call_mpfr::
-func(double a, f1p_t f,
+func(double a, ff_f_t f,
      std::pair<double, double>* ulp1i0,
      std::pair<double, double>* ulp1i1)
 {
@@ -91,7 +91,7 @@ func(double a, f1p_t f,
 
 double
 cftal::test::call_mpfr::
-func(int32_t* ip, double a, f1i_t f, std::pair<double, double>* ulp1i)
+func(int32_t* ip, double a, fi_f_t f, std::pair<double, double>* ulp1i)
 {
     mpfr_cache::f1i_mpfr_result<std::pair<double, int32_t> > c;
     auto pf= mpfr_cache::result(a, f, c);
@@ -121,7 +121,7 @@ func(int32_t* ip, double a, f1i_t f, std::pair<double, double>* ulp1i)
 
 double
 cftal::test::call_mpfr::
-func(double a, double b, f2_t f, std::pair<double, double>* ulp1i)
+func(double a, double b, f_ff_t f, std::pair<double, double>* ulp1i)
 {
     mpfr_cache::f2_mpfr_result<double> c;
     auto pf= mpfr_cache::result(a, b, f, c);
@@ -149,7 +149,7 @@ func(double a, double b, f2_t f, std::pair<double, double>* ulp1i)
 
 double
 cftal::test::call_mpfr::
-func(double a, int32_t ib, f2fi_t f, std::pair<double, double>* ulp1i)
+func(double a, int32_t ib, f_fi_t f, std::pair<double, double>* ulp1i)
 {
     double_emin_emax g;
     MPFR_DECL_INIT(ai, 53);
@@ -166,7 +166,7 @@ func(double a, int32_t ib, f2fi_t f, std::pair<double, double>* ulp1i)
 
 float
 cftal::test::call_mpfr::
-func(float a, f1_t f, std::pair<float, float>* ulp1i)
+func(float a, f_f_t f, std::pair<float, float>* ulp1i)
 {
     mpfr_cache::f1_mpfr_result<float> c;
     auto pf= mpfr_cache::result(a, f, c);
@@ -192,7 +192,7 @@ func(float a, f1_t f, std::pair<float, float>* ulp1i)
 
 std::pair<float, float>
 cftal::test::call_mpfr::
-func(float a, f1p_t f,
+func(float a, ff_f_t f,
      std::pair<float, float>* ulp1i0,
      std::pair<float, float>* ulp1i1)
 {
@@ -225,7 +225,7 @@ func(float a, f1p_t f,
 
 float
 cftal::test::call_mpfr::
-func(int32_t* ip, float a, f1i_t f, std::pair<float, float>* ulp1i)
+func(int32_t* ip, float a, fi_f_t f, std::pair<float, float>* ulp1i)
 {
     mpfr_cache::f1i_mpfr_result<std::pair<float, int32_t> > c;
     auto pf= mpfr_cache::result(a, f, c);
@@ -255,7 +255,7 @@ func(int32_t* ip, float a, f1i_t f, std::pair<float, float>* ulp1i)
 
 float
 cftal::test::call_mpfr::
-func(float a, float b, f2_t f, std::pair<float, float>* ulp1i)
+func(float a, float b, f_ff_t f, std::pair<float, float>* ulp1i)
 {
     mpfr_cache::f2_mpfr_result<float> c;
     auto pf= mpfr_cache::result(a, b, f, c);
@@ -283,7 +283,7 @@ func(float a, float b, f2_t f, std::pair<float, float>* ulp1i)
 
 float
 cftal::test::call_mpfr::
-func(float a, int ib, f2fi_t f, std::pair<float, float>* ulp1i)
+func(float a, int ib, f_fi_t f, std::pair<float, float>* ulp1i)
 {
     float_emin_emax g;
     MPFR_DECL_INIT(ai, 24);
@@ -300,7 +300,7 @@ func(float a, int ib, f2fi_t f, std::pair<float, float>* ulp1i)
 
 cftal::f16_t
 cftal::test::call_mpfr::
-func(f16_t a, f1_t f, std::pair<f16_t, f16_t>* ulp1i)
+func(f16_t a, f_f_t f, std::pair<f16_t, f16_t>* ulp1i)
 {
     mpfr_cache::f1_mpfr_result<f16_t> c;
     // auto pf= mpfr_cache::result(a, f, c);
@@ -328,7 +328,7 @@ func(f16_t a, f1_t f, std::pair<f16_t, f16_t>* ulp1i)
 
 std::pair<cftal::f16_t, cftal::f16_t>
 cftal::test::call_mpfr::
-func(f16_t a, f1p_t f,
+func(f16_t a, ff_f_t f,
      std::pair<f16_t, f16_t>* ulp1i0,
      std::pair<f16_t, f16_t>* ulp1i1)
 {
@@ -364,7 +364,7 @@ func(f16_t a, f1p_t f,
 
 cftal::f16_t
 cftal::test::call_mpfr::
-func(int32_t* ip, f16_t a, f1i_t f, std::pair<f16_t, f16_t>* ulp1i)
+func(int32_t* ip, f16_t a, fi_f_t f, std::pair<f16_t, f16_t>* ulp1i)
 {
     mpfr_cache::f1i_mpfr_result<std::pair<f16_t, int32_t> > c;
     // auto pf= mpfr_cache::result(a, f, c);
@@ -397,7 +397,7 @@ func(int32_t* ip, f16_t a, f1i_t f, std::pair<f16_t, f16_t>* ulp1i)
 
 cftal::f16_t
 cftal::test::call_mpfr::
-func(f16_t a, f16_t b, f2_t f, std::pair<f16_t, f16_t>* ulp1i)
+func(f16_t a, f16_t b, f_ff_t f, std::pair<f16_t, f16_t>* ulp1i)
 {
     mpfr_cache::f2_mpfr_result<f16_t> c;
     // auto pf= mpfr_cache::result(a, b, f, c);
@@ -429,7 +429,7 @@ func(f16_t a, f16_t b, f2_t f, std::pair<f16_t, f16_t>* ulp1i)
 
 cftal::f16_t
 cftal::test::call_mpfr::
-func(f16_t a, int ib, f2fi_t f, std::pair<f16_t, f16_t>* ulp1i)
+func(f16_t a, int ib, f_fi_t f, std::pair<f16_t, f16_t>* ulp1i)
 {
     half_emin_emax g;
     MPFR_DECL_INIT(ai, 11);
@@ -486,7 +486,7 @@ namespace {
 
 cftal::bf16_t
 cftal::test::call_mpfr::
-func(bf16_t a, f1_t f, std::pair<bf16_t, bf16_t>* ulp1i)
+func(bf16_t a, f_f_t f, std::pair<bf16_t, bf16_t>* ulp1i)
 {
     mpfr_cache::f1_mpfr_result<bf16_t> c;
     // auto pf= mpfr_cache::result(a, f, c);
@@ -514,7 +514,7 @@ func(bf16_t a, f1_t f, std::pair<bf16_t, bf16_t>* ulp1i)
 
 std::pair<cftal::bf16_t, cftal::bf16_t>
 cftal::test::call_mpfr::
-func(bf16_t a, f1p_t f,
+func(bf16_t a, ff_f_t f,
      std::pair<bf16_t, bf16_t>* ulp1i0,
      std::pair<bf16_t, bf16_t>* ulp1i1)
 {
@@ -554,7 +554,7 @@ func(bf16_t a, f1p_t f,
 
 cftal::bf16_t
 cftal::test::call_mpfr::
-func(int32_t* ip, bf16_t a, f1i_t f, std::pair<bf16_t, bf16_t>* ulp1i)
+func(int32_t* ip, bf16_t a, fi_f_t f, std::pair<bf16_t, bf16_t>* ulp1i)
 {
     mpfr_cache::f1i_mpfr_result<std::pair<bf16_t, int32_t> > c;
     // auto pf= mpfr_cache::result(a, f, c);
@@ -587,7 +587,7 @@ func(int32_t* ip, bf16_t a, f1i_t f, std::pair<bf16_t, bf16_t>* ulp1i)
 
 cftal::bf16_t
 cftal::test::call_mpfr::
-func(bf16_t a, bf16_t b, f2_t f, std::pair<bf16_t, bf16_t>* ulp1i)
+func(bf16_t a, bf16_t b, f_ff_t f, std::pair<bf16_t, bf16_t>* ulp1i)
 {
     mpfr_cache::f2_mpfr_result<bf16_t> c;
     // auto pf= mpfr_cache::result(a, b, f, c);
@@ -619,7 +619,7 @@ func(bf16_t a, bf16_t b, f2_t f, std::pair<bf16_t, bf16_t>* ulp1i)
 
 cftal::bf16_t
 cftal::test::call_mpfr::
-func(bf16_t a, int ib, f2fi_t f, std::pair<bf16_t, bf16_t>* ulp1i)
+func(bf16_t a, int ib, f_fi_t f, std::pair<bf16_t, bf16_t>* ulp1i)
 {
     bfloat16_emin_emax g;
     MPFR_DECL_INIT(ai, 8);
