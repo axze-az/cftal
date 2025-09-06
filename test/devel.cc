@@ -22,6 +22,7 @@
 #include <limits>
 #include <cftal/vec.h>
 #include <cftal/d_real.h>
+#include <cftal/test/call_mpfr.h>
 
 namespace cftal { namespace devel {
     int
@@ -51,6 +52,7 @@ calc_m_kahan(int nm1, double x, double rcp_eps)
             break;
         md += 2.0;
     }
+    std::cout << ykp1 << std::endl;
     return m;
 }
 
@@ -61,7 +63,7 @@ cftal::devel::
 bessel_j(int n, double x)
 {
     using v_t = d_real<double>;
-    size_t _N=calc_m_kahan(n-1, x, 0x1.0p54);
+    size_t _N=calc_m_kahan(n-1, x, 0x1.0p68);
     std::cout << "jn(" << n << ", " << x << ") _N=" << _N  <<'\n';
     std::vector<v_t> vj(_N+2, v_t(0.0));
     v_t rec_x=v_t(1.0)/x;
@@ -82,22 +84,25 @@ bessel_j(int n, double x)
     return jn[0];
 }
 
-
 using namespace cftal;
 
 int main(int argc, char** argv)
 {
     using namespace cftal;
     using namespace cftal::devel;
+    using namespace cftal::test;
+
 
     std::cout << std::scientific << std::setprecision(18);
-    const double x=10000;
-    const int n=2;
-    double j1nv= bessel_j(n, x);
-    std::cout << j1nv << std::endl;
-    double j1v= j1(v1f64(x))();
-    std::cout << j1v << std::endl;
-    double jnx=::jn(n, x);
-    std::cout << jnx << std::endl;
+    const double x=99;
+    const int n=100;
+    double jn= bessel_j(n, x);
+    std::cout << jn << std::endl;
+    // double j1v= j1(v1f64(x))();
+    // std::cout << j1v << std::endl;
+    double jn_glibc=::jn(n, x);
+    std::cout << jn_glibc << std::endl;
+    double jn_mpfr=call_mpfr::func(n, x, mpfr_jn, nullptr);
+    std::cout << jn_mpfr << std::endl;
     return 0;
 }
