@@ -104,7 +104,7 @@ bessel_j(int n, double x)
     }
 #endif
     using v_t = d_real<double>;
-    size_t _N=calc_m_kahan(nm1, x, 0x1.0p70);
+    size_t _N=calc_m_kahan(nm1, x, 0x1.0p75);
     std::cout << "jn(" << n << ", " << x << ") _N=" << _N  <<'\n';
     std::vector<v_t> vj(_N+2, v_t(0.0));
     v_t rec_x=v_t(1.0)/x;
@@ -136,16 +136,26 @@ int main(int argc, char** argv)
 
 
     std::cout << std::scientific << std::setprecision(18);
-    const int n=1; // avoid compile time evaluation of jn)x, x)
-    for (double x=1.0; x<100; x+=1) {
+    const int n=0; // avoid compile time evaluation of jn)x, x)
+    for (double x=1.0; x<130; x+=1) {
         std::cout << "x=" << x << std::endl;
         double jn= bessel_j(n, x);
         std::cout << std::hexfloat;
         std::cout << jn << std::endl;
-        // double j1v= j1(v1f64(x))();
-        // std::cout << j1v << std::endl;
-        double jn_glibc=::jn(n, x);
-        std::cout << jn_glibc << std::endl;
+        if (n==0) {
+            double j0v= j0(v1f64(x))();
+            std::cout << j0v << std::endl;
+            double j0_glibc=::j0(x);
+            std::cout << j0_glibc << std::endl;
+        } else if (n==1) {
+            double j1v= j1(v1f64(x))();
+            std::cout << j1v << std::endl;
+            double j1_glibc=::j1(x);
+            std::cout << j1_glibc << std::endl;
+        } else {
+            double jn_glibc=::jn(n, x);
+            std::cout << jn_glibc << std::endl;
+        }
         double jn_mpfr;
         switch (n) {
         case 0:
