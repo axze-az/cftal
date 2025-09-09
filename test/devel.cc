@@ -25,8 +25,10 @@
 #include <cftal/test/call_mpfr.h>
 
 namespace cftal { namespace devel {
+
+    template <typename _T>
     int
-    calc_m_kahan(int nm1, double x, double rcp_eps);
+    calc_m_kahan(int nm1, _T x, _T rcp_eps);
 
     template <typename _T>
     _T
@@ -35,11 +37,16 @@ namespace cftal { namespace devel {
                               _T j0x,
                               _T j1x);
 
+    template <typename _T>
+    _T
+    bessel_recurrence_backward(int nm1,
+                               _T x);
+
     double bessel_j(int n, double x);
 }}
 
 
-template<typename _T>
+template <typename _T>
 _T
 cftal::devel::
 bessel_recurrence_forward(int nm1, _T x, _T j0x, _T j1x)
@@ -66,30 +73,66 @@ bessel_recurrence_forward(int nm1, _T x, _T j0x, _T j1x)
     return jn;
 }
 
+template <typename _T>
 int
 cftal::devel::
-calc_m_kahan(int nm1, double x, double rcp_eps)
+calc_m_kahan(int nm1, _T x, _T rcp_eps)
 {
     using std::max;
     using std::rint;
     int k= max(nm1+1, static_cast<int>(rint(x)));
-    const auto beta=1.0;
-    double yk = 0.0, ykp1=beta;
-    double _2_x= 2.0/x;
+    const auto beta=_T(1.0);
+    _T yk = 0.0, ykp1=beta;
+    _T _2_x= _T(2.0)/x;
     int m=k+1;
-    double md=static_cast<double>(m);
+    _T md=static_cast<_T>(m);
     for (;m<std::numeric_limits<int>::max(); ++m) {
-        double t= md * _2_x * ykp1 - yk;
+        _T t= md * _2_x * ykp1 - yk;
         yk   = ykp1;
         ykp1 = t;
         // because beta == 1.0
         if (ykp1 >= rcp_eps)
             break;
-        md += 2.0;
+        md += 1.0;
     }
     // std::cout << ykp1 << std::endl;
     return m;
 }
+
+
+template <typename _T>
+_T
+cftal::devel::bessel_recurrence_backward(int nm1, _T x)
+{
+    using v_t = d_real<_T>;
+    size_t _N=calc_m_kahan(nm1, x, 0x1.0p72);
+    std::cout << "jn(" << nm1+1 << ", " << x << ") _N=" << _N  <<'\n';
+
+    v_t rec_x=_T(1.0)/x;
+    v_t yn=_T(1.0);
+    v_t ynp1=_T(0.0);
+    v_t rn=ynp1;
+    v_t norm = 0.0;
+    _T vi(_N);
+    for (ssize_t i=_N; i > 0; --i) {
+        v_t yn2;
+        yn2[0]= yn[0]*_T(2.0);
+        yn2[1]= yn[1]*_T(2.0);
+        v_t ynm1=(vi*rec_x) * yn2 - ynp1;
+        if ((i&1)==0) {
+            norm += yn2;
+        }
+        if (i == nm1+1)
+            rn=yn;
+        ynp1 = yn;
+        yn = ynm1;
+        vi -= _T(1.0);
+    }
+    norm += yn;
+    v_t jn=rn/norm;
+    return jn[0];
+}
+
 
 // j(n-1, x) = 2*n/x * j(n, x) - j(n+1, x)
 // 1 = j(0, x) + 2*j(2, x) + 2 * j(4, x) + ....
@@ -103,17 +146,20 @@ bessel_j(int n, double x)
         return bessel_recurrence_forward(nm1, x, ::j0(x), ::j1(x));
     }
 #endif
+#if 1
+    return bessel_recurrence_backward(nm1, x);
+#else
     using v_t = d_real<double>;
-    size_t _N=calc_m_kahan(nm1, x, 0x1.0p75);
+    size_t _N=calc_m_kahan(nm1, x, 0x1.0p72);
     std::cout << "jn(" << n << ", " << x << ") _N=" << _N  <<'\n';
     std::vector<v_t> vj(_N+2, v_t(0.0));
-    v_t rec_x=v_t(1.0)/x;
+    v_t _rec_x=v_t(1.0)/x;
     vj[_N] = 1.0;
     vj[_N+1] = 0.0;
     v_t norm=0.0;
     v_t vi(2*_N);
     for (ssize_t i=_N; i > 0; --i) {
-        v_t vj_im1=(vi)*rec_x * vj[i] - vj[i+1];
+        v_t vj_im1=(vi)*_rec_x * vj[i] - vj[i+1];
         if (i && (i&1)==0) {
             norm += 2.0*vj[i];
         }
@@ -124,6 +170,7 @@ bessel_j(int n, double x)
     v_t jn=vj[n]/norm;
     return jn[0];
     // return jn;
+#endif
 }
 
 using namespace cftal;
