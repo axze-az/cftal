@@ -105,34 +105,34 @@ _T
 cftal::devel::bessel_recurrence_backward(int nm1, _T x)
 {
     using v_t = d_real<_T>;
+    using ops=d_real_ops<_T, d_real_traits<_T>::fma>;
     size_t _N=calc_m_kahan(nm1, x, 0x1.0p72);
-    std::cout << "jn(" << nm1+1 << ", " << x << ") _N=" << _N  <<'\n';
+    // std::cout << "jn(" << nm1+1 << ", " << x << ") _N=" << _N  <<'\n';
 
-    v_t rec_x=_T(1.0)/x;
+    v_t rec_x;
+    ops::div12(rec_x[0], rec_x[1], _T(1.0), x);
     v_t yn=_T(1.0);
     v_t ynp1=_T(0.0);
     v_t rn=ynp1;
     v_t norm = 0.0;
-    _T vi(_N);
+    _T vi(2*_N);
     for (ssize_t i=_N; i > 0; --i) {
-        v_t yn2;
-        yn2[0]= yn[0]*_T(2.0);
-        yn2[1]= yn[1]*_T(2.0);
-        v_t ynm1=(vi*rec_x) * yn2 - ynp1;
+        v_t ynm1=(vi*rec_x) * yn - ynp1;
         if ((i&1)==0) {
+            v_t yn2=mul_pwr2(yn, 2.0);
             norm += yn2;
         }
-        if (i == nm1+1)
-            rn=yn;
         ynp1 = yn;
         yn = ynm1;
-        vi -= _T(1.0);
+        vi -= _T(2.0);
+        if (i == nm1+2) {
+            rn=yn;
+        }
     }
     norm += yn;
     v_t jn=rn/norm;
     return jn[0];
 }
-
 
 // j(n-1, x) = 2*n/x * j(n, x) - j(n+1, x)
 // 1 = j(0, x) + 2*j(2, x) + 2 * j(4, x) + ....
@@ -142,7 +142,7 @@ bessel_j(int n, double x)
 {
     int nm1=n-1;
 #if 1
-    if (n <= x && x > 126.5) {
+    if (n <= x && x > 126.0) {
         return bessel_recurrence_forward(nm1, x, ::j0(x), ::j1(x));
     }
 #endif
@@ -167,10 +167,13 @@ bessel_j(int n, double x)
         vi -= 2.0;
     }
     norm += vj[0];
+    // for (size_t i=0; i<vj.size(); ++i) {
+    //     std::cout << std::setw(2) << i << ' ' << vj[i] << std::endl;
+    // }
     v_t jn=vj[n]/norm;
     return jn[0];
-    // return jn;
 #endif
+    // return jn;
 }
 
 using namespace cftal;
@@ -181,41 +184,56 @@ int main(int argc, char** argv)
     using namespace cftal::devel;
     using namespace cftal::test;
 
+    bool verbose=false;
+
+    if (argc > 1) {
+        std::string_view argv1=argv[1];
+        using namespace std::string_view_literals;
+        if (argv1=="--verbose"sv) {
+            verbose=true;
+        }
+    }
 
     std::cout << std::scientific << std::setprecision(18);
-    const int n=0; // avoid compile time evaluation of jn)x, x)
-    for (double x=1.0; x<130; x+=1) {
-        std::cout << "x=" << x << std::endl;
-        double jn= bessel_j(n, x);
-        std::cout << std::hexfloat;
-        std::cout << jn << std::endl;
-        if (n==0) {
-            double j0v= j0(v1f64(x))();
-            std::cout << j0v << std::endl;
-            double j0_glibc=::j0(x);
-            std::cout << j0_glibc << std::endl;
-        } else if (n==1) {
-            double j1v= j1(v1f64(x))();
-            std::cout << j1v << std::endl;
-            double j1_glibc=::j1(x);
-            std::cout << j1_glibc << std::endl;
-        } else {
-            double jn_glibc=::jn(n, x);
-            std::cout << jn_glibc << std::endl;
+    std::cout << std::hexfloat;
+    // const int n=0; // avoid compile time evaluation of jn)x, x)
+    for (int n=0; n<1000; ++n) {
+        const double xd=128.0;
+        for (double x=1.0/xd; x<127; x+=1.0/xd) {
+            double jn= bessel_j(n, x);
+            double jn_mpfr, jn_glibc;
+            switch (n) {
+            case 0:
+                jn_mpfr=call_mpfr::func(x, mpfr_j0, nullptr);
+                jn_glibc=::j0(x);
+                break;
+            case 1:
+                jn_mpfr=call_mpfr::func(x, mpfr_j1, nullptr);
+                jn_glibc=::j1(x);
+                break;
+            default:
+                jn_mpfr=call_mpfr::func(n, x, mpfr_jn, nullptr);
+                jn_glibc=::jn(n, x);
+                break;
+            }
+            if (verbose) {
+                std::cout << "n=" << std::setw(5) << n
+                          << " x=" << x << std::endl;
+                std::cout << "bessel_j: " << jn << std::endl;
+                std::cout << "glibc:    " << jn_glibc << std::endl;
+                std::cout << "mfpr:     " << jn_mpfr << std::endl;
+            }
+            if (jn != jn_mpfr) {
+                if (!verbose) {
+                    std::cout << "n=" << std::setw(5) << n
+                              << " x=" << x << std::endl;
+                    std::cout << "bessel_j: " << jn << std::endl;
+                    std::cout << "glibc:    " << jn_glibc << std::endl;
+                    std::cout << "mfpr:     " << jn_mpfr << std::endl;
+                }
+                std::cout << "delta: " << jn - jn_mpfr << std::endl;
+            }
         }
-        double jn_mpfr;
-        switch (n) {
-        case 0:
-            jn_mpfr=call_mpfr::func(x, mpfr_j0, nullptr);
-            break;
-        case 1:
-            jn_mpfr=call_mpfr::func(x, mpfr_j1, nullptr);
-            break;
-        default:
-            jn_mpfr=call_mpfr::func(n, x, mpfr_jn, nullptr);
-            break;
-        }
-        std::cout << jn_mpfr << std::endl;
     }
     return 0;
 }
