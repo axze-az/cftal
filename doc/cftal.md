@@ -54,10 +54,10 @@ All these functions behave as their counterparts in the std namespace.
 |pow | $\pm$ 1 | y  | $\pm$ 1 | y |
 
 The sqrt function uses the hardware instruction provided by modern processors.
-The function rsqrt(x) calculates $ \frac{1}{\sqrt{x}}$, the function
-rcbrt(x) $ \frac{1}{\sqrt[3]{x}}$.
-The function rootn(x, n) calculates $ \sqrt[n]{x} $ and
-the function powi(x, n) calculates $ x^n $, where $n$ is an integer.
+The function rsqrt(x) calculates $\frac{1}{\sqrt{x}}$, the function
+rcbrt(x) $\frac{1}{\sqrt[3]{x}}$.
+The function rootn(x, n) calculates $\sqrt[n]{x}$ and
+the function powi(x, n) calculates $x^n$, where $n$ is an integer.
 
 ### elementary functions
 
