@@ -11,13 +11,12 @@ implementation.]
 MPFR functions return a function value $res$ rounded to target precision
 and information about the direction of the final rounding $mpfr_res$.
 
-The column $\Delta$ulp in the subsections below shows the maximum
+The column $\Delta ulp$ in the subsections below shows the maximum
 deviation in bits against the GNU MPFR library functions observed,
 this means functions with $\Delta ulp = 0$ are correctly rounded.
 Faithful rounding is achieved if the implemented function returns
 one of the 2 interval borders.
 
-The following function are implemented and their
 ### support functions
 
 | Function | binary64 |  | binary32 | |
@@ -55,10 +54,10 @@ All these functions behave as their counterparts in the std namespace.
 |pow | $\pm$ 1 | y  | $\pm$ 1 | y |
 
 The sqrt function uses the hardware instruction provided by modern processors.
-The function $ rsqrt(x) $ calculates $ \frac{1}{\sqrt{x}}$, the function
-$ rcbrt(x) $ $ \frac{1}{\sqrt[3]{x}}$.
-The function $ rootn(x, n) $ calculates $ \sqrt[n]{x} $ and
-the function $ powi(x, n) $ calculates $ x^n $, where $n$ is an integer.
+The function rsqrt(x) calculates $ \frac{1}{\sqrt{x}}$, the function
+rcbrt(x) $ \frac{1}{\sqrt[3]{x}}$.
+The function rootn(x, n) calculates $ \sqrt[n]{x} $ and
+the function powi(x, n) calculates $ x^n $, where $n$ is an integer.
 
 ### elementary functions
 
