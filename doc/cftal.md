@@ -57,7 +57,7 @@ The sqrt function uses the hardware instruction provided by modern processors.
 The function rsqrt(x) calculates $\frac{1}{\sqrt{x}}$, the function
 rcbrt(x) $\frac{1}{\sqrt[3]{x}}$.
 The function rootn(x, n) calculates $\sqrt[n]{x}$ and
-the function powi(x, n) calculates $x^n$, where $n$ is an integer.
+the function powi(x, n) calculates $x^n$, where n is an integer.
 
 ### elementary functions
 
@@ -94,7 +94,7 @@ the function powi(x, n) calculates $x^n$, where $n$ is an integer.
 |atanh | $\pm$ 1 | y  | $\pm$ 1 | y |
 
 The functions exp2m1 and exp10m1 calculate $2^x-1$ and $10^x-1$ respectively,
-the functions log2p1 and log10p1 calculate $log_{2}(1+x) $ and $log_{10}(1+x)$
+the functions log2p1 and log10p1 calculate $log_{2}(1+x)$ and $log_{10}(1+x)$
 respectively.
 
 ### additional elementary functions
@@ -116,14 +116,14 @@ respectively.
 |tanpi | $\pm$ 1 | y  | $\pm$ 1 | y |
 |sinpicospi | $\pm$ 1 | y  | $\pm$ 1 | y |
 
-The function exp\_mx2 calculates $e^{-x^2}$, exp\_px2 calculates
+The function ex\_mx2 calculates $e^{-x^2}$, exp_px2 calculates
 $e^{x^2}$, the functions exp2\_mx2, exp2\_mx2, exp10\_mx2 and
 exp10\_mx2 calculate $2^{-x^2}$, $2^{x^2}$, $10^{-x^2}$ and 
 $10^{x^2}$.
 The logistic or sigmoid
 function sig returns $\frac{1}{1+e^{-x}}$.
-The functions sinpi, cospi and tanpi calculate $\sin(\pi *x) $, 
-$\cos(\pi * x) $ and $\tan(\pi * x) $ respectivly. The function
+The functions sinpi, cospi and tanpi calculate $\sin(\pi *x)$, 
+$\cos(\pi * x) $ and $\tan(\pi * x)$ respectivly. The function
 sincos returns sinus and cosinus of its argument, sinpicospi returns
 sinpi and cospi.
 
