@@ -1,15 +1,29 @@
 # The cftal Library
 
-## List off functions and precision
+## List of functions and precision
 
 The tables in this section contain the list of implemented functions and
 their measured maximium deviations against the corresponding functions
 from the mpfr library. The column about faithfully rounding describes 
 if faithfully rounding was observed using a test data set.
-All test programs use the routines from The GNU MPFR library,  as reference
-implementation.]
+All test programs use the routines from The GNU MPFR library as reference
+implementation.
+
+
+
 MPFR functions return a function value $res$ rounded to target precision
 and information about the direction of the final rounding $mpfr_res$.
+
+The formulaes
+
+std::nextafter(res, $-\infty$), res] when $mpfr\_res > 0$
+
+[res, std::nextafter(res, $+\infty$)]  when $mpfr\_res < 0$
+
+[res, res] when $mpfr\_res = 0$|
+
+describe the conversion between the values $res$ and $mpfr\_res$
+and an interval.
 
 The column $\Delta ulp$ in the subsections below shows the maximum
 deviation in bits against the GNU MPFR library functions observed,
