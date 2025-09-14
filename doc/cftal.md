@@ -116,14 +116,15 @@ respectively.
 |tanpi | $\pm$ 1 | y  | $\pm$ 1 | y |
 |sinpicospi | $\pm$ 1 | y  | $\pm$ 1 | y |
 
-The function ex\_mx2 calculates $e^{-x^2}$, exp_px2 calculates
-$e^{x^2}$, the functions exp2\_mx2, exp2\_mx2, exp10\_mx2 and
-exp10\_mx2 calculate $2^{-x^2}$, $2^{x^2}$, $10^{-x^2}$ and 
+The function ex_mx2 calculates $e^{-x^2}$, exp_px2 calculates
+$e^{x^2}$, the functions exp2\_mx2, exp2_mx2, exp10_mx2 and
+exp10_mx2 calculate $2^{-x^2}$, $2^{x^2}$, $10^{-x^2}$ and 
 $10^{x^2}$.
-The logistic or sigmoid
-function sig returns $\frac{1}{1+e^{-x}}$.
-The functions sinpi, cospi and tanpi calculate $\sin(\pi *x)$, 
-$\cos(\pi * x) $ and $\tan(\pi * x)$ respectivly. The function
+
+The logistic or sigmoid function sig returns $\frac{1}{1+e^{-x}}$.
+
+The functions sinpi, cospi and tanpi calculate $\sin(\pi *x)$,
+$\cos(\pi * x)$ and $\tan(\pi * x)$ respectivly. The function
 sincos returns sinus and cosinus of its argument, sinpicospi returns
 sinpi and cospi.
 
