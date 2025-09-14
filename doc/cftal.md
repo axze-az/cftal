@@ -3,8 +3,8 @@
 The following function are implemented and their
 ### support functions
 | Function | binary64 |  | binary32 | |
-|| $\delta$ulp | (prob.) faithfully | $\delta$ulp | (prob.) faithfully |
 | --- | --- | ---| --- | ---|
+| | $\delta$ ulp | (prob.) faithfully | $\delta$ ulp | (prob.) faithfully |
 |ldexp | $\pm$ 0 | n/a  | $\pm$ 0 | n/a |
 |frexp | $\pm$ 0 | n/a  | $\pm$ 0 | n/a |
 |ilogb | $\pm$ 0 | n/a  | $\pm$ 0 | n/a |
