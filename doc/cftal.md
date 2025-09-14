@@ -12,17 +12,17 @@ implementation.
 
 
 MPFR functions return a function value $res$ rounded to target precision
-and information about the direction of the final rounding $mpfr_res$.
+and information about the direction of the final rounding mpfr_res.
 
 The formulaes
 
-std::nextafter(res, $-\infty$), res] when $mpfr\_res > 0$
+std::nextafter(res, $-\infty$), res] when mpfr_res > 0
 
-[res, std::nextafter(res, $+\infty$)]  when $mpfr\_res < 0$
+[res, std::nextafter(res, $+\infty$)]  when mpfr_res < 0
 
-[res, res] when $mpfr\_res = 0$|
+[res, res] when $mpfr_res = 0
 
-describe the conversion between the values $res$ and $mpfr\_res$
+describe the conversion between the values res and mpfr_res
 and an interval.
 
 The column $\Delta ulp$ in the subsections below shows the maximum
