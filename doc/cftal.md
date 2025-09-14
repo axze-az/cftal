@@ -93,8 +93,8 @@ the function powi(x, n) calculates $ x^n $, where $n$ is an integer.
 |acosh | $\pm$ 1 | y  | $\pm$ 1 | y |
 |atanh | $\pm$ 1 | y  | $\pm$ 1 | y |
 
-The functions exp2m1 and exp10m1 calculate $ 2^x-1 $ and $ 10^x-1 $ respectively,
-the functions log2p1 and log10p1 calculate $ log_2(1+x) $ and $ log_{10}(1+x)$
+The functions exp2m1 and exp10m1 calculate $2^x-1$ and $10^x-1$ respectively,
+the functions log2p1 and log10p1 calculate $\log_{2}(1+x) $ and $\log_{10}(1+x)$
 respectively.
 
 ### additional elementary functions
