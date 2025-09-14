@@ -16,7 +16,7 @@ and information about the direction of the final rounding mpfr_res.
 
 The formulaes
 
-std::nextafter(res, $-\infty$), res] when mpfr_res > 0
+[std::nextafter(res, $-\infty$), res] when mpfr_res > 0
 
 [res, std::nextafter(res, $+\infty$)]  when mpfr_res < 0
 
