@@ -13,7 +13,7 @@ and information about the direction of the final rounding $mpfr_res$.
 
 The column $\Delta$ulp in the subsections below shows the maximum
 deviation in bits against the GNU MPFR library functions observed,
-this means functions with $\Delta$ulp = 0 are correctly rounded.
+this means functions with $\Delta ulp = 0$ are correctly rounded.
 Faithful rounding is achieved if the implemented function returns
 one of the 2 interval borders.
 
@@ -94,8 +94,8 @@ the function $ powi(x, n) $ calculates $ x^n $, where $n$ is an integer.
 |acosh | $\pm$ 1 | y  | $\pm$ 1 | y |
 |atanh | $\pm$ 1 | y  | $\pm$ 1 | y |
 
-The functions exp2m1 and exp10m1 calculate $2^x-1$ and $10^x-1$ respectively,
-the functions log2p1 and log10p1 calculate $log_2(1+x)$ and $log_{10}(1+x)$
+The functions exp2m1 and exp10m1 calculate $ 2^x-1 $ and $ 10^x-1 $ respectively,
+the functions log2p1 and log10p1 calculate $ log_2(1+x) $ and $ log_{10}(1+x)$
 respectively.
 
 ### additional elementary functions
