@@ -182,7 +182,12 @@ are produced using sollya \cite{ChevillardJoldesLauter2010}.
 \label{sub_sec:func_list}
 The tables in this section contain the list of implemented functions and
 their measured maximium deviations against the corresponding functions
-from the mpfr library. The column about faithfully rounding describes if faithfully rounding was observed using a test data set.
+from the mpfr library.
+The column about faithfully rounding describes if faithfully rounding
+was observed using a test data set.
+Faithful rounding is achieved if the implemented function returns
+one of the 2 interval borders containing the true function value.
+
 All test programs use the routines from The GNU MPFR library, see
 \cite{mpfr}, \cite{Fousse:2007:MMB:1236463.1236468}, as reference
 implementation.\\[10pt]
@@ -204,8 +209,6 @@ and an interval.\\[10pt]
 The column $\Delta$ulp in the subsections below shows the maximum
 deviation in bits against the GNU MPFR library functions observed,
 this means functions with $\Delta$ulp = 0 are correctly rounded.
-Faithful rounding is achieved if the implemented function returns
-one of the 2 interval borders.
 %
 %Functions with names like native\_xxx implement the function xxx with
 %reduced precision or range or both.
