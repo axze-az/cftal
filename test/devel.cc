@@ -24,6 +24,7 @@
 #include <cftal/d_real.h>
 #include <cftal/math/func_traits.h>
 #include <cftal/math/vec_func_traits_f64.h>
+#include <cftal/test/f32_f64.h>
 #include <cftal/test/call_mpfr.h>
 
 namespace cftal { namespace devel {
@@ -253,17 +254,18 @@ int main(int argc, char** argv)
         for (double x=1.0/*xd*/; x<127; x+=1.0/xd) {
             double jn= bessel_j(n, x);
             double jn_mpfr, jn_glibc;
+            std::pair<double, double> ulp1_interval;
             switch (n) {
             case 0:
-                jn_mpfr=call_mpfr::func(x, mpfr_j0, nullptr);
+                jn_mpfr=call_mpfr::func(x, mpfr_j0, &ulp1_interval);
                 jn_glibc=::j0(x);
                 break;
             case 1:
-                jn_mpfr=call_mpfr::func(x, mpfr_j1, nullptr);
+                jn_mpfr=call_mpfr::func(x, mpfr_j1, &ulp1_interval);
                 jn_glibc=::j1(x);
                 break;
             default:
-                jn_mpfr=call_mpfr::func(n, x, mpfr_jn, nullptr);
+                jn_mpfr=call_mpfr::func(n, x, mpfr_jn, &ulp1_interval);
                 jn_glibc=::jn(n, x);
                 break;
             }
@@ -276,7 +278,7 @@ int main(int argc, char** argv)
                 std::cout << "mfpr:     " << jn_mpfr << std::endl;
                 std::cout << std::scientific;
             }
-            if (jn != jn_mpfr) {
+            if (jn != ulp1_interval.first &&  jn != ulp1_interval.second) {
                 if (!verbose) {
                     std::cout << "n=" << std::setw(5) << n
                               << " x=" << x << std::endl;
@@ -285,7 +287,9 @@ int main(int argc, char** argv)
                     std::cout << "glibc:    " << jn_glibc << std::endl;
                     std::cout << "mfpr:     " << jn_mpfr << std::endl;
                 }
-                std::cout << "delta: " << jn - jn_mpfr << std::endl;
+                std::cout << "delta: " << jn - jn_mpfr
+                          << " distance: " << test::distance(jn, jn_mpfr)
+                          << std::endl;
                 std::cout << std::scientific;
             }
         }
