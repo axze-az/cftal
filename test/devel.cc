@@ -150,7 +150,7 @@ cftal::devel::bessel_recurrence_backward(int nm1, _T x)
     // std::cout << "jn(" << nm1+1 << ", " << x << ") _N=" << _N  <<'\n';
 
     v_t rec_x;
-    ops::div12(rec_x[0], rec_x[1], _T(1.0), x);
+    ops::rcp12(rec_x[0], rec_x[1], x);
     v_t yn=_T(1.0);
     v_t ynp1=_T(0.0);
     v_t rn=ynp1;
@@ -251,7 +251,7 @@ int main(int argc, char** argv)
     // const int n=0; // avoid compile time evaluation of jn)x, x)
     for (int n=0; n<10000; ++n) {
         const double xd=128.0;
-        for (double x=1.0/*xd*/; x<127; x+=1.0/xd) {
+        for (double x=1.0/xd; x<256; x+=1.0/xd) {
             double jn= bessel_j(n, x);
             double jn_mpfr, jn_glibc;
             std::pair<double, double> ulp1_interval;
