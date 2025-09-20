@@ -22,6 +22,8 @@
 #include <limits>
 #include <cftal/vec.h>
 #include <cftal/d_real.h>
+#include <cftal/math/func_traits.h>
+#include <cftal/math/vec_func_traits_f64.h>
 #include <cftal/test/call_mpfr.h>
 
 namespace cftal { namespace devel {
@@ -29,6 +31,10 @@ namespace cftal { namespace devel {
     template <typename _T>
     int
     calc_m_kahan(int nm1, _T x, _T rcp_eps);
+
+    template <typename _T, size_t _N>
+    vec<int, _N>
+    calc_m_kahan(int nm1, arg_t<vec<_T, _N> >  x, _T rcp_eps);
 
     template <typename _T>
     _T
@@ -99,6 +105,39 @@ calc_m_kahan(int nm1, _T x, _T rcp_eps)
     return m;
 }
 
+template <typename _R, cftal::size_t _N>
+cftal::vec<int, _N>
+cftal::devel::
+calc_m_kahan(int nm1, arg_t<vec<_R, _N> > x, _R rcp_eps)
+{
+    using std::max;
+    using std::rint;
+
+    using _T = math::func_traits<vec<_R, _N>, vec<int32_t, _N> >;
+
+    // using vf_type = typename _T::vf_type;
+    using vi_type = typename _T::vi_type;
+
+    vi_type xi=_T::cvt_f_to_i(x);
+    vi_type k= max(nm1+1, xi);
+    const auto beta=_R(1.0);
+    _R yk = 0.0, ykp1=beta;
+    _R _2_x= _R(2.0)/x;
+    int m=k+1;
+    _R md=static_cast<_R>(m);
+    for (;m<std::numeric_limits<int>::max(); ++m) {
+        _R t= md * _2_x * ykp1 - yk;
+        yk   = ykp1;
+        ykp1 = t;
+        // because beta == 1.0
+        if (ykp1 >= rcp_eps)
+            break;
+        md += 1.0;
+    }
+    // std::cout << ykp1 << std::endl;
+    return m;
+}
+
 
 template <typename _T>
 _T
@@ -106,7 +145,7 @@ cftal::devel::bessel_recurrence_backward(int nm1, _T x)
 {
     using v_t = d_real<_T>;
     using ops=d_real_ops<_T, d_real_traits<_T>::fma>;
-    size_t _N=calc_m_kahan(nm1, x, 0x1.0p72);
+    size_t _N=calc_m_kahan(nm1, x, 0x1.0p75);
     // std::cout << "jn(" << nm1+1 << ", " << x << ") _N=" << _N  <<'\n';
 
     v_t rec_x;
@@ -125,6 +164,19 @@ cftal::devel::bessel_recurrence_backward(int nm1, _T x)
         ynp1 = yn;
         yn = ynm1;
         vi -= _T(2.0);
+        if (yn[0] > _T(0x1p512)) {
+#if 1
+            ynp1 = mul_pwr2(ynp1, 0x1p-512);
+            norm = mul_pwr2(norm, 0x1p-512);
+            rn = mul_pwr2(rn, 0x1p-512);
+            yn = mul_pwr2(yn, 0x1p-512);
+#else
+            ynp1 /= yn;
+            norm /= yn;
+            rn /= yn;
+            yn = 1.0;
+#endif
+        }
         if (i == nm1+2) {
             rn=yn;
         }
@@ -141,7 +193,7 @@ cftal::devel::
 bessel_j(int n, double x)
 {
     int nm1=n-1;
-#if 1
+#if 0
     if (n <= x && x > 126.0) {
         return bessel_recurrence_forward(nm1, x, ::j0(x), ::j1(x));
     }
@@ -195,11 +247,10 @@ int main(int argc, char** argv)
     }
 
     std::cout << std::scientific << std::setprecision(18);
-    std::cout << std::hexfloat;
     // const int n=0; // avoid compile time evaluation of jn)x, x)
-    for (int n=0; n<1000; ++n) {
+    for (int n=0; n<10000; ++n) {
         const double xd=128.0;
-        for (double x=1.0/xd; x<127; x+=1.0/xd) {
+        for (double x=1.0/*xd*/; x<127; x+=1.0/xd) {
             double jn= bessel_j(n, x);
             double jn_mpfr, jn_glibc;
             switch (n) {
@@ -219,21 +270,26 @@ int main(int argc, char** argv)
             if (verbose) {
                 std::cout << "n=" << std::setw(5) << n
                           << " x=" << x << std::endl;
+                std::cout << std::hexfloat;
                 std::cout << "bessel_j: " << jn << std::endl;
                 std::cout << "glibc:    " << jn_glibc << std::endl;
                 std::cout << "mfpr:     " << jn_mpfr << std::endl;
+                std::cout << std::scientific;
             }
             if (jn != jn_mpfr) {
                 if (!verbose) {
                     std::cout << "n=" << std::setw(5) << n
                               << " x=" << x << std::endl;
+                    std::cout << std::hexfloat;
                     std::cout << "bessel_j: " << jn << std::endl;
                     std::cout << "glibc:    " << jn_glibc << std::endl;
                     std::cout << "mfpr:     " << jn_mpfr << std::endl;
                 }
                 std::cout << "delta: " << jn - jn_mpfr << std::endl;
+                std::cout << std::scientific;
             }
         }
+        std::cout << "n="  << n << std::endl;
     }
     return 0;
 }
