@@ -140,7 +140,6 @@ calc_m_kahan(int nm1, arg_t<vec<_R, _N> > x, _R rcp_eps)
     return m;
 }
 
-
 template <typename _T>
 _T
 cftal::devel::bessel_recurrence_backward(int nm1, _T x)
@@ -155,7 +154,7 @@ cftal::devel::bessel_recurrence_backward(int nm1, _T x)
     v_t yn=_T(1.0);
     v_t ynp1=_T(0.0);
     v_t rn=ynp1;
-    v_t norm = 0.0;
+    v_t norm = _T(0.0);
     _T vi(2*_N);
     for (uint32_t i=_N; i > 0; --i) {
         v_t ynm1=(vi*rec_x) * yn - ynp1;
