@@ -30,7 +30,7 @@
 namespace cftal { namespace devel {
 
     template <typename _T>
-    int
+    uint32_t
     calc_m_kahan(int nm1, _T x, _T rcp_eps);
 
     template <typename _T, size_t _N>
@@ -81,19 +81,20 @@ bessel_recurrence_forward(int nm1, _T x, _T j0x, _T j1x)
 }
 
 template <typename _T>
-int
+cftal::uint32_t
 cftal::devel::
 calc_m_kahan(int nm1, _T x, _T rcp_eps)
 {
     using std::max;
     using std::rint;
-    int k= max(nm1+1, static_cast<int>(rint(x)));
+    uint32_t k= max(static_cast<uint32_t>(nm1+1),
+                    static_cast<uint32_t>(rint(x)));
     const auto beta=_T(1.0);
     _T yk = 0.0, ykp1=beta;
     _T _2_x= _T(2.0)/x;
-    int m=k+1;
+    uint32_t m=k+1;
     _T md=static_cast<_T>(m);
-    for (;m<std::numeric_limits<int>::max(); ++m) {
+    for (;m<std::numeric_limits<uint32_t>::max(); ++m) {
         _T t= md * _2_x * ykp1 - yk;
         yk   = ykp1;
         ykp1 = t;
@@ -146,7 +147,7 @@ cftal::devel::bessel_recurrence_backward(int nm1, _T x)
 {
     using v_t = d_real<_T>;
     using ops=d_real_ops<_T, d_real_traits<_T>::fma>;
-    size_t _N=calc_m_kahan(nm1, x, 0x1.0p75);
+    uint32_t _N=calc_m_kahan(nm1, x, 0x1.0p53);
     // std::cout << "jn(" << nm1+1 << ", " << x << ") _N=" << _N  <<'\n';
 
     v_t rec_x;
@@ -156,7 +157,7 @@ cftal::devel::bessel_recurrence_backward(int nm1, _T x)
     v_t rn=ynp1;
     v_t norm = 0.0;
     _T vi(2*_N);
-    for (ssize_t i=_N; i > 0; --i) {
+    for (uint32_t i=_N; i > 0; --i) {
         v_t ynm1=(vi*rec_x) * yn - ynp1;
         if ((i&1)==0) {
             v_t yn2=mul_pwr2(yn, 2.0);
@@ -166,19 +167,13 @@ cftal::devel::bessel_recurrence_backward(int nm1, _T x)
         yn = ynm1;
         vi -= _T(2.0);
         if (yn[0] > _T(0x1p512)) {
-#if 1
+            // scale if required
             ynp1 = mul_pwr2(ynp1, 0x1p-512);
             norm = mul_pwr2(norm, 0x1p-512);
             rn = mul_pwr2(rn, 0x1p-512);
             yn = mul_pwr2(yn, 0x1p-512);
-#else
-            ynp1 /= yn;
-            norm /= yn;
-            rn /= yn;
-            yn = 1.0;
-#endif
         }
-        if (i == nm1+2) {
+        if (i == static_cast<uint32_t>(nm1+2)) {
             rn=yn;
         }
     }
@@ -249,7 +244,7 @@ int main(int argc, char** argv)
 
     std::cout << std::scientific << std::setprecision(18);
     // const int n=0; // avoid compile time evaluation of jn)x, x)
-    for (int n=0; n<10000; ++n) {
+    for (int n=0; n<2000; ++n) {
         const double xd=128.0;
         for (double x=1.0/xd; x<256; x+=1.0/xd) {
             double jn= bessel_j(n, x);
