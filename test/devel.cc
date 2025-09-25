@@ -203,7 +203,7 @@ cftal::devel::bessel_recurrence_backward(int nm1, double x)
         ynp1 = yn;
         yn = ynm1;
         vi -= 2.0;
-        if (yn> 0x1p51) {
+        if (yn> 0x1p512) {
             // scale if required
             ynp1 *= 0x1p-512;
             norm *= 0x1p-512;
