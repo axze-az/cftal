@@ -46,8 +46,10 @@ namespace cftal { namespace devel {
 
     template <typename _T>
     _T
-    bessel_recurrence_backward(int nm1,
-                               _T x);
+    bessel_recurrence_backward(int nm1, _T x);
+
+    double
+    bessel_recurrence_backward(int nm1, double x);
 
     double bessel_j(int n, double x);
 }}
@@ -146,7 +148,7 @@ cftal::devel::bessel_recurrence_backward(int nm1, _T x)
 {
     using v_t = d_real<_T>;
     using ops=d_real_ops<_T, d_real_traits<_T>::fma>;
-    uint32_t _N=calc_m_kahan(nm1, x, 0x1.0p53);
+    uint32_t _N=calc_m_kahan(nm1, x, 0x1.0p52);
     // std::cout << "jn(" << nm1+1 << ", " << x << ") _N=" << _N  <<'\n';
 
     v_t rec_x;
@@ -181,6 +183,42 @@ cftal::devel::bessel_recurrence_backward(int nm1, _T x)
     return jn[0];
 }
 
+double
+cftal::devel::bessel_recurrence_backward(int nm1, double x)
+{
+    using v_t = double;
+    uint32_t _N=calc_m_kahan(nm1, x, 0x1.0p75);
+    // std::cout << "jn(" << nm1+1 << ", " << x << ") _N=" << _N  <<'\n';
+    v_t rec_x=1.0/x;
+    v_t yn=1.0;
+    v_t ynp1=0.0;
+    v_t rn=ynp1;
+    v_t norm =0.0;
+    double vi(2*_N);
+    for (uint32_t i=_N; i > 0; --i) {
+        v_t ynm1=(vi*rec_x) * yn - ynp1;
+        if ((i&1)==0) {
+            norm += 2.0*yn;
+        }
+        ynp1 = yn;
+        yn = ynm1;
+        vi -= 2.0;
+        if (yn> 0x1p51) {
+            // scale if required
+            ynp1 *= 0x1p-512;
+            norm *= 0x1p-512;
+            rn *= 0x1p-512;
+            yn *= 0x1p-512;
+        }
+        if (i == static_cast<uint32_t>(nm1+2)) {
+            rn=yn;
+        }
+    }
+    norm += yn;
+    v_t jn=rn/norm;
+    return jn;
+}
+
 // j(n-1, x) = 2*n/x * j(n, x) - j(n+1, x)
 // 1 = j(0, x) + 2*j(2, x) + 2 * j(4, x) + ....
 double
@@ -189,12 +227,12 @@ bessel_j(int n, double x)
 {
     int nm1=n-1;
 #if 0
-    if (n <= x && x > 126.0) {
+    if (n <= x /* && x > 126.0 */ ) {
         return bessel_recurrence_forward(nm1, x, ::j0(x), ::j1(x));
     }
 #endif
 #if 1
-    return bessel_recurrence_backward(nm1, x);
+    return bessel_recurrence_backward<double>(nm1, x);
 #else
     using v_t = d_real<double>;
     size_t _N=calc_m_kahan(nm1, x, 0x1.0p72);
