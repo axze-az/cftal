@@ -44,6 +44,27 @@ namespace cftal { namespace devel {
                               _T j0x,
                               _T j1x);
 
+    namespace impl {
+        template <typename _T>
+        struct bessel_recurrence_traits {};
+
+        template <>
+        struct bessel_recurrence_traits<double> {
+            constexpr static double rcp_eps() { return  0x1p52; }
+            constexpr static double scale_above() { return 0x1p512; }
+            constexpr static double scale_factor() { return 0x1p-512; }
+        };
+
+        template <>
+        struct bessel_recurrence_traits<float> {
+            constexpr static float rcp_eps() { return  0x1p23f; }
+            constexpr static float scale_above() { return 0x1p64f; }
+            constexpr static float scale_factor() { return 0x1p-64f; }
+        };
+
+    }
+
+
     template <typename _T>
     _T
     bessel_recurrence_backward(int nm1, _T x);
@@ -148,7 +169,8 @@ cftal::devel::bessel_recurrence_backward(int nm1, _T x)
 {
     using v_t = d_real<_T>;
     using ops=d_real_ops<_T, d_real_traits<_T>::fma>;
-    uint32_t _N=calc_m_kahan(nm1, x, 0x1.0p52);
+    using traits_t = impl::bessel_recurrence_traits<_T>;
+    uint32_t _N=calc_m_kahan(nm1, x, traits_t::rcp_eps());
     // std::cout << "jn(" << nm1+1 << ", " << x << ") _N=" << _N  <<'\n';
 
     v_t rec_x;
@@ -167,12 +189,12 @@ cftal::devel::bessel_recurrence_backward(int nm1, _T x)
         ynp1 = yn;
         yn = ynm1;
         vi -= _T(2.0);
-        if (yn[0] > _T(0x1p512)) {
+        if (yn[0] > traits_t::scale_above()) {
             // scale if required
-            ynp1 = mul_pwr2(ynp1, 0x1p-512);
-            norm = mul_pwr2(norm, 0x1p-512);
-            rn = mul_pwr2(rn, 0x1p-512);
-            yn = mul_pwr2(yn, 0x1p-512);
+            ynp1 = mul_pwr2(ynp1, traits_t::scale_factor());
+            norm = mul_pwr2(norm, traits_t::scale_factor());
+            rn = mul_pwr2(rn, traits_t::scale_factor());
+            yn = mul_pwr2(yn, traits_t::scale_factor());
         }
         if (i == static_cast<uint32_t>(nm1+2)) {
             rn=yn;
