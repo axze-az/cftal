@@ -179,8 +179,9 @@ cftal::devel::bessel_recurrence_backward(int nm1, _T x)
         }
     }
     norm += yn;
-    v_t jn=rn/norm;
-    return jn[0];
+    _T jn;
+    ops::div21(jn, rn[0], rn[1], norm[0], norm[1]);
+    return jn;
 }
 
 double
