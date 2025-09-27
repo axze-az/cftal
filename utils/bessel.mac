@@ -89,7 +89,7 @@ beta_coeffs(nue, k) :=
     block([r, bsi, i, eq, ri, l, iml, a0, a1],
         bsi : beta_square_coeffs(nue, k),
         r : [],
-        /* use the cauhcy product for
+        /* use the cauchy product for
            sum(bsi_i*x_i)= sum(r_i*x_i)*sum(r_i*x_i)
            to get the root of beta square using a coefficent comparison for
            the different powers of x
