@@ -1,5 +1,5 @@
 /* first 4 terms of bessel function of first kind as infinite series */
-jn(n, x) := (x/2)^n * sum((-1^k)*(1/4*x*x)^k/(k!*(n+k)!), k, 0, 3);
+jn(n, x) := (x/2)^n * sum(((-1)^k)*((1/4*x*x)^k)/(k!*(n+k)!), k, 0, 3);
 
 d2: ratsimp(jn(2, x)) - ratsimp(taylor(bessel_j(2, x), x , 0, 2+(3*2)));
 
