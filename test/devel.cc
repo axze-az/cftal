@@ -284,9 +284,40 @@ bessel_j(int n, double x)
     // return jn;
 }
 
-using namespace cftal;
-
 int main(int argc, char** argv)
+{
+    using namespace cftal;
+    using namespace cftal::devel;
+    using namespace cftal::test;
+
+#if 0
+    bool verbose=false;
+    if (argc > 1) {
+        std::string_view argv1=argv[1];
+        using namespace std::string_view_literals;
+        if (argv1=="--verbose"sv) {
+            verbose=true;
+        }
+    }
+#endif
+    std::cout << std::scientific << std::setprecision(18);
+    // const int n=0; // avoid compile time evaluation of jn)x, x)
+    for (int n=0x1023; n>-1; n-=1) {
+        double jn_mpfr;
+        std::pair<double, double> ulp1_interval;
+        double x=n;
+        x*=0.25;
+        jn_mpfr=call_mpfr::func(n, x, mpfr_jn, &ulp1_interval);
+        std::cout << "n=" << std::setw(5) << n
+                    << " x=" << x << std::endl;
+        std::cout << std::hexfloat;
+        std::cout << "bessel_j: " << jn_mpfr << std::endl;
+        std::cout << std::scientific;
+    }
+    return 0;
+}
+
+int main1(int argc, char** argv)
 {
     using namespace cftal;
     using namespace cftal::devel;
@@ -304,7 +335,7 @@ int main(int argc, char** argv)
 
     std::cout << std::scientific << std::setprecision(18);
     // const int n=0; // avoid compile time evaluation of jn)x, x)
-    for (int n=0; n<2000; ++n) {
+    for (int n=0x7fff; n>-1; --n) {
         const double xd=128.0;
         for (double x=1.0/xd; x<256; x+=1.0/xd) {
             double jn= bessel_j(n, x);
