@@ -23,6 +23,7 @@
 #include <cftal/vec.h>
 #include <cftal/d_real.h>
 #include <cftal/math/func_traits.h>
+#include <cftal/math/horner.h>
 #include <cftal/math/vec_func_traits_f64.h>
 #include <cftal/test/f32_f64.h>
 #include <cftal/test/call_mpfr.h>
@@ -43,7 +44,6 @@ namespace cftal { namespace devel {
                               _T x,
                               _T j0x,
                               _T j1x);
-
     namespace impl {
         template <typename _T>
         struct bessel_recurrence_traits {};
@@ -69,8 +69,15 @@ namespace cftal { namespace devel {
     _T
     bessel_recurrence_backward(int nm1, _T x);
 
+
+
     double
     bessel_recurrence_backward(int nm1, double x);
+
+
+    template <typename _T>
+    _T
+    bessel_taylor(int nm1, _T x);
 
     double bessel_j(int n, double x);
 }}
@@ -242,6 +249,25 @@ cftal::devel::bessel_recurrence_backward(int nm1, double x)
     return jn;
 }
 
+
+template <typename _T>
+_T
+cftal::devel::bessel_taylor(int nm1, _T x)
+{
+    uint32_t n=nm1+1;
+    _T xh=x*_T(0.5);
+    _T f0=_T(1.0);
+    _T xhn=xh;
+    _T ti=2;
+    for (uint32_t i=2; i<=n; ++i) {
+        f0 *= ti;
+        xhn *= xh;
+        ti+=_T(1.0);
+    }
+    _T r= xhn/f0;
+    return r;
+}
+
 // j(n-1, x) = 2*n/x * j(n, x) - j(n+1, x)
 // 1 = j(0, x) + 2*j(2, x) + 2 * j(4, x) + ....
 double
@@ -249,6 +275,9 @@ cftal::devel::
 bessel_j(int n, double x)
 {
     int nm1=n-1;
+    if (x <= 0x1p-30)  {
+        return bessel_taylor(nm1, x);
+    }
 #if 0
     if (n <= x /* && x > 126.0 */ ) {
         return bessel_recurrence_forward(nm1, x, ::j0(x), ::j1(x));
@@ -284,7 +313,7 @@ bessel_j(int n, double x)
     // return jn;
 }
 
-int main(int argc, char** argv)
+int main1(int argc, char** argv)
 {
     using namespace cftal;
     using namespace cftal::devel;
@@ -317,7 +346,7 @@ int main(int argc, char** argv)
     return 0;
 }
 
-int main1(int argc, char** argv)
+int main(int argc, char** argv)
 {
     using namespace cftal;
     using namespace cftal::devel;
@@ -334,10 +363,10 @@ int main1(int argc, char** argv)
     }
 
     std::cout << std::scientific << std::setprecision(18);
-    // const int n=0; // avoid compile time evaluation of jn)x, x)
-    for (int n=0x7fff; n>-1; --n) {
-        const double xd=128.0;
-        for (double x=1.0/xd; x<256; x+=1.0/xd) {
+    // const int n=0; // avoid compile time evaluation of jn(n, x)
+    for (int n=0x7fff; n>0; --n) {
+        const double xd=0x1p32;
+        for (double x=1.0/xd; x<0x1p-29; x+=1.0/xd) {
             double jn= bessel_j(n, x);
             double jn_mpfr, jn_glibc;
             std::pair<double, double> ulp1_interval;
@@ -364,7 +393,7 @@ int main1(int argc, char** argv)
                 std::cout << "mfpr:     " << jn_mpfr << std::endl;
                 std::cout << std::scientific;
             }
-            if (jn != ulp1_interval.first &&  jn != ulp1_interval.second) {
+            if (jn != ulp1_interval.first && jn != ulp1_interval.second) {
                 if (!verbose) {
                     std::cout << "n=" << std::setw(5) << n
                               << " x=" << x << std::endl;
