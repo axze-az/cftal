@@ -113,7 +113,7 @@ calc_m_kahan(int nm1, _T x, _T rcp_eps)
     uint32_t k= max(static_cast<uint32_t>(nm1+1),
                     static_cast<uint32_t>(rint(x)));
     const auto beta=_T(1.0);
-    _T yk = 0.0, ykp1=beta;
+    _T yk = _T(0.0), ykp1=beta;
     _T _2_x= _T(2.0)/x;
     uint32_t m=k+1;
     _T md=static_cast<_T>(m);
@@ -124,7 +124,7 @@ calc_m_kahan(int nm1, _T x, _T rcp_eps)
         // because beta == 1.0
         if (ykp1 >= rcp_eps)
             break;
-        md += 1.0;
+        md += _T(1.0);
     }
     // std::cout << ykp1 << std::endl;
     return m;
