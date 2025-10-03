@@ -50,7 +50,7 @@ namespace cftal { namespace devel {
 
         template <>
         struct bessel_recurrence_traits<double> {
-            constexpr static double rcp_eps() { return  0x1p52; }
+            constexpr static double rcp_eps() { return  0x1p75; }
             constexpr static double scale_above() { return 0x1p512; }
             constexpr static double scale_factor() { return 0x1p-512; }
         };
@@ -68,8 +68,6 @@ namespace cftal { namespace devel {
     template <typename _T>
     _T
     bessel_recurrence_backward(int nm1, _T x);
-
-
 
     double
     bessel_recurrence_backward(int nm1, double x);
@@ -255,16 +253,23 @@ _T
 cftal::devel::bessel_taylor(int nm1, _T x)
 {
     uint32_t n=nm1+1;
-    _T xh=x*_T(0.5);
-    _T f0=_T(1.0);
-    _T xhn=xh;
-    _T ti=2;
-    for (uint32_t i=2; i<=n; ++i) {
-        f0 *= ti;
-        xhn *= xh;
-        ti+=_T(1.0);
+    _T r=_T(0);
+    if (n < 34) {
+        if (n == 0) {
+            r=_T(1);
+        } else {
+            _T xh=x*_T(0.5);
+            _T f0=_T(1.0);
+            _T xhn=xh;
+            _T ti=2;
+            for (uint32_t i=2; i<=n; ++i) {
+                f0 *= ti;
+                xhn *= xh;
+                ti+=_T(1.0);
+            }
+            r = xhn/f0;
+        }
     }
-    _T r= xhn/f0;
     return r;
 }
 
@@ -275,7 +280,7 @@ cftal::devel::
 bessel_j(int n, double x)
 {
     int nm1=n-1;
-    if (x <= 0x1p-30)  {
+    if (x <= 0x1p-128)  {
         return bessel_taylor(nm1, x);
     }
 #if 0
@@ -364,9 +369,9 @@ int main(int argc, char** argv)
 
     std::cout << std::scientific << std::setprecision(18);
     // const int n=0; // avoid compile time evaluation of jn(n, x)
-    for (int n=0x7fff; n>0; --n) {
-        const double xd=0x1p32;
-        for (double x=1.0/xd; x<0x1p-29; x+=1.0/xd) {
+    for (int n=0x7f; n>-1; --n) {
+        const double xd=0x1p38;
+        for (double x=1.0/xd; x<=0x1p-32; x+=1.0/xd) {
             double jn= bessel_j(n, x);
             double jn_mpfr, jn_glibc;
             std::pair<double, double> ulp1_interval;
@@ -386,8 +391,9 @@ int main(int argc, char** argv)
             }
             if (verbose) {
                 std::cout << "n=" << std::setw(5) << n
-                          << " x=" << x << std::endl;
-                std::cout << std::hexfloat;
+                          << " x=" << x
+                          << std::hexfloat
+                          << ' ' << x << std::endl;
                 std::cout << "bessel_j: " << jn << std::endl;
                 std::cout << "glibc:    " << jn_glibc << std::endl;
                 std::cout << "mfpr:     " << jn_mpfr << std::endl;
@@ -395,9 +401,10 @@ int main(int argc, char** argv)
             }
             if (jn != ulp1_interval.first && jn != ulp1_interval.second) {
                 if (!verbose) {
-                    std::cout << "n=" << std::setw(5) << n
-                              << " x=" << x << std::endl;
-                    std::cout << std::hexfloat;
+                std::cout << "n=" << std::setw(5) << n
+                          << " x=" << x
+                          << std::hexfloat
+                          << ' ' << x << std::endl;
                     std::cout << "bessel_j: " << jn << std::endl;
                     std::cout << "glibc:    " << jn_glibc << std::endl;
                     std::cout << "mfpr:     " << jn_mpfr << std::endl;
