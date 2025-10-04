@@ -24,7 +24,7 @@ print_inv_fac_f64 = proc() {
 	l = l :. f;
 	j = j+1;
     };
-    write_coeff_table(l, "_recip_faculty_f64", double);
+    write_coeff_table(l, "_recip_factorial_f64", double);
     write("\n");
 };
 
@@ -38,7 +38,7 @@ print_inv_fac_f32 = proc() {
 	l = l :. f;
 	j = j+1;
     };
-    write_coeff_table(l, "_recip_faculty_f32", single);
+    write_coeff_table(l, "_recip_factorial_f32", single);
     write("\n");
 };
 
@@ -52,7 +52,7 @@ print_inv_fac_f16 = proc() {
 	l = l :. f;
 	j = j+1;
     };
-    write_coeff_table(l, "_recip_faculty_f16", halfprecision);
+    write_coeff_table(l, "_recip_factorial_f16", halfprecision);
     write("\n");
 };
 
