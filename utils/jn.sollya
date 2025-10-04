@@ -1,0 +1,66 @@
+#! /usr/bin/sollya
+execute("common.sollya");
+
+verbosity=1!;
+prec=2048!;
+write("\n");
+
+fac = proc(n) {
+    var res;
+    if (n == 0) then
+       res := 1
+    else
+       res := n * fac(n - 1);
+    return res;
+};
+
+print_inv_fac_f64 = proc() {
+    var j, f, l;
+    l=[||];
+    f=1;
+    j=0;
+    while (f > 0) do {
+        f = double(1/fac(j));
+	l = l :. f;
+	j = j+1;
+    };
+    write_coeff_table(l, "_recip_faculty_f64", double);
+    write("\n");
+};
+
+print_inv_fac_f32 = proc() {
+    var j, f, l;
+    l=[||];
+    f=1;
+    j=0;
+    while (f > 0) do {
+        f = single(1/fac(j));
+	l = l :. f;
+	j = j+1;
+    };
+    write_coeff_table(l, "_recip_faculty_f32", single);
+    write("\n");
+};
+
+print_inv_fac_f16 = proc() {
+    var j, f, l;
+    l=[||];
+    f=1;
+    j=0;
+    while (f > 0) do {
+        f = halfprecision(1/fac(j));
+	l = l :. f;
+	j = j+1;
+    };
+    write_coeff_table(l, "_recip_faculty_f16", halfprecision);
+    write("\n");
+};
+
+print_inv_fac_f64();
+print_inv_fac_f32();
+print_inv_fac_f16();
+
+
+// Local variables:
+// mode: c++
+// end:
