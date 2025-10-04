@@ -380,11 +380,24 @@ cftal::devel::bessel_taylor(int nm1, _T x)
             r=_T(1);
         } else {
             _T xh=x*_T(0.5);
+#if 1
+            _T xhn=1.0;
+            uint32_t k=n;
+            while (1) {
+                if (k & 1)
+                    xhn *= xh;
+                k >>=1;
+                if (k == 0)
+                    break;
+                xh *= xh;
+            }
+#else
             _T xhn=xh;
             for (uint32_t i=2; i<=n; ++i) {
                 xhn *= xh;
             }
-            r = xhn*math::rcp_factorial<_T>::v(n);
+#endif
+            r = xhn/math::factorial<_T>::v(n);
         }
     }
     return r;
@@ -397,8 +410,8 @@ cftal::devel::
 bessel_j(int n, double x)
 {
     int nm1=n-1;
-    if (x <= 0x1p-128)  {
-        return bessel_taylor(nm1, x);
+    if (x == 0)  {
+        return n == 0 ? 1.0 : 0.0;
     }
 #if 0
     if (n <= x /* && x > 126.0 */ ) {
@@ -486,7 +499,7 @@ int main(int argc, char** argv)
 
     std::cout << std::scientific << std::setprecision(18);
     // const int n=0; // avoid compile time evaluation of jn(n, x)
-    for (int n=0x7f; n>-1; --n) {
+    for (int n=0x7fff; n>-1; --n) {
         const double xd=0x1p140;
         for (double x=0.0; x<=0x1p-127; x+=1.0/xd) {
             double jn= bessel_j(n, x);
