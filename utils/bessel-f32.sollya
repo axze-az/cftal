@@ -1,5 +1,5 @@
 #! /usr/bin/sollya
-execute("../../../cftal/utils/common.sollya");
+execute("common.sollya");
 prec=1024!;
 verbosity=1!;
 // i/(k-1);
