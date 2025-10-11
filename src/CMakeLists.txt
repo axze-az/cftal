@@ -120,6 +120,10 @@ set (CSRCS
     # error messages for implementations:
     dot_product.cc
     hsum.cc
+    # factorials
+    factorial_f64.cc
+    factorial_f32.cc
+    factorial_f16.cc
 )
 
 # only for ides
@@ -166,6 +170,7 @@ SET (HDRS
     ../include/cftal/math/elem_func.h
     ../include/cftal/math/elem_func_loprec_core_f64.h
     ../include/cftal/math/elem_func_wrapper_f32.h
+    ../include/cftal/math/factorial.h
     ../include/cftal/math/func_constants_f32.h
     ../include/cftal/math/func_constants_f64.h
     ../include/cftal/math/func_constants.h
