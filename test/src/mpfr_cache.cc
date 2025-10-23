@@ -71,7 +71,16 @@ cftal::test::lzma::handle::handle(mode m)
     lzma_ret r= LZMA_OK;
     if (m==mode::decompress) {
         const std::size_t max_size=256*1024*1024;
+#if 0
         r=lzma_stream_decoder(&_strm, max_size, LZMA_CONCATENATED);
+#else
+        lzma_mt mt= {0};
+        mt.flags=LZMA_CONCATENATED;
+        mt.threads = std::max(1u, lzma_cputhreads());
+        mt.memlimit_threading=max_size;
+        mt.memlimit_stop=max_size * mt.threads;
+        r=lzma_stream_decoder_mt(&_strm, &mt);
+#endif
         if (r != LZMA_OK) {
             throw std::runtime_error("decompress oops");
         }
@@ -82,7 +91,7 @@ cftal::test::lzma::handle::handle(mode m)
         lzma_mt mt= {0};
         mt.preset = 3;
         mt.check = LZMA_CHECK_CRC64;
-        mt.threads = std::min(std::max(1u, lzma_cputhreads()), 8u);
+        mt.threads = std::max(1u, lzma_cputhreads());
         r=lzma_stream_encoder_mt(&_strm, &mt);
 #endif
         if (r != LZMA_OK) {
@@ -182,7 +191,8 @@ load(std::ifstream& f, std::vector<_T>& v)
         }
     } while (r == LZMA_OK);
     if (r != LZMA_OK && r != LZMA_STREAM_END) {
-        std::cout <<'\n' << r << std::endl;
+        std::cout <<'\n' << "unexpected LZMA_RESULT="<< r << std::endl;
+        std::exit(r);
     }
     std::cout << "read " << v.size() << " entries" << std::endl;
 }
