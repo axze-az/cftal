@@ -77,8 +77,8 @@ cftal::test::lzma::handle::handle(mode m)
         lzma_mt mt= {0};
         mt.flags=LZMA_CONCATENATED;
         mt.threads = std::max(1u, lzma_cputhreads());
-        mt.memlimit_threading=max_size;
-        mt.memlimit_stop=max_size * mt.threads;
+        mt.memlimit_threading=max_size*mt.threads;
+        mt.memlimit_stop=max_size;
         r=lzma_stream_decoder_mt(&_strm, &mt);
 #endif
         if (r != LZMA_OK) {
