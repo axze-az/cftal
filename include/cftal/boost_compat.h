@@ -39,7 +39,7 @@ namespace boost {
                 using result_type = _T;
                 result_type operator()(const cftal::vec<_T, _N>& v) const {
                     cftal::vec<_T, _N> va= abs(v);
-                    return cftal::max_element(va);
+                    return cftal::hmax(va);
                 }
             };
         }

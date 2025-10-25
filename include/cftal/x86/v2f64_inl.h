@@ -438,7 +438,7 @@ cftal::min(const v2f64& a, const v2f64& b)
 
 inline
 double
-cftal::max_element(const v2f64& v)
+cftal::hmax(const v2f64& v)
 {
     v2f64 vp=permute<1, 0>(v);
     v2f64 r=max(v, vp);

@@ -627,7 +627,7 @@ namespace cftal {
     // return the maximum element
     template <typename _T, std::size_t _N>
     _T
-    max_element(const vec<_T, _N>& v);
+    hmax(const vec<_T, _N>& v);
 
     // return the minimum element
     template <typename _T, std::size_t _N>
@@ -1114,9 +1114,9 @@ cftal::modf(const vec<_T, _N>& x, vec<_T, _N>* iptr)
 template <class _T, std::size_t _N>
 inline
 _T
-cftal::max_element(const vec<_T, _N>& v)
+cftal::hmax(const vec<_T, _N>& v)
 {
-    return max_element(max(low_half(v), high_half(v)));
+    return hmax(max(low_half(v), high_half(v)));
 }
 
 template <class _T, std::size_t _N>
