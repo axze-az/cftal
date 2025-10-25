@@ -74,11 +74,12 @@ cftal::test::lzma::handle::handle(mode m)
 #if 0
         r=lzma_stream_decoder(&_strm, max_size, LZMA_CONCATENATED);
 #else
-        lzma_mt mt= {0};
-        mt.flags=LZMA_CONCATENATED;
-        mt.threads = std::max(1u, lzma_cputhreads());
-        mt.memlimit_threading=max_size*mt.threads;
-        mt.memlimit_stop=max_size;
+        lzma_mt mt= {
+            .flags=LZMA_CONCATENATED,
+            .threads = std::max(1u, lzma_cputhreads()),
+            .memlimit_threading=max_size*mt.threads,
+            .memlimit_stop=max_size
+        };
         r=lzma_stream_decoder_mt(&_strm, &mt);
 #endif
         if (r != LZMA_OK) {
@@ -88,10 +89,11 @@ cftal::test::lzma::handle::handle(mode m)
 #if 0
         r=lzma_easy_encoder(&_strm, LZMA_PRESET_DEFAULT, LZMA_CHECK_CRC64);
 #else
-        lzma_mt mt= {0};
-        mt.preset = 3;
-        mt.check = LZMA_CHECK_CRC64;
-        mt.threads = std::max(1u, lzma_cputhreads());
+        lzma_mt mt= {
+            .threads = std::max(1u, lzma_cputhreads()),
+            .preset = 3,
+            .check = LZMA_CHECK_CRC64
+        };
         r=lzma_stream_encoder_mt(&_strm, &mt);
 #endif
         if (r != LZMA_OK) {
