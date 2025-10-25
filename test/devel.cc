@@ -37,7 +37,7 @@ namespace cftal { namespace devel {
     calc_m_kahan(int nm1, _T x, _T rcp_eps);
 
     template <typename _T, size_t _N>
-    vec<int, _N>
+    vec<uint32_t, _N>
     calc_m_kahan(int nm1, arg_t<vec<_T, _N> >  x, _T rcp_eps);
 
     template <typename _T>
@@ -138,36 +138,19 @@ calc_m_kahan(int nm1, _T x, _T rcp_eps)
 }
 
 template <typename _R, cftal::size_t _N>
-cftal::vec<int, _N>
+cftal::vec<cftal::uint32_t, _N>
 cftal::devel::
 calc_m_kahan(int nm1, arg_t<vec<_R, _N> > x, _R rcp_eps)
 {
-    using std::max;
-    using std::rint;
-
-    using _T = math::func_traits<vec<_R, _N>, vec<int32_t, _N> >;
-
-    // using vf_type = typename _T::vf_type;
-    using vi_type = typename _T::vi_type;
-
-    vi_type xi=_T::cvt_f_to_i(x);
-    vi_type k= max(nm1+1, xi);
-    const auto beta=_R(1.0);
-    _R yk = 0.0, ykp1=beta;
-    _R _2_x= _R(2.0)/x;
-    int m=k+1;
-    _R md=static_cast<_R>(m);
-    for (;m<std::numeric_limits<int>::max(); ++m) {
-        _R t= md * _2_x * ykp1 - yk;
-        yk   = ykp1;
-        ykp1 = t;
-        // because beta == 1.0
-        if (ykp1 >= rcp_eps)
-            break;
-        md += 1.0;
+    // using _T = math::func_traits<vec<_R, _N>, vec<int32_t, _N> >;
+    using std::size;
+    vec<uint32_t, _N> r;
+    for (std::size_t i=0; i<_N; ++i) {
+        _R xi=extract(x, i);
+        uint32_t ri=calc_m_kahan(nm1, xi, rcp_eps);
+        insert(r, ri, i);
     }
-    // std::cout << ykp1 << std::endl;
-    return m;
+    return r;
 }
 
 template <typename _T>
