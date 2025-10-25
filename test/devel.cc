@@ -66,13 +66,16 @@ namespace cftal { namespace devel {
 
     }
 
-
     template <typename _T>
     _T
     bessel_recurrence_backward(int nm1, _T x);
 
     double
     bessel_recurrence_backward(int nm1, double x);
+
+    template <typename _T, size_t _N>
+    vec<_T, _N>
+    bessel_recurrence_backward(int nm1, arg_t<vec<_T, _N> > x);
 
 
     template <typename _T>
@@ -153,6 +156,7 @@ calc_m_kahan(int nm1, arg_t<vec<_R, _N> > x, _R rcp_eps)
     return r;
 }
 
+
 template <typename _T>
 _T
 cftal::devel::bessel_recurrence_backward(int nm1, _T x)
@@ -160,8 +164,8 @@ cftal::devel::bessel_recurrence_backward(int nm1, _T x)
     using v_t = d_real<_T>;
     using ops=d_real_ops<_T, d_real_traits<_T>::fma>;
     using traits_t = impl::bessel_recurrence_traits<_T>;
-    uint32_t _N=calc_m_kahan(nm1, x, traits_t::rcp_eps());
-    // std::cout << "jn(" << nm1+1 << ", " << x << ") _N=" << _N  <<'\n';
+    uint32_t m=calc_m_kahan(nm1, x, traits_t::rcp_eps());
+    // std::cout << "jn(" << nm1+1 << ", " << x << ") m=" << m  <<'\n';
 
     v_t rec_x;
     ops::rcp12(rec_x[0], rec_x[1], x);
@@ -169,8 +173,8 @@ cftal::devel::bessel_recurrence_backward(int nm1, _T x)
     v_t ynp1=_T(0.0);
     v_t rn=ynp1;
     v_t norm = _T(0.0);
-    _T vi(2*_N);
-    for (uint32_t i=_N; i > 0; --i) {
+    _T vi(2*m);
+    for (uint32_t i=m; i > 0; --i) {
         v_t ynm1=(vi*rec_x) * yn - ynp1;
         if ((i&1)==0) {
             v_t yn2=mul_pwr2(yn, 2.0);
@@ -200,15 +204,15 @@ double
 cftal::devel::bessel_recurrence_backward(int nm1, double x)
 {
     using v_t = double;
-    uint32_t _N=calc_m_kahan(nm1, x, 0x1.0p75);
+    uint32_t m=calc_m_kahan(nm1, x, 0x1.0p75);
     // std::cout << "jn(" << nm1+1 << ", " << x << ") _N=" << _N  <<'\n';
     v_t rec_x=1.0/x;
     v_t yn=1.0;
     v_t ynp1=0.0;
     v_t rn=ynp1;
     v_t norm =0.0;
-    double vi(2*_N);
-    for (uint32_t i=_N; i > 0; --i) {
+    double vi(2*m);
+    for (uint32_t i=m; i > 0; --i) {
         v_t ynm1=(vi*rec_x) * yn - ynp1;
         if ((i&1)==0) {
             norm += 2.0*yn;
@@ -229,6 +233,56 @@ cftal::devel::bessel_recurrence_backward(int nm1, double x)
     }
     norm += yn;
     v_t jn=rn/norm;
+    return jn;
+}
+
+template <typename _T, size_t _N>
+cftal::vec<_T, _N>
+cftal::devel::
+bessel_recurrence_backward(int nm1, arg_t<vec<_T, _N> > x)
+{
+    using traits_t = impl::bessel_recurrence_traits<_T>;
+    using _TR = math::func_traits<vec<_T, _N>, vec<int32_t, _N> >;
+
+    using vf_type = typename _TR::vf_type;
+    // using vi_type = typename _TR::vi_type;
+    using v_t = typename _TR::vdf_type;
+    using ops = d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
+
+    vec<uint32_t, _N> vm=calc_m_kahan(nm1, x, traits_t::rcp_eps());
+    // std::cout << "jn(" << nm1+1 << ", " << x << ") _N=" << _N  <<'\n';
+    uint32_t m=hmax(vm);
+
+    v_t rec_x;
+    ops::rcp12(rec_x[0], rec_x[1], x);
+    v_t yn=_T(1.0);
+    v_t ynp1=_T(0.0);
+    v_t rn=ynp1;
+    v_t norm = _T(0.0);
+    _T vi(2*m);
+    for (uint32_t i=m; i > 0; --i) {
+        v_t ynm1=(vi*rec_x) * yn - ynp1;
+        if ((i&1)==0) {
+            v_t yn2=mul_pwr2(yn, 2.0);
+            norm += yn2;
+        }
+        ynp1 = yn;
+        yn = ynm1;
+        vi -= _T(2.0);
+        if (yn[0] > traits_t::scale_above()) {
+            // scale if required
+            ynp1 = mul_pwr2(ynp1, traits_t::scale_factor());
+            norm = mul_pwr2(norm, traits_t::scale_factor());
+            rn = mul_pwr2(rn, traits_t::scale_factor());
+            yn = mul_pwr2(yn, traits_t::scale_factor());
+        }
+        if (i == static_cast<uint32_t>(nm1+2)) {
+            rn=yn;
+        }
+    }
+    norm += yn;
+    _T jn;
+    ops::div21(jn, rn[0], rn[1], norm[0], norm[1]);
     return jn;
 }
 
