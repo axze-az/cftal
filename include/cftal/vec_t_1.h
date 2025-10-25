@@ -302,6 +302,9 @@ namespace cftal {
     template <typename _T>
     _T hmin(const vec<_T, 1>& v);
 
+    template <typename _T>
+    _T hsum(const vec<_T, 1>& n);
+
     template <std::size_t _I, typename _T>
     _T extract(const vec<_T, 1>& v);
 
@@ -964,6 +967,14 @@ template <class _T>
 inline
 _T
 cftal::hmin(const vec<_T, 1>& v)
+{
+    return v();
+}
+
+template <typename _T>
+inline
+_T
+cftal::hsum(const vec<_T, 1>& v)
 {
     return v();
 }

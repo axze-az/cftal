@@ -24,14 +24,6 @@
 
 namespace cftal {
 
-    // horizontal add 
-    template <typename _T, std::size_t _N>
-    _T hsum(const vec<_T, _N>& n);
-
-    // horizontal add 
-    template <typename _T>
-    _T hsum(const vec<_T, 1>& n);
-
     // dot product
     template <typename _T, std::size_t _N>
     _T dot_product(const vec<_T, _N>& a, const vec<_T, _N>& b);
@@ -97,23 +89,6 @@ namespace cftal {
                 const _V4& a0, const _V4& a1, const _V4& a2, const _V4& a3,
                 const _V4& b0, const _V4& b1, const _V4& b2, const _V4& b3);
 
-}
-
-template <typename _T, std::size_t _N>
-inline
-_T
-cftal::hsum(const vec<_T, _N>& v)
-{
-    vec<_T, _N/2> t=high_half(v)+low_half(v);
-    return hsum(t);
-}
-
-template <typename _T>
-inline
-_T
-cftal::hsum(const vec<_T, 1>& v)
-{
-    return v();
 }
 
 template <typename _T, std::size_t _N>

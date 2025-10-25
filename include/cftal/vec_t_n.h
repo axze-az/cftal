@@ -624,15 +624,19 @@ namespace cftal {
                      vec<_T, _N> >
     modf(const vec<_T, _N>& x, vec<_T, _N>* iptr);
 
-    // return the maximum element
+    // return the maximum value of all elements
     template <typename _T, std::size_t _N>
     _T
     hmax(const vec<_T, _N>& v);
 
-    // return the minimum element
+    // return the minimum value of all elements
     template <typename _T, std::size_t _N>
     _T
     hmin(const vec<_T, _N>& v);
+
+    // horizontal add: sum of all elements
+    template <typename _T, std::size_t _N>
+    _T hsum(const vec<_T, _N>& n);
 
     // load and store vectors from and to memory
     template <class _T, std::size_t _N>
@@ -1125,6 +1129,15 @@ _T
 cftal::hmin(const vec<_T, _N>& v)
 {
     return hmin(min(low_half(v), high_half(v)));
+}
+
+template <typename _T, std::size_t _N>
+inline
+_T
+cftal::hsum(const vec<_T, _N>& v)
+{
+    vec<_T, _N/2> t=high_half(v)+low_half(v);
+    return hsum(t);
 }
 
 template <int32_t _I0, int32_t _I1, typename _T>
