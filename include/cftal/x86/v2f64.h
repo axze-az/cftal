@@ -147,7 +147,7 @@ namespace cftal {
     v2f64 min(const v2f64& a, const v2f64& b);
 
     double hmax(const v2f64& v);
-    double min_element(const v2f64& v);
+    double hmin(const v2f64& v);
 
     v2f64 abs(const v2f64& a);
     v2f64 sqrt(const v2f64& a);

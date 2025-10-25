@@ -99,7 +99,7 @@ namespace cftal {
     v2f32 min(const v2f32& a, const v2f32& b);
 
     float hmax(const v2f32& v);
-    float min_element(const v2f32& v);
+    float hmin(const v2f32& v);
 
     v2f32 abs(const v2f32& a);
     v2f32 fabs(const v2f32& a);
@@ -503,7 +503,7 @@ cftal::hmax(const v2f32& v)
 
 inline
 float
-cftal::min_element(const v2f32& v)
+cftal::hmin(const v2f32& v)
 {
     v2f32 vp=permute<1, 0>(v);
     v2f32 r=min(v, vp);

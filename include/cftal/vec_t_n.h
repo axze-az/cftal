@@ -632,7 +632,7 @@ namespace cftal {
     // return the minimum element
     template <typename _T, std::size_t _N>
     _T
-    min_element(const vec<_T, _N>& v);
+    hmin(const vec<_T, _N>& v);
 
     // load and store vectors from and to memory
     template <class _T, std::size_t _N>
@@ -1122,9 +1122,9 @@ cftal::hmax(const vec<_T, _N>& v)
 template <class _T, std::size_t _N>
 inline
 _T
-cftal::min_element(const vec<_T, _N>& v)
+cftal::hmin(const vec<_T, _N>& v)
 {
-    return min_element(min(low_half(v), high_half(v)));
+    return hmin(min(low_half(v), high_half(v)));
 }
 
 template <int32_t _I0, int32_t _I1, typename _T>

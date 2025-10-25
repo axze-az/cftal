@@ -603,11 +603,11 @@ cftal::hmax(const v4f64& v)
 
 inline
 double
-cftal::min_element(const v4f64& v)
+cftal::hmin(const v4f64& v)
 {
     v2f64 hh= high_half(v);
     v2f64 lh= low_half(v);
-    return min_element(min(lh, hh));
+    return hmin(min(lh, hh));
 }
 
 
