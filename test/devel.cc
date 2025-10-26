@@ -245,12 +245,23 @@ bessel_recurrence_backward(int nm1, arg_t<vec<_T, _N> > x)
     using _TR = math::func_traits<vec<_T, _N>, vec<int32_t, _N> >;
 
     using vf_type = typename _TR::vf_type;
+    using vmf_type = typename _TR::vmf_type;
+    using vmi_type = typename _TR::vmi_type;
+    using vu_type = vec<uint32_t, _N>;
+    using vmu_type = typename vec<uint32_t, _N>::mask_type;
     // using vi_type = typename _TR::vi_type;
     using v_t = typename _TR::vdf_type;
     using ops = d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
 
-    vec<uint32_t, _N> vm=calc_m_kahan(nm1, x, traits_t::rcp_eps());
-    // std::cout << "jn(" << nm1+1 << ", " << x << ") _N=" << _N  <<'\n';
+    auto sel_vdf=[](vmf_type m, v_t t, v_t f) -> v_t {
+        return vt_t(_T::sel(m, t[0], f[0]),
+                    _T::sel(m, t[1], f[1]));
+    };
+    auto vmu_to_vmi=[](vmu_type t)->vmi_type {
+        return vmi_type(t);
+    };
+
+    vu_type vm=calc_m_kahan(nm1, x, traits_t::rcp_eps());
     uint32_t m=hmax(vm);
 
     v_t rec_x;
@@ -259,22 +270,31 @@ bessel_recurrence_backward(int nm1, arg_t<vec<_T, _N> > x)
     v_t ynp1=_T(0.0);
     v_t rn=ynp1;
     v_t norm = _T(0.0);
-    _T vi(2*m);
+    vf_type vi=cvt<vf_type>(vm)*_T(2);
     for (uint32_t i=m; i > 0; --i) {
+        vmf_type ivalid=_T::vmi_to_vmf(vmu_to_vmi(vm<(i+1)));
         v_t ynm1=(vi*rec_x) * yn - ynp1;
         if ((i&1)==0) {
-            v_t yn2=mul_pwr2(yn, 2.0);
+            v_t yn2=mul_pwr2(yn, _T::sel(ivalid, 2.0, 0.0));
             norm += yn2;
         }
-        ynp1 = yn;
-        yn = ynm1;
-        vi -= _T(2.0);
+        ynp1 = sel_vdf(ivalid, yn, ynp1);
+        yn = sel_vdf(ivalid, ynm1, yn);
+        vi -= _T::sel(ivalid, _T(2.0), _T(0.0));
         if (yn[0] > traits_t::scale_above()) {
             // scale if required
-            ynp1 = mul_pwr2(ynp1, traits_t::scale_factor());
-            norm = mul_pwr2(norm, traits_t::scale_factor());
-            rn = mul_pwr2(rn, traits_t::scale_factor());
-            yn = mul_pwr2(yn, traits_t::scale_factor());
+            ynp1 = sel_vdf(ivalid,
+                           mul_pwr2(ynp1, traits_t::scale_factor()),
+                           ynp1);
+            norm = sel_vdf(ivalid,
+                           mul_pwr2(norm, traits_t::scale_factor()),
+                           norm);
+            rn = sel_vdf(ivalid,
+                         mul_pwr2(rn, traits_t::scale_factor()),
+                         rn);
+            yn = sel_vdf(ivalid,
+                         mul_pwr2(yn, traits_t::scale_factor()),
+                         yn);
         }
         if (i == static_cast<uint32_t>(nm1+2)) {
             rn=yn;
