@@ -64,6 +64,13 @@ namespace cftal {
                      const vec<_TY, _N>& y,
                      _F f);
 
+    // execute a scalar function f(x,y ) on every element of x
+    template <typename _T, size_t _N, typename _F>
+    vec<_T, _N>
+    call_scalar_func(const vec<_T, _N>& x,
+                     const vec<_T, _N>& y,
+                     _F f);
+
     // transpose a 4x4 matrix
     template <class _V4>
     void
@@ -210,6 +217,13 @@ cftal::call_scalar_func(const vec<_TX, _N>& x, const vec<_TY, _N>& y, _F f)
     }
     vr_type r=mem<vr_type>::load(ar._a, _N);
     return r;
+}
+
+template <typename _T, size_t _N, typename _F>
+cftal::vec<_T, _N>
+cftal::call_scalar_func(const vec<_T, _N>& x, const vec<_T, _N>& y, _F f)
+{
+    return call_scalar_func<_T, _T, _T, _N, _F>(x, y, f);
 }
 
 template <class _V4>
