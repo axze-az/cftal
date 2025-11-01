@@ -83,7 +83,7 @@ cftal::test::lzma::handle::handle(mode m)
         r=lzma_stream_decoder_mt(&_strm, &mt);
 #endif
         if (r != LZMA_OK) {
-            throw std::runtime_error("decompress oops");
+            throw std::runtime_error("decompression failed");
         }
     } else if (m==mode::compress) {
 #if 0
@@ -97,10 +97,10 @@ cftal::test::lzma::handle::handle(mode m)
         r=lzma_stream_encoder_mt(&_strm, &mt);
 #endif
         if (r != LZMA_OK) {
-            throw std::runtime_error("compress oops");
+            throw std::runtime_error("compression failed");
         }
     } else {
-        throw std::runtime_error("oops");
+        throw std::runtime_error("unknown operation mode");
     }
 }
 
