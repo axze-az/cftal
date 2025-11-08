@@ -83,6 +83,7 @@ namespace cftal { namespace devel {
     bessel_taylor(int nm1, _T x);
 
     double bessel_j(int n, double x);
+
 }}
 
 
@@ -437,10 +438,11 @@ int main(int argc, char** argv)
 
     std::cout << std::scientific << std::setprecision(18);
     // const int n=0; // avoid compile time evaluation of jn(n, x)
-    for (int n=0x7fff; n>-1; --n) {
+    for (int n=34; n>-1; --n) {
         const double xd=0x1p140;
         for (double x=0.0; x<=0x1p-127; x+=1.0/xd) {
-            double jn= bessel_j(n, x);
+            // double jn= bessel_j(n, x);
+            double jn=bessel_taylor(n-1, x);
             double jn_mpfr, jn_glibc;
             std::pair<double, double> ulp1_interval;
             switch (n) {
@@ -464,7 +466,10 @@ int main(int argc, char** argv)
                           << ' ' << x << std::endl;
                 std::cout << "bessel_j: " << jn << std::endl;
                 std::cout << "glibc:    " << jn_glibc << std::endl;
-                std::cout << "mfpr:     " << jn_mpfr << std::endl;
+                std::cout << "mfpr:     " << jn_mpfr
+                              << " "  << ulp1_interval.first
+                              << " "  << ulp1_interval.second
+                              << std::endl;
                 std::cout << std::scientific;
             }
             if (jn != ulp1_interval.first && jn != ulp1_interval.second) {
@@ -475,7 +480,10 @@ int main(int argc, char** argv)
                           << ' ' << x << std::endl;
                     std::cout << "bessel_j: " << jn << std::endl;
                     std::cout << "glibc:    " << jn_glibc << std::endl;
-                    std::cout << "mfpr:     " << jn_mpfr << std::endl;
+                    std::cout << "mfpr:     " << jn_mpfr
+                              << " "  << ulp1_interval.first
+                              << " "  << ulp1_interval.second
+                              << std::endl;
                 }
                 std::cout << "delta: " << jn - jn_mpfr
                           << " distance: " << test::distance(jn, jn_mpfr)
