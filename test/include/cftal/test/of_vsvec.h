@@ -507,6 +507,16 @@ cftal::test::of_vsvec<_T, _A>::execute()
     vm_t x1=select(x0_eq_x0, x0, x0);
     vm_t x2=select(x0_eq_x0, x0+x0, _T(2.0)*x0);
 
+    if constexpr (is_floating_point_v<_T>) {
+        static_assert(std::is_same_v<_T, float> ||
+                      std::is_same_v<_T, double> ||
+                      std::is_same_v<_T, f16_t> ||
+                      std::is_same_v<_T, bf16_t>,
+                      "wrong assumption");
+        vm_t xnan=isnan(x0);
+        vm_t xinf=isinf(x0);
+    }
+
     const func_domain<_T>& d_full=domain_full_x_axis<_T>::domains[0];
 
     bool r = true;
