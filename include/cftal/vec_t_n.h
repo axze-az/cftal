@@ -30,8 +30,6 @@
 #include <cftal/type_traits.h>
 #include <iosfwd>
 #include <iostream>
-#include <algorithm>
-
 
 namespace cftal {
 
