@@ -6,3 +6,4 @@ debug*
 .kdev4*
 *~
 *.bin
+compile_command.json
