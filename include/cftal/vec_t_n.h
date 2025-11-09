@@ -26,6 +26,7 @@
 #include <cftal/arg.h>
 #include <cftal/mem.h>
 #include <cftal/mask.h>
+#include <cftal/fenv.h>
 #include <cftal/impl/masks.h>
 #include <cftal/type_traits.h>
 #include <iosfwd>
