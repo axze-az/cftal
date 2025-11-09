@@ -75,7 +75,6 @@ inline
 cftal::scoped_ftz_daz_mode::~scoped_ftz_daz_mode()
 {
 #if defined (__SSE__)
-    // if (_mm_getcsr()!=_csr)
     if (_restore)
         _mm_setcsr(_csr);
 #endif
