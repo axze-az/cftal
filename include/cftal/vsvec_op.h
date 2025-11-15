@@ -696,79 +696,79 @@ namespace cftal {
         return rr;                                                      \
     }                                                                   \
                                                                         \
-        /* cmp scalar, vsvec */                                         \
-        template <typename _T, typename _A>                             \
-        typename vsvec<_T, _A>::mask_type                               \
-        operator the_op (const _T& l, const vsvec<_T, _A>& r) {         \
-            expr< op_type <vsvec<_T, _A>>, _T, vsvec<_T, _A> > e(l, r); \
-            typename vsvec<_T, _A>::mask_type rr(e);                    \
-            return rr;                                                  \
-        }                                                               \
+    /* cmp scalar, vsvec */                                             \
+    template <typename _T, typename _A>                                 \
+    typename vsvec<_T, _A>::mask_type                                   \
+    operator the_op (const _T& l, const vsvec<_T, _A>& r) {             \
+        expr< op_type <vsvec<_T, _A>>, _T, vsvec<_T, _A> > e(l, r);     \
+        typename vsvec<_T, _A>::mask_type rr(e);                        \
+        return rr;                                                      \
+    }                                                                   \
                                                                         \
-        /* cmp vsvec, scalar */                                         \
-        template <typename _T, typename _A>                             \
-        typename vsvec<_T, _A>::mask_type                               \
-        operator the_op (const vsvec<_T, _A>& l, const _T& r) {         \
-            expr< op_type <vsvec<_T, _A>>, vsvec<_T, _A>, _T> e(l, r);  \
-            typename vsvec<_T, _A>::mask_type rr(e);                    \
-            return rr;                                                  \
-        }                                                               \
+    /* cmp vsvec, scalar */                                             \
+    template <typename _T, typename _A>                                 \
+    typename vsvec<_T, _A>::mask_type                                   \
+    operator the_op (const vsvec<_T, _A>& l, const _T& r) {             \
+        expr< op_type <vsvec<_T, _A>>, vsvec<_T, _A>, _T> e(l, r);      \
+        typename vsvec<_T, _A>::mask_type rr(e);                        \
+        return rr;                                                      \
+    }                                                                   \
                                                                         \
-        /* cmp expr, vsvec */                                           \
-        template <typename _T, typename _A,                             \
-                  template <class _U> class _OP,                        \
-                  class _L, class _R>                                   \
-        typename vsvec<_T, _A>::mask_type                               \
-        operator the_op (const expr<_OP<vsvec<_T, _A>>, _L, _R>& l,     \
-                         const vsvec<_T, _A>& r) {                      \
-            expr<op_type <vsvec<_T, _A>>,                               \
-                 expr<_OP<vsvec<_T, _A>>, _L, _R>,                      \
-                 vsvec<_T, _A> > e(l, r);                               \
-            typename vsvec<_T, _A>::mask_type rr(e);                    \
-            return rr;                                                  \
-        }                                                               \
+    /* cmp expr, vsvec */                                               \
+    template <typename _T, typename _A,                                 \
+              template <class _U> class _OP,                            \
+              class _L, class _R>                                       \
+    typename vsvec<_T, _A>::mask_type                                   \
+    operator the_op (const expr<_OP<vsvec<_T, _A>>, _L, _R>& l,         \
+                     const vsvec<_T, _A>& r) {                          \
+        expr<op_type <vsvec<_T, _A>>,                                   \
+             expr<_OP<vsvec<_T, _A>>, _L, _R>,                          \
+             vsvec<_T, _A> > e(l, r);                                   \
+        typename vsvec<_T, _A>::mask_type rr(e);                        \
+        return rr;                                                      \
+    }                                                                   \
                                                                         \
-        /* cmp expr, scalar */                                          \
-        template <typename _T, typename _A,                             \
-                  template <class _U> class _OP,                        \
-                  class _L, class _R>                                   \
-        typename vsvec<_T>::mask_type                                   \
-        operator the_op (const expr<_OP<vsvec<_T, _A>>, _L, _R>& l,     \
-                         const _T& r) {                                 \
-            expr<op_type <vsvec<_T, _A>>,                               \
-                 expr<_OP<vsvec<_T, _A>>, _L, _R>,                      \
-                 _T> e(l, r);                                           \
-            typename vsvec<_T>::mask_type rr(e);                        \
-            return rr;                                                  \
-        }                                                               \
+    /* cmp expr, scalar */                                              \
+    template <typename _T, typename _A,                                 \
+              template <class _U> class _OP,                            \
+              class _L, class _R>                                       \
+    typename vsvec<_T>::mask_type                                       \
+    operator the_op (const expr<_OP<vsvec<_T, _A>>, _L, _R>& l,         \
+                     const _T& r) {                                     \
+        expr<op_type <vsvec<_T, _A>>,                                   \
+             expr<_OP<vsvec<_T, _A>>, _L, _R>,                          \
+             _T> e(l, r);                                               \
+        typename vsvec<_T>::mask_type rr(e);                            \
+        return rr;                                                      \
+    }                                                                   \
                                                                         \
-        /* cmp vsvec, expr */                                           \
-        template <typename _T, typename _A,                             \
-                  template <class _U> class _OP,                        \
-                  class _L, class _R>                                   \
-        typename vsvec<_T, _A>::mask_type                               \
-        operator the_op (const vsvec<_T, _A>& l,                        \
-                         const expr<_OP<vsvec<_T, _A>>, _L, _R>& r) {   \
-            expr<op_type <vsvec<_T, _A>>,                               \
-                 vsvec<_T, _A>,                                         \
-                 expr<_OP<vsvec<_T, _A>>, _L, _R> > e(l, r);            \
-            typename vsvec<_T, _A>::mask_type rr(e);                    \
-            return rr;                                                  \
-        }                                                               \
+    /* cmp vsvec, expr */                                               \
+    template <typename _T, typename _A,                                 \
+              template <class _U> class _OP,                            \
+              class _L, class _R>                                       \
+    typename vsvec<_T, _A>::mask_type                                   \
+    operator the_op (const vsvec<_T, _A>& l,                            \
+                     const expr<_OP<vsvec<_T, _A>>, _L, _R>& r) {       \
+        expr<op_type <vsvec<_T, _A>>,                                   \
+             vsvec<_T, _A>,                                             \
+             expr<_OP<vsvec<_T, _A>>, _L, _R> > e(l, r);                \
+        typename vsvec<_T, _A>::mask_type rr(e);                        \
+        return rr;                                                      \
+    }                                                                   \
                                                                         \
-        /* cmp vsvec, expr */                                           \
-        template <typename _T, typename _A,                             \
-                  template <class _U> class _OP,                        \
-                  class _L, class _R>                                   \
-        typename vsvec<_T>::mask_type                                   \
-        operator the_op (const _T& l,                                   \
-                         const expr<_OP<vsvec<_T, _A>>, _L, _R>& r) {   \
-            expr<op_type <vsvec<_T, _A>>,                               \
-                 _T,                                                    \
-                 expr<_OP<vsvec<_T, _A>>, _L, _R> > e(l, r);            \
-            typename vsvec<_T>::mask_type rr(e);                        \
-            return rr;                                                  \
-        }                                                               \
+    /* cmp vsvec, expr */                                               \
+    template <typename _T, typename _A,                                 \
+              template <class _U> class _OP,                            \
+              class _L, class _R>                                       \
+    typename vsvec<_T>::mask_type                                       \
+    operator the_op (const _T& l,                                       \
+                     const expr<_OP<vsvec<_T, _A>>, _L, _R>& r) {       \
+        expr<op_type <vsvec<_T, _A>>,                                   \
+             _T,                                                        \
+             expr<_OP<vsvec<_T, _A>>, _L, _R> > e(l, r);                \
+        typename vsvec<_T>::mask_type rr(e);                            \
+        return rr;                                                      \
+    }                                                                   \
 
 
     CMP_OP(<, op::lt)
