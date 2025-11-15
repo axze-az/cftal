@@ -20,8 +20,6 @@
 
 #include <cftal/fenv.h>
 #include <cftal/constants.h>
-#include <cftal/x86/const.h>
-#include <cftal/x86/perm.h>
 #include <cftal/x86/ops_0.h>
 
 namespace cftal {

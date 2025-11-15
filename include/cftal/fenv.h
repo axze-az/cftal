@@ -19,6 +19,7 @@
 #define __CFTAL_FENV_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/types.h>
 #include <fenv.h>
 #if defined (__SSE__)
 #include <cftal/std_types.h>
