@@ -19,6 +19,7 @@
 #define __CFTAL_VSVEC_MISC_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/vsvec_t_a.h>
 #include <cftal/vec_load_strided.h>
 #include <cftal/impl/dot_product.h>
 #include <cftal/impl/hsum.h>
