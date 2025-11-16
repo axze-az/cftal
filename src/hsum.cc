@@ -16,7 +16,6 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
 #include "cftal/impl/hsum.h"
-#include <sstream>
 
 void
 cftal::impl::hsum_stride_zero()
