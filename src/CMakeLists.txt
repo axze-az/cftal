@@ -120,6 +120,7 @@ set (CSRCS
     # error messages for implementations:
     dot_product.cc
     hsum.cc
+    hminmax.cc
     # factorials
     factorial_f64.cc
     factorial_f32.cc

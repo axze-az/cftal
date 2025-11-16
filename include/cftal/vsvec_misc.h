@@ -23,11 +23,28 @@
 #include <cftal/vec_load_strided.h>
 #include <cftal/impl/dot_product.h>
 #include <cftal/impl/hsum.h>
+#include <cftal/impl/hminmax.h>
 #include <stdexcept>
 #include <sstream>
 
 namespace cftal {
 
+    template <typename _T, typename _A>
+    _T
+    hmin(const vsvec<_T, _A>& a);
+
+    template <typename _T, typename _A>
+    _T
+    hmin(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a);
+
+    template <typename _T, typename _A>
+    _T
+    hmax(const vsvec<_T, _A>& a);
+
+    template <typename _T, typename _A>
+    _T
+    hmax(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a);
+        
     template <typename _T, typename _A>
     _T
     hsum(const vsvec<_T, _A>& a);
@@ -83,6 +100,44 @@ namespace cftal {
     dot_product(const vsvec<f16_t, _A>& a, int32_t stride_a, size_t offset_a,
                 const vsvec<f16_t, _A>& b, int32_t stride_b, size_t offset_b);
 
+}
+
+template <typename _T, typename _A>
+_T
+cftal::
+hmax(const vsvec<_T, _A>& a)
+{
+    return impl::hminmax<_T, impl::opminmax::max>(a.size(), a.cbegin());
+}
+
+template <typename _T, typename _A>
+_T
+cftal::
+hmax(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a)
+{
+    if (stride_a==0)
+        impl::hminmax_stride_zero();
+    return impl::hminmax<_T, impl::opminmax::max>(
+        a.size()/stride_a, a.cbegin(), stride_a, offset_a);
+}
+
+template <typename _T, typename _A>
+_T
+cftal::
+hmin(const vsvec<_T, _A>& a)
+{
+    return impl::hminmax<_T, impl::opminmax::min>(a.size(), a.cbegin());
+}
+
+template <typename _T, typename _A>
+_T
+cftal::
+hmin(const vsvec<_T, _A>& a, int32_t stride_a, size_t offset_a)
+{
+    if (stride_a==0)
+        impl::hminmax_stride_zero();
+    return impl::hminmax<_T, impl::opminmax::min>(
+        a.size()/stride_a, a.cbegin(), stride_a, offset_a);
 }
 
 template <typename _T, typename _A>
