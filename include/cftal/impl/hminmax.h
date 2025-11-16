@@ -26,11 +26,11 @@
 namespace cftal {
     namespace impl {
 
-	// arguments for hminmax
-	enum class opminmax {
-	    max,
-	    min
-	};
+        // arguments for hminmax
+        enum class opminmax {
+            max,
+            min
+        };
 
         // horizontal maximization/minimization of _T arrays
         template <typename _T, opminmax _M>
@@ -47,7 +47,7 @@ namespace cftal {
         template <typename _T, opminmax _M>
         _T
         hminmax(size_t s,
-		const _T* a, int32_t stride_a, size_t offset_a);
+                const _T* a, int32_t stride_a, size_t offset_a);
     }
 }
 
@@ -66,9 +66,9 @@ hminmax(size_t s, const _T* a)
         using v_t = vec<_T, _N>;
         const size_t n4 = s & ~(_N4 - 1);
         const _T init = _M == opminmax::min ?
-	    std::numeric_limits<_T>::max() :  ( is_floating_point_v<_T> ?
-						-std::numeric_limits<_T>::max()
-						: std::numeric_limits<_T>::min());
+            std::numeric_limits<_T>::max()
+            : (is_floating_point_v<_T> ? -std::numeric_limits<_T>::max() :
+               std::numeric_limits<_T>::min());
         _T r0(init);
         if (n4) {
             v_t r1(init), r2(init), r3(init);
@@ -77,51 +77,51 @@ hminmax(size_t s, const _T* a)
                 v_t a1 = mem<v_t>::load(a+i+1*_N);
                 v_t a2 = mem<v_t>::load(a+i+2*_N);
                 v_t a3 = mem<v_t>::load(a+i+3*_N);
-		if ( _M == opminmax::max) {
-		    r0 = max(r0, a0);
-		    r1 = max(r1, a1);
-		    r2 = max(r2, a2);
+                if ( _M == opminmax::max) {
+                    r0 = max(r0, a0);
+                    r1 = max(r1, a1);
+                    r2 = max(r2, a2);
                     r3 = max(r3, a3);
                 } else {
-		    r0 = min(r0, a0);
-		    r1 = min(r1, a1);
-		    r2 = min(r2, a2);
+                    r0 = min(r0, a0);
+                    r1 = min(r1, a1);
+                    r2 = min(r2, a2);
                     r3 = min(r3, a3);
-		}
+                }
             }
             r2 += r3;
             r0 += r1;
             r0 += r2;
-	    if ( _M == opminmax::max) {
-		r2 = max(r2, r3);
-		r0 = max(r0, r1);
-		r0 = max(r0, r2);
-	    } else {
-		r2 = max(r2, r3);
-		r0 = max(r0, r1);
-		r0 = max(r0, r2);
-	    }
+            if ( _M == opminmax::max) {
+                r2 = max(r2, r3);
+                r0 = max(r0, r1);
+                r0 = max(r0, r2);
+            } else {
+                r2 = max(r2, r3);
+                r0 = max(r0, r1);
+                r0 = max(r0, r2);
+            }
         }
         for (size_t i=n4; i<n1; i+= _N) {
             v_t a0 = mem<v_t>::load(a+i+0*_N);
-	    if ( _M == opminmax::max) {
-		r0 = max(r0, a0);
-	    } else {
-		r0 = min(r0, a0);
-	    }
+            if ( _M == opminmax::max) {
+                r0 = max(r0, a0);
+            } else {
+                r0 = min(r0, a0);
+            }
         }
-	if ( _M == opminmax::max) {
-	    r = hmax(r0);
+        if ( _M == opminmax::max) {
+            r = hmax(r0);
         } else {
-	    r = hmin(r0);
-	}
+            r = hmin(r0);
+        }
     }
     for (size_t i = n1; i < s; ++i) {
-	if ( _M == opminmax::max) {
-	    r = max(r, a[i]);
-	} else {
-	    r = min(r, a[i]);
-	}
+        if ( _M == opminmax::max) {
+            r = max(r, a[i]);
+        } else {
+            r = min(r, a[i]);
+        }
     }
     return _T(r);
 }
@@ -150,9 +150,9 @@ hminmax(size_t s,
         const size_t n4 = s & ~(_N4 - 1);
         using vi_t = vec<int32_t, _N>;
         const _T init = _M == opminmax::min ?
-	    std::numeric_limits<_T>::max() :  ( is_floating_point_v<_T> ?
-						-std::numeric_limits<_T>::max()
-						: std::numeric_limits<_T>::min());
+            std::numeric_limits<_T>::max() :  ( is_floating_point_v<_T> ?
+                                                -std::numeric_limits<_T>::max()
+                                                : std::numeric_limits<_T>::min());
         _T r0(init);
         vi_t idx_a=
             impl::indices_from_stride<vi_t, int32_t>::create(stride_a);
@@ -164,51 +164,51 @@ hminmax(size_t s,
                 v_t a1 = lck_a.fromp(a+(i+1*_N)*stride_a+offset_a);
                 v_t a2 = lck_a.fromp(a+(i+2*_N)*stride_a+offset_a);
                 v_t a3 = lck_a.fromp(a+(i+3*_N)*stride_a+offset_a);
-		if ( _M == opminmax::max) {
-		    r0 = max(r0, a0);
-		    r1 = max(r1, a1);
-		    r2 = max(r2, a2);
+                if ( _M == opminmax::max) {
+                    r0 = max(r0, a0);
+                    r1 = max(r1, a1);
+                    r2 = max(r2, a2);
                     r3 = max(r3, a3);
                 } else {
-		    r0 = min(r0, a0);
-		    r1 = min(r1, a1);
-		    r2 = min(r2, a2);
+                    r0 = min(r0, a0);
+                    r1 = min(r1, a1);
+                    r2 = min(r2, a2);
                     r3 = min(r3, a3);
-		}
+                }
             }
             r2 += r3;
             r0 += r1;
             r0 += r2;
-	    if ( _M == opminmax::max) {
-		r2 = max(r2, r3);
-		r0 = max(r0, r1);
-		r0 = max(r0, r2);
-	    } else {
-		r2 = max(r2, r3);
-		r0 = max(r0, r1);
-		r0 = max(r0, r2);
-	    }
+            if ( _M == opminmax::max) {
+                r2 = max(r2, r3);
+                r0 = max(r0, r1);
+                r0 = max(r0, r2);
+            } else {
+                r2 = max(r2, r3);
+                r0 = max(r0, r1);
+                r0 = max(r0, r2);
+            }
         }
         for (size_t i=n4; i<n1; i+= _N) {
             v_t a0 = lck_a.fromp(a+(i+0*_N)*stride_a+offset_a);
-	    if ( _M == opminmax::max) {
-		r0 = max(r0, a0);
-	    } else {
-		r0 = min(r0, a0);
-	    }
+            if ( _M == opminmax::max) {
+                r0 = max(r0, a0);
+            } else {
+                r0 = min(r0, a0);
+            }
         }
-	if ( _M == opminmax::max) {
-	    r = hmax(r0);
+        if ( _M == opminmax::max) {
+            r = hmax(r0);
         } else {
-	    r = hmin(r0);
-	}
+            r = hmin(r0);
+        }
     }
     for (size_t i = n1; i < s; ++i) {
-	if ( _M == opminmax::max) {
-	    r = max(r, a[i*stride_a+offset_a]);
-	} else {
-	    r = min(r, a[i*stride_a+offset_a]);
-	}
+        if ( _M == opminmax::max) {
+            r = max(r, a[i*stride_a+offset_a]);
+        } else {
+            r = min(r, a[i*stride_a+offset_a]);
+        }
     }
     return _T(r);
 }
