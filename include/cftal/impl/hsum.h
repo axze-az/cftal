@@ -30,7 +30,7 @@ namespace cftal {
         _T
         hsum(size_t s, const _T* a);
 
-        // error message for dot_product with stride equal to zero
+        // error message for hsum with stride equal to zero
         [[noreturn]]
         void
         hsum_stride_zero();
