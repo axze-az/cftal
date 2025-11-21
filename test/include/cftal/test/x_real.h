@@ -61,7 +61,7 @@ namespace cftal {
         struct check_x_real_traits<d_real, double> {
             static
             double eps() {
-                return 0x1.0p-104; // std::ldexp(1.0, -104);
+                return 0x1.0p-104;
             }
 
             template <typename _D, typename _RND>
@@ -84,7 +84,7 @@ namespace cftal {
         struct check_x_real_traits<t_real, double> {
             static
             double eps() {
-                return 0x1.0p-156; // std::ldexp(1.0, -156);
+                return 0x1.0p-156;
             }
 
             template <typename _D, typename _RND>
@@ -111,7 +111,7 @@ namespace cftal {
         struct check_x_real_traits<d_real, float> {
             static
             float eps() {
-                return 0x1.0p-47f; // std::ldexp(1.0, -47);
+                return 0x1.0p-47f;
             }
             template <typename _D, typename _RND>
             static
@@ -133,8 +133,7 @@ namespace cftal {
         struct check_x_real_traits<t_real, float> {
             static
             float eps() {
-                // return std::pow(2, -64);
-                return 0x1.0p-65f; //std::ldexp(1.0, -65);
+                return 0x1.0p-65f;
             }
             template <typename _D, typename _RND>
             static
@@ -159,7 +158,7 @@ namespace cftal {
         struct check_x_real_traits<d_real, f16_t> {
             static
             float eps() {
-                return 0x1.0p-21f; // std::ldexp(1.0, -47);
+                return 0x1.0p-21f;
             }
 
             template <typename _D, typename _RND>
@@ -177,8 +176,6 @@ namespace cftal {
 
             constexpr static const bool check_div = false;
         };
-
-
     }
 }
 
