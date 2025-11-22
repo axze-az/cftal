@@ -19,10 +19,9 @@
 #define __CFTAL_VEC_CVT_H__ 1
 
 #include <cftal/cvt.h>
-#include <cftal/vec.h>
+#include <cftal/vec_spec.h>
 #include <cftal/as.h>
 #include <cftal/bitops.h>
-#include <utility>
 
 namespace cftal {
 
