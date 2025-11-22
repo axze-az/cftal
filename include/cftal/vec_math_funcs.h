@@ -27,8 +27,6 @@
 
 namespace cftal {
 
-    namespace impl {
-    }
 
     // returns linear interpolation between a and b
     template <typename _T, typename _T1, std::size_t _N>
@@ -507,8 +505,6 @@ combine_f32pair_to_f64(const vec<float, _N>& h, const vec<float, _N>& l)
     vhf_type dl = cvt<vhf_type>(l);
     return dh + dl;
 }
-
-
 
 // Local variables:
 // mode: c++
