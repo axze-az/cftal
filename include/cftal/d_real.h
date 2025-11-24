@@ -27,7 +27,6 @@
 #include <cftal/fp_expansion.h>
 #include <cmath>
 #include <cftal/type_traits.h>
-#include <limits>
 
 namespace cftal {
 
