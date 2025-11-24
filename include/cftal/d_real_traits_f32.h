@@ -20,7 +20,10 @@
 
 #include <cftal/config.h>
 #include <cftal/std_types.h>
+#include <cftal/as.h>
+#include <cftal/constants.h>
 #include <cftal/d_real_traits.h>
+#include <cmath>
 
 namespace cftal {
 
@@ -73,7 +76,8 @@ namespace cftal {
             constexpr const float split_scale_down = 1.0f/16384.0f;
             // 2^14
             constexpr const float split_scale_up = 16384.0f;
-            cmp_result_type is_big(std::fabs(a) > split_threshold);
+	    using std::fabs;
+            cmp_result_type is_big(fabs(a) > split_threshold);
             float temp;
             if (__unlikely(any_of_v(is_big))) {
                 a*=split_scale_down;
