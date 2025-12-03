@@ -1074,10 +1074,10 @@ namespace cftal {
     MFUNC_A1(isnan, f16_t, func::f_isnan)
     MFUNC_A1(isnan, bf16_t, func::f_isnan)
 
-    MFUNC_A1(signbit, float, func::f_isnan)
-    MFUNC_A1(signbit, double, func::f_isnan)
-    MFUNC_A1(signbit, f16_t, func::f_isnan)
-    MFUNC_A1(signbit, bf16_t, func::f_isnan)
+    MFUNC_A1(signbit, float, func::f_signbit)
+    MFUNC_A1(signbit, double, func::f_signbit)
+    MFUNC_A1(signbit, f16_t, func::f_signbit)
+    MFUNC_A1(signbit, bf16_t, func::f_signbit)
 
     // #undef FUNC_A1
 #define TFUNC_A2(the_func, op_type)                                     \
