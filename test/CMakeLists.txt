@@ -109,17 +109,28 @@ function(target_add_test_libs arg1)
     target_add_mpfr_libs(${arg1})
 endfunction()
 
+# arguments are the test executable name with the name of the only
+# source file beeing the executable name with .cc appended or the
+# executable name and the names of ALL source files
 function(test_prog arg1)
-    #add_executable(${arg1} ${arg1}.cc ${TEST_HDRS})
+  #message("${ARGV}")
+  set(srcs ${ARGN})  
+  #message("${srcs}")
+  if ("${srcs}" STREQUAL "")
+    #message("using default sources for ${arg1}")
     add_executable(${arg1} ${arg1}.cc)
-    target_add_test_libs(${arg1})
-    add_test(NAME ${arg1} COMMAND ${arg1})
+  else()
+    #message("using ${srcs} for ${arg1}")
+    add_executable(${arg1} ${srcs})
+  endif()
+  target_add_test_libs(${arg1})
+  add_test(NAME ${arg1} COMMAND ${arg1})
 endfunction()
 
 add_subdirectory(vec)
 add_subdirectory(vsvec)
 
-test_prog(test-tools)
+test_prog(test-tools test-tools.cc)
 
 test_prog(test-dint8)
 test_prog(test-duint8)
