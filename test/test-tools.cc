@@ -36,7 +36,7 @@ cftal::test::test_ulp_stats()
 {
     bool rc=true;
     ulp_stats st;
-    for (uint64_t i=0; i<0x7fff'ffffULL; ++i) {
+    for (uint64_t i=0; i<0x1'0000'0000ULL; ++i) {
 	if ((i & 0xFFFFFFFULL)==0xFFFFFFFULL) {
 	    std::cout << i << '\r' << std::flush;
 	}
