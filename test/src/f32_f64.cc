@@ -90,6 +90,10 @@ cftal::test::ulp_stats::deviations::inc(int32_t ulp)
         rulp = ulp < 0 ?
                -int32_t(log2_u)-lin_max : int32_t(log2_u)+lin_max;
     }
+    using std::max;
+    rulp = max(rulp, -int32_t(_zero_offset-1));
+    using std::min;
+    rulp = min(rulp, int32_t(_zero_offset-1));
     ++_v[_zero_offset + rulp].second;
 #else
     int32_t aulp=std::abs(ulp);
