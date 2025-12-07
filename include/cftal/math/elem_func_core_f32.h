@@ -2711,7 +2711,7 @@ __log_tbl_k12(arg_t<vf_type> xc)
     static const float ci[]={
         log_hp_c5, log_hp_c4, log_hp_c3
     };
-#if 0
+#if 1
     vf_type r=d_ops::xfma(xr, inv_c, -1.0f);
     vf_type r2=r*r;
     vf_type p=horner2(r, r2, ci);
