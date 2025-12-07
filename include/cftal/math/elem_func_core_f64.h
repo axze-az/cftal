@@ -3011,6 +3011,35 @@ __log_tbl_k12(arg_t<vf_type> xc)
     const double log_c9=+1.1116283564742583667151e-01;
 
     using ctbl=impl::d_real_constants<d_real<double>, double>;
+    static_assert(log_c1 == 1.0);
+    static_assert(log_c2 ==-0.5);
+    constexpr
+    static const double ci[]={
+        log_c9, log_c8, log_c7, log_c6,
+        log_c5, log_c4, log_c3
+    };
+#if 1
+    vf_type r=d_ops::xfma(xr, inv_c, -1.0);
+    vf_type r2=r*r;
+    vf_type p=horner2(r, r2, ci);
+
+    // thanks to the glibc developers for the lesson:
+    vf_type t1, t;
+    d_ops::add12(t1, t, kf* ctbl::m_ln2_cw[0], log_c_h);
+    vf_type t2, l2; // l2 error of t2
+    d_ops::add12(t2, l2, t1, r);
+    vf_type l1= kf* ctbl::m_ln2_cw[1] + t + log_c_l;
+    // exact because |log_c2| is a power of 2:
+    vf_type ar=log_c2 * r;
+    vf_type ar2, l3; // l3 error of ar2
+    d_ops::mul12(ar2, l3, ar, r);
+    vf_type r3=r*r2;
+    vf_type h, l4; // l4 error of h
+    d_ops::add12(h, l4, t2, ar2);
+    vf_type l=(l1+l2+l3+l4)+r3*p;
+    vf_type lh, ll;
+    d_ops::add12(lh, ll, h, l);
+#else
     vf_type r;
     vf_type rh, rl;
     if (d_real_traits<vf_type>::fma == true) {
@@ -3022,13 +3051,6 @@ __log_tbl_k12(arg_t<vf_type> xc)
         rh -= 1.0;
         r = rh + rl;
     }
-    static_assert(log_c1 == 1.0);
-    static_assert(log_c2 ==-0.5);
-    constexpr
-    static const double ci[]={
-        log_c9, log_c8, log_c7, log_c6,
-        log_c5, log_c4, log_c3
-    };
     vf_type r2=r*r;
     vf_type p=horner2(r, r2, ci);
 
@@ -3061,6 +3083,7 @@ __log_tbl_k12(arg_t<vf_type> xc)
     vf_type l=(l1+l2+l3+l4)+r3*p;
     vf_type lh= h + l;
     vf_type ll= h - lh + l;
+#endif
     return vdf_type(lh, ll);
 }
 
