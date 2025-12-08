@@ -63,7 +63,7 @@ configure the build system and build:
 
 You may also use gcc instead of clang:
 
-3. `CC=gcc-14 CXX=g++-14 cmake -DCMAKE_BUILD_TYPE=release ..`
+3. `CC=gcc-15 CXX=g++-15 cmake -DCMAKE_BUILD_TYPE=release ..`
 
 If you want to use vectors of double's for the calculation of some elementary
 and special functions for single precision, use
@@ -105,4 +105,4 @@ a pdf is created in ./doc containing some documentation.
 
 ## License
 
-This project is licensed under the LGPL v2.1License.
+This project is licensed under the LGPL v2.1 License.
