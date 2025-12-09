@@ -1165,6 +1165,26 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
                 r &= calc(va, vb, st, speed_only, cmp);
             }
         }
+	if constexpr (std::is_same_v<_T1, _T2>) {
+	    static constexpr const _T1 crit_arg_pairs[]={
+		// pow (double, double) no fma:
+		_T1(9.925633628733863123e-01), _T1(8.126575857146648923e+04)
+	    };
+	    for (auto ab=std::begin(crit_arg_pairs), ae=std::end(crit_arg_pairs);
+		 ab != ae;) {
+		_T1 ai=*ab; ++ab;
+		_T2 bi=*ab; ++ab;
+		std::fill(std::begin(va), std::end(va), ai);
+		std::fill(std::begin(vb), std::end(vb), bi);
+                r &= calc(va, vb, st, speed_only, cmp);
+                std::fill(std::begin(vb), std::end(vb), -bi);
+                r &= calc(va, vb, st, speed_only, cmp);
+                std::fill(std::begin(va), std::end(va), -ai);
+                r &= calc(va, vb, st, speed_only, cmp);
+                std::fill(std::begin(vb), std::end(vb), bi);
+                r &= calc(va, vb, st, speed_only, cmp);
+            }
+	}
     }
 
     std::mt19937_64 rnd;
