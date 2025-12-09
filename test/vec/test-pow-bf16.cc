@@ -81,5 +81,8 @@ int main(int argc, char** argv)
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st1 << std::endl;
+    std::cout <<"test of pow bf16 "
+	      << (rc== true ? "passed" : "failed")
+	      << ".\n";
     return (rc == true) ? 0 : 1;
 }
