@@ -21,5 +21,29 @@ test_prog(test-vsvec-flops)
 
 test_prog(test-vsvec-misc)
 
+test_prog(test-vsvec-rsqrt-f32
+  test-vsvec-rsqrt-f32.cc
+  vsvec-rsqrt-f32.cc)
+
+test_prog(test-vsvec-rsqrt-f64
+  test-vsvec-rsqrt-f64.cc
+  vsvec-rsqrt-f64.cc)
+
+test_prog(test-vsvec-exp-f32
+  test-vsvec-exp-f32.cc
+  vsvec-exp-f32.cc)
+
+test_prog(test-vsvec-exp-f64
+  test-vsvec-exp-f64.cc
+  vsvec-exp-f64.cc)
+
+test_prog(test-vsvec-log-f32
+  test-vsvec-log-f32.cc
+  vsvec-log-f32.cc)
+
+test_prog(test-vsvec-log-f64
+  test-vsvec-log-f64.cc
+  vsvec-log-f64.cc)
+
 add_executable(dev-vsvec dev-vsvec.cc)
 target_add_test_libs(dev-vsvec)

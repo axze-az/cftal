@@ -1,0 +1,39 @@
+//
+// Copyright (C) 2010-2025 Axel Zeuner
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
+//
+#include <cftal/test/vsvec_program.h>
+
+int main(int argc, char** argv)
+{
+    using namespace cftal::test;
+
+    const func_domain<double> di[]={
+        std::make_pair(-750.0, 710.0),
+        // check the denormal result range
+        std::make_pair(-750.0, -7.083964185322641924358322e+02)
+    };
+    const int shifts[]= {
+        0,
+        -3
+    };
+    const int _ulp=1;
+    int r=vsvec_program<vsvec_exp<double>, 4096, _ulp>(argc,
+                                                       argv,
+                                                       di,
+                                                       shifts);
+    return r;
+}
