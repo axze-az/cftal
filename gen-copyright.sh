@@ -10,7 +10,7 @@ do
     ll=$(($ll-$offset))
 cat >/tmp/$$ <<EOF
 //
-// Copyright (C) 2010-2025 Axel Zeuner
+// Copyright (C) 2010-2026 Axel Zeuner
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
