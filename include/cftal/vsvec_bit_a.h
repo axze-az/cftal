@@ -27,8 +27,8 @@ namespace cftal {
     namespace impl {
         // helper class for setting a single bit
         class bit_ref {
-            uint32_t* _p;
-            size_t _bit;
+            uint64_t* _p;
+            uint32_t _bit;
         public:
             // return pos / 64
             static
@@ -39,7 +39,7 @@ namespace cftal {
             uint32_t
             bitnum(uint32_t pos);
             // reference bit at p + pos
-            bit_ref(uint32_t* p, size_t pos);
+            bit_ref(uint64_t* p, size_t pos);
             // proxy setter
             bit_ref&
             operator=(const bit& r);
@@ -133,7 +133,7 @@ cftal::impl::bit_ref::bitnum(uint32_t pos)
 }
 
 inline
-cftal::impl::bit_ref::bit_ref(uint32_t* p, size_t pos)
+cftal::impl::bit_ref::bit_ref(uint64_t* p, size_t pos)
     : _p(p+offset(pos)), _bit(bitnum(pos))
 {
 }
@@ -206,8 +206,11 @@ cftal::vsvec<cftal::bit, _A>::operator=(vsvec&& r)
 template <typename _A>
 inline
 cftal::vsvec<cftal::bit, _A>::vsvec(const bit& r, size_t n)
-    : base_type(r() != 0 ? ~base_type::value_type(0) : base_type::value_type(0),
-                impl::bit_ref::offset(n+sizeof(base_type::value_type)*8-1)),
+    : base_type(r() != 0 ?
+		~(typename base_type::value_type(0)) :
+		(typename base_type::value_type(0)),
+                impl::bit_ref::offset(
+		    n+sizeof(typename base_type::value_type)*8-1)),
      _size(n)
 {
 }
