@@ -46,6 +46,7 @@ namespace cftal {
         _b _v;
     };
 
+    bool signbit(bit b);
     std::ostream& operator<<(std::ostream& s, const bit& b);
 
     // specialization of vec for bit masks
@@ -266,6 +267,14 @@ namespace cftal {
            const vec<bit, _N>& on_true, const vec<bit, _N> on_false);
 
     std::ostream& operator<<(std::ostream& s, const vec<bit, 1>& v);
+}
+
+inline
+bool
+cftal::signbit(bit b)
+{
+    uint32_t v=b();
+    return v;
 }
 
 inline
