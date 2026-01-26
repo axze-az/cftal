@@ -119,11 +119,20 @@ namespace cftal {
                                  const float (&tb)[j01y01_data<float>::ENTRIES],
                                  float max_small_x);
 
+            // argument reduction for trigonometric functions with higher
+            // precision for usage in bessel function
+            // reduction by %pi/2, the low bits of multiples of %pi/2
+            // are returned in the value, the reduced argument is
+            // stored as triple float into xrh, xrm and  xrl
             static
             vi_type
             __reduce_trig_arg(vf_type& xrh, vf_type& xrm, vf_type& xrl,
                               arg_t<vf_type> x);
 
+            // reduction by %pi/2, the low bits of multiples of %pi/2
+            // are returned in the value, the reduced argument is
+            // stored into xrh and xrl
+            // works only in the interval [-3/2*pi/2, 3/2*pi/2]
             static
             vi_type
             __reduce_trig_arg_tiny(vf_type& xrh, vf_type& xrl,
