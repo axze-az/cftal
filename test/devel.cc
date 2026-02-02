@@ -29,7 +29,6 @@
 #include <cftal/test/f32_f64.h>
 #include <cftal/test/call_mpfr.h>
 
-
 namespace cftal { namespace devel {
 
     template <typename _T>
@@ -85,7 +84,6 @@ namespace cftal { namespace devel {
     double bessel_j(int n, double x);
 
 }}
-
 
 template <typename _T>
 _T
@@ -147,9 +145,8 @@ cftal::devel::
 calc_m_kahan(int nm1, arg_t<vec<_R, _N> > x, _R rcp_eps)
 {
     // using _T = math::func_traits<vec<_R, _N>, vec<int32_t, _N> >;
-    using std::size;
     vec<uint32_t, _N> r;
-    for (std::size_t i=0; i<_N; ++i) {
+    for (size_t i=0; i<_N; ++i) {
         _R xi=extract(x, i);
         uint32_t ri=calc_m_kahan(nm1, xi, rcp_eps);
         insert(r, ri, i);
@@ -255,46 +252,49 @@ bessel_recurrence_backward(int nm1, arg_t<vec<_T, _N> > x)
     using ops = d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
 
     auto sel_vdf=[](vmf_type m, v_t t, v_t f) -> v_t {
-        return vt_t(_T::sel(m, t[0], f[0]),
-                    _T::sel(m, t[1], f[1]));
+        return v_t(_TR::sel(m, t[0], f[0]),
+		   _TR::sel(m, t[1], f[1]));
     };
     auto vmu_to_vmi=[](vmu_type t)->vmi_type {
-        return vmi_type(t);
+        return as<vmi_type>(t);
     };
 
-    vu_type vm=calc_m_kahan(nm1, x, traits_t::rcp_eps());
+    vu_type vm=calc_m_kahan<_T, _N>(nm1, x, traits_t::rcp_eps());
     uint32_t m=hmax(vm);
 
     v_t rec_x;
     ops::rcp12(rec_x[0], rec_x[1], x);
-    v_t yn=_T(1.0);
-    v_t ynp1=_T(0.0);
+    v_t yn=vf_type(1.0);
+    v_t ynp1=vf_type(0.0);
     v_t rn=ynp1;
-    v_t norm = _T(0.0);
+    v_t norm = vf_type(0.0);
     vf_type vi=cvt<vf_type>(vm)*_T(2);
+    const vf_type scale_fac=traits_t::scale_factor();
     for (uint32_t i=m; i > 0; --i) {
-        vmf_type ivalid=_T::vmi_to_vmf(vmu_to_vmi(vm<(i+1)));
+        vmf_type ivalid=_TR::vmi_to_vmf(vmu_to_vmi(vm<(i+1)));
         v_t ynm1=(vi*rec_x) * yn - ynp1;
         if ((i&1)==0) {
-            v_t yn2=mul_pwr2(yn, _T::sel(ivalid, 2.0, 0.0));
+            v_t yn2=mul_pwr2(yn, _TR::sel(ivalid, 2.0, 0.0));
             norm += yn2;
         }
         ynp1 = sel_vdf(ivalid, yn, ynp1);
         yn = sel_vdf(ivalid, ynm1, yn);
-        vi -= _T::sel(ivalid, _T(2.0), _T(0.0));
-        if (yn[0] > traits_t::scale_above()) {
+        vi -= _TR::sel(ivalid, _T(2.0), _T(0.0));
+	vmf_type scale_req=(yn[0] > traits_t::scale_above()) &
+	    ivalid;
+        if (any_of(scale_req)) {
             // scale if required
-            ynp1 = sel_vdf(ivalid,
-                           mul_pwr2(ynp1, traits_t::scale_factor()),
+            ynp1 = sel_vdf(scale_req,
+                           mul_pwr2(ynp1, scale_fac),
                            ynp1);
-            norm = sel_vdf(ivalid,
-                           mul_pwr2(norm, traits_t::scale_factor()),
+            norm = sel_vdf(scale_req,
+                           mul_pwr2(norm,  scale_fac),
                            norm);
-            rn = sel_vdf(ivalid,
-                         mul_pwr2(rn, traits_t::scale_factor()),
+            rn = sel_vdf(scale_req,
+                         mul_pwr2(rn,  scale_fac),
                          rn);
-            yn = sel_vdf(ivalid,
-                         mul_pwr2(yn, traits_t::scale_factor()),
+            yn = sel_vdf(scale_req,
+                         mul_pwr2(yn,  scale_fac),
                          yn);
         }
         if (i == static_cast<uint32_t>(nm1+2)) {
@@ -302,7 +302,7 @@ bessel_recurrence_backward(int nm1, arg_t<vec<_T, _N> > x)
         }
     }
     norm += yn;
-    _T jn;
+    vf_type jn;
     ops::div21(jn, rn[0], rn[1], norm[0], norm[1]);
     return jn;
 }
@@ -358,7 +358,9 @@ bessel_j(int n, double x)
     }
 #endif
 #if 1
-    return bessel_recurrence_backward<double>(nm1, x);
+    vec<double, 1> vx(x);
+    auto vr=bessel_recurrence_backward<double, 1>(nm1, vx);
+    return vr();
 #else
     using v_t = d_real<double>;
     size_t _N=calc_m_kahan(nm1, x, 0x1.0p72);
