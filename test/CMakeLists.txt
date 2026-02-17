@@ -127,8 +127,8 @@ function(test_prog arg1)
   add_test(NAME ${arg1} COMMAND ${arg1})
 endfunction()
 
-add_subdirectory(vec)
 add_subdirectory(vsvec)
+add_subdirectory(vec)
 
 test_prog(test-tools test-tools.cc)
 
