@@ -61,7 +61,6 @@ namespace cftal {
     vec<int16_t, _N>
     ilogb(const vec<f16_t, _N>& x);
 
-
     template <size_t _N>
     vec<f16_t, _N>
     rsqrt(const vec<f16_t, _N>& x);
