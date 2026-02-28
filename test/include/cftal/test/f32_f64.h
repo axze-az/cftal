@@ -660,11 +660,10 @@ template <class _T, std::size_t _N>
 bool
 cftal::test::check_cmp(const vec<_T, _N>& vr, bool expected, const char* msg)
 {
-    _T vsr[_N];
+    _T vsr[_N]={0};
     mem< vec<_T, _N> >::store(vsr, vr);
     return check_cmp(vsr, expected, msg);
 }
-
 
 template <class _T>
 _T
