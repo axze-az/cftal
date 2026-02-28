@@ -38,7 +38,7 @@ namespace cftal {
         namespace call_mpfr {
             // mpfr function returning a float and one float argument
             using f_f_t = int (*)(mpfr_t, const mpfr_t,
-                                 mpfr_rnd_t);
+                                  mpfr_rnd_t);
 
             // mpfr function returning two floats and one float
             // argument
@@ -48,7 +48,7 @@ namespace cftal {
             // mpfr function returning a float and a integer and one
             // float argument
             using fi_f_t = int (*)(mpfr_t, int32_t*, const mpfr_t,
-				   mpfr_rnd_t);
+                                   mpfr_rnd_t);
 
             // mpfr function returning a float with two float arguments
             using f_ff_t = int (*)(mpfr_t, const mpfr_t,
@@ -62,10 +62,10 @@ namespace cftal {
 
             // mpfr function returning a float with one float and one
             // integer argument
-	    using f_if_t = int (*)(mpfr_t, long int,
-				   const mpfr_t,
+            using f_if_t = int (*)(mpfr_t, long int,
+                                   const mpfr_t,
                                    mpfr_rnd_t);
-	    
+
             // call f(a), returns also the interval
             // containing the unrounded result
             double
@@ -90,7 +90,7 @@ namespace cftal {
             double
             func(int a, double b, f_if_t f,
                  std::pair<double, double>* ulp1i= nullptr);
-	    
+
             // call f(a, i), returns also the interval
             // containing the unrounded result
             double
@@ -139,7 +139,7 @@ namespace cftal {
             float
             func(int a, float b, f_if_t f,
                  std::pair<float, float>* ulp1i= nullptr);
-	    
+
             // call f(a), returns also the interval
             // containing the unrounded result
             f16_t
@@ -176,7 +176,7 @@ namespace cftal {
             f16_t
             func(int a, f16_t b, f_if_t f,
                  std::pair<f16_t, f16_t>* ulp1i= nullptr);
-	    
+
             // call f(a), returns also the interval
             // containing the unrounded result
             bf16_t
