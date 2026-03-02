@@ -24,9 +24,9 @@
 
 namespace cftal {
 
-    // description of an argument - all things greater than
-    // a double are transferred by constant reference and by
-    // value otherwise.
+    // description of an argument - all types with a size larger than
+    // a double are transferred by constant reference and by value
+    // otherwise.
     template <typename _T>
     struct arg {
         // using type = const _T&;
