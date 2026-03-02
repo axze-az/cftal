@@ -24,6 +24,7 @@
 
 namespace cftal {
 
+    // a class similiar to a std::initializer_list
     template <typename _T>
     class init_list {
         const _T* _begin;
@@ -33,26 +34,26 @@ namespace cftal {
             : _begin(b), _end(e) {}
         constexpr const _T* begin() const { return _begin; }
         constexpr const _T* end() const { return _end; }
-        constexpr std::size_t size() const { return end() - begin(); }
+        constexpr size_t size() const { return end() - begin(); }
     };
 
-    template <typename _T, std::size_t _N>
+    template <typename _T, size_t _N>
     constexpr init_list<_T>
     low_half(const init_list<_T>& l) {
-        const std::size_t s = l.size();
-        const std::size_t ns= (s < _N/2 ? s : _N/2);
+        const size_t s = l.size();
+        const size_t ns= (s < _N/2 ? s : _N/2);
         const _T* p= l.begin();
-        return init_list<_T>(p, p+ ns);
+        return init_list<_T>(p, p + ns);
     }
 
-    template <typename _T, std::size_t _N>
+    template <typename _T, size_t _N>
     constexpr init_list<_T>
     high_half(const init_list<_T>& l) {
-        const std::size_t s = l.size();
-        const std::size_t offs= (s > _N/2 ? s - _N/2 : s - 1);
-        const std::size_t ns= (s > _N/2 ? s - _N/2 : 1);
+        const size_t s = l.size();
+        const size_t offs= (s > _N/2 ? s - _N/2 : s - 1);
+        const size_t ns= (s > _N/2 ? s - _N/2 : 1);
         const _T* p= l.begin() + offs;
-        return init_list<_T>(p, p+ ns);
+        return init_list<_T>(p, p + ns);
     }
 }
 
