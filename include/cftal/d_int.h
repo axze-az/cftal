@@ -233,11 +233,11 @@ namespace cftal {
 
     // double signed integer
     template <typename _T>
-    class dint : public duint<typename std::make_unsigned<_T>::type> {
+    class dint : public duint<typename make_unsigned<_T>::type> {
         static_assert(is_signed<_T>::value, "_T must be signed");
     public:
         using type = _T;
-        using utype = typename std::make_unsigned<_T>::type;
+        using utype = typename make_unsigned<_T>::type;
         using base_type = duint<utype>;
         constexpr dint() : base_type() {}
         constexpr dint(const type& vl) :
@@ -505,7 +505,7 @@ namespace cftal {
         struct sign {
             static
             bool get(const _T& a) {
-                typename std::make_signed<_T>::type s(a);
+                typename make_signed<_T>::type s(a);
                 return s < 0 ? true : false;
             }
         };
@@ -1306,7 +1306,7 @@ template <typename _T>
 cftal::dint<_T> cftal::operator*(const dint<_T>& a, const _T& b)
 {
     typedef typename dint<_T>::base_type du_t;
-    typedef typename std::make_unsigned<_T>::type u_t;
+    typedef typename make_unsigned<_T>::type u_t;
     du_t p(static_cast<const du_t&>(a) *
            static_cast<const u_t&>(b));
     if (impl::get_sign(b))
@@ -1324,7 +1324,7 @@ template <typename _T>
 cftal::dint<_T> cftal::operator/(const dint<_T>& a, const _T& b)
 {
     bool flip_a(impl::get_sign(a)), flip_b(impl::get_sign(b));
-    typedef typename std::make_unsigned<_T>::type u_t;
+    typedef typename make_unsigned<_T>::type u_t;
     typedef typename dint<_T>::base_type du_t;
     du_t ap(flip_a ? -a : a);
     u_t bp(flip_b ? -b : b);
@@ -1393,7 +1393,6 @@ cftal::dint<_T> cftal::operator>>(const dint<_T>& a, unsigned s)
 {
     // arithmetic shift from logical shift:
     typedef typename dint<_T>::base_type du_t;
-    // typedef typename std::make_unsigned<_T>::type u_t;
     const du_t& au = static_cast<const du_t&>(a);
     du_t t(- (au >> (dint<_T>::N-1)));
     du_t a_xor_t(a^ t);
