@@ -35,7 +35,7 @@ namespace cftal {
         // store to memory
         static
         void
-        store(_T* p, const _T& v, ssize_t s =1) {
+        store(_T* p, const _T& v, ssize_t s = 1) {
             if (s >= 1)
                 *p = v;
         }
