@@ -286,8 +286,7 @@ namespace cftal {
 
     // evaluation of
     // a - -b = a + b
-    template <typename _T, std::size_t _N,
-              class _L, class _R>
+    template <class _L, class _R>
     inline
     f16_t
     eval(const expr<op::sub<f16_t>,
