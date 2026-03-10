@@ -24,6 +24,7 @@
 
 namespace cftal {
 
+    // floating point expansion specialization with 3 elements
     template <typename _T>
     class fp_expansion<_T, 3> {
         _T _e[3];
@@ -39,11 +40,11 @@ namespace cftal {
         template <typename _U>
         constexpr
         fp_expansion(const fp_expansion<_U, 3>& r)
-            : _e{ _T(r[0]), _T(r[1]), _T(r[2])} {}
+            : _e{_T(r[0]), _T(r[1]), _T(r[2])} {}
         template<typename _U>
         constexpr
         fp_expansion(const fp_expansion<_U, 2>& r, const _U& l=_U(0))
-            : _e{ _T(r[0]), _T(r[1]),_T(l)} {}
+            : _e{_T(r[0]), _T(r[1]),_T(l)} {}
 
         template <std::size_t _M>
         constexpr
@@ -73,12 +74,15 @@ namespace cftal {
         }
     };
 
+    // type definition for t_real = triple_real
     template <typename _T>
     using t_real = fp_expansion<_T, 3>;
 
+    // use the d_real_traits as t_real_traits
     template <typename _T>
     struct t_real_traits : public d_real_traits<_T> {};
 
+    // operation classes for t_real objects
     template <typename _T>
     struct t_real_ops
         : public d_real_ops<_T, d_real_traits<_T>::fma > {
@@ -206,7 +210,6 @@ namespace cftal {
         void
         recp3(_T& rh, _T& rm, _T& rl,
               const _T& dh, const _T& dm, const _T& dl);
-
 
         static
         void
