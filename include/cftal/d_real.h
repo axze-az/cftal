@@ -84,7 +84,7 @@ namespace cftal {
         }
     };
 
-    // the double real class template
+    // the double real is floating point expansion with 2 elements
     template <typename _T>
     using d_real = fp_expansion<_T, 2>;
 
