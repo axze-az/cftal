@@ -41,7 +41,7 @@ namespace cftal {
         constexpr const type& uh() const { return _h; }
         void l(const type& v) { _l = v; }
         void uh(const type& v) { _h = v; }
-        explicit operator _T() const { return _l; }
+        explicit constexpr operator _T() const { return _l; }
     private:
         type _l;
         type _h;
@@ -251,7 +251,7 @@ namespace cftal {
             // const type* ph= reinterpret_cast<const type*>(&_uh);
             // return *ph;
         }
-        explicit operator _T() const {
+        explicit constexpr operator _T() const {
             return type(this->l());
         }
     };
