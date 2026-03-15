@@ -20,7 +20,6 @@
 
 // x86-64-v4 add AVX512F, AVX512BW, AVX512CD, AVX512DQ and AVX512VL
 
-#if 1 // !defined(__AVX512FP16__)
 #include <cftal/config.h>
 #include <cftal/vec_spec.h>
 #include <cftal/cvt.h>
@@ -1916,7 +1915,6 @@ cftal::hsum(const vec<f16_t, _N>& a)
 }
 
 #undef VF16_USE_INT_CMP
-#endif
 
 // Local variables:
 // mode: c++
