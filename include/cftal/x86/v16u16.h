@@ -22,6 +22,7 @@
 #include <cftal/types.h>
 #include <cftal/x86/vreg.h>
 #include <cftal/vec_op.h>
+#include <cftal/vec_bit_n.h>
 
 namespace cftal {
 
