@@ -19,21 +19,33 @@
 #define __CFTAL_VEC_MISC_H__
 
 #include <cftal/config.h>
-#include <cftal/vec.h>
+#include <cftal/vec_t_n.h>
+#include <cftal/vec_spec.h>
 #include <cftal/type_traits.h>
 
 namespace cftal {
 
-    // dot product
+    // dot product of two vec<_T, _N>
     template <typename _T, std::size_t _N>
     _T dot_product(const vec<_T, _N>& a, const vec<_T, _N>& b);
 
+    // dot product of two vec<_T, 16>
+    template <typename _T>
+    _T dot_product(const vec<_T, 16>& a, const vec<_T, 16>& b);
+
+    // dot product of two vec<_T, 8>
+    template <typename _T>
+    _T dot_product(const vec<_T, 8>& a, const vec<_T, 8>& b);
+
+    // dot product of two vec<_T, 4>
     template <typename _T>
     _T dot_product(const vec<_T, 4>& a, const vec<_T, 4>& b);
 
+    // dot product of two vec<_T, 2>
     template <typename _T>
     _T dot_product(const vec<_T, 2>& a, const vec<_T, 2>& b);
 
+    // dot product of two vec<_T, 1>
     template <typename _T>
     _T dot_product(const vec<_T, 1>& a, const vec<_T, 1>& b);
 
@@ -110,6 +122,24 @@ cftal::dot_product(const vec<_T, _N>& a, const vec<_T, _N>& b)
     vec<_T, _N/4> b3=high_half(b23), b2=low_half(b23),
         b1=high_half(b01), b0=low_half(b01);
     vec<_T, _N/4> t=a3*b3+a2*b2+a1*b1+a0*b0;
+    return hsum(t);
+}
+
+template <typename _T>
+inline
+_T
+cftal::dot_product(const vec<_T, 16>& a, const vec<_T, 16>& b)
+{
+    vec<_T, 16> t=a*b;
+    return hsum(t);
+}
+
+template <typename _T>
+inline
+_T
+cftal::dot_product(const vec<_T, 8>& a, const vec<_T, 8>& b)
+{
+    vec<_T, 8> t=a*b;
     return hsum(t);
 }
 
