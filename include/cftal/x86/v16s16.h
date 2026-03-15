@@ -22,6 +22,7 @@
 #include <cftal/types.h>
 #include <cftal/x86/vreg.h>
 #include <cftal/vec_op.h>
+#include <cftal/vec_bit_n.h>
 
 namespace cftal {
 
@@ -43,7 +44,7 @@ namespace cftal {
         using base_type::base_type;
         vec() = default;
         vec(const vec<uint16_t, 16>& v);
-        // create vec{v,v,v,v}
+        // create vec{v,v,v,...}
         vec(int16_t v);
         // constructor from std::initializer_list, fills remaining
         // elements with the last one given
