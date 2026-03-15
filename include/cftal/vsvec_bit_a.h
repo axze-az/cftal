@@ -223,7 +223,7 @@ cftal::vsvec<cftal::bit, _A>::vsvec(std::initializer_list<bit> l)
      _size(l.size())
 {
     if (_size) {
-        uint32_t* p=base_type::begin();
+        uint64_t* p=base_type::begin();
         auto b=cbegin(l);
         for (size_t i=0; i<_size; ++i, ++b) {
             impl::bit_ref t(p, i);
