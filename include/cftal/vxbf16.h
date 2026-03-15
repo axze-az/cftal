@@ -18,7 +18,6 @@
 #if !defined (__CFTAL_VXBF16_H__)
 #define __CFTAL_VXBF16_H__ 1
 
-#if 1
 #include <cftal/config.h>
 #include <cftal/vec_spec.h>
 #include <cftal/cvt.h>
@@ -1918,7 +1917,6 @@ cftal::hsum(const vec<bf16_t, _N>& a)
 }
 
 #undef VBF16_USE_INT_CMP
-#endif
 
 // Local variables:
 // mode: c++
