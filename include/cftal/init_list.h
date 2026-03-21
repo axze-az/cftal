@@ -24,19 +24,25 @@
 
 namespace cftal {
 
-    // a class similiar to a std::initializer_list
+    // a class similiar to a std::initializer_list but with a public
+    // constructor
     template <typename _T>
     class init_list {
         const _T* _begin;
         const _T* _end;
     public:
-        constexpr init_list(const _T* b, const _T* e)
+	// constructor from a range
+        constexpr init_list(const _T* b, const _T* e) noexcept
             : _begin(b), _end(e) {}
-        constexpr const _T* begin() const { return _begin; }
-        constexpr const _T* end() const { return _end; }
-        constexpr size_t size() const { return end() - begin(); }
+	// first element
+        constexpr const _T* begin() const noexcept { return _begin; }
+	// one past last element
+        constexpr const _T* end() const noexcept { return _end; }
+	// number of elements
+        constexpr size_t size() const noexcept { return end() - begin(); }
     };
 
+    // return the lower half of an init_list
     template <typename _T, size_t _N>
     constexpr init_list<_T>
     low_half(const init_list<_T>& l) {
@@ -46,6 +52,7 @@ namespace cftal {
         return init_list<_T>(p, p + ns);
     }
 
+    // return the higher half of an init_list
     template <typename _T, size_t _N>
     constexpr init_list<_T>
     high_half(const init_list<_T>& l) {
