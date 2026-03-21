@@ -130,9 +130,12 @@
 
 namespace cftal {
 
+    // return the maximum length of a specialized implementation of
+    // vec<_T>
     template <typename _T>
     constexpr
-    size_t max_vec_size_specialized();
+    size_t
+    max_vec_size_specialized();
 }
 
 template <typename _T>
