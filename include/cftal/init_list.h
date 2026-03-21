@@ -45,7 +45,7 @@ namespace cftal {
     // return the lower half of an init_list
     template <typename _T, size_t _N>
     constexpr init_list<_T>
-    low_half(const init_list<_T>& l) {
+    low_half(const init_list<_T>& l) noexcept {
         const size_t s = l.size();
         const size_t ns= (s < _N/2 ? s : _N/2);
         const _T* p= l.begin();
@@ -55,7 +55,7 @@ namespace cftal {
     // return the higher half of an init_list
     template <typename _T, size_t _N>
     constexpr init_list<_T>
-    high_half(const init_list<_T>& l) {
+    high_half(const init_list<_T>& l) noexcept {
         const size_t s = l.size();
         const size_t offs= (s > _N/2 ? s - _N/2 : s - 1);
         const size_t ns= (s > _N/2 ? s - _N/2 : 1);
