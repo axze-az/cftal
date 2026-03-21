@@ -42,6 +42,7 @@ namespace cftal {
     template <typename _T>
     class vec<_T, 1> {
     public:
+	// value_type type definition
         using value_type = _T;
 #if USE_TYPE_AS_MASK>0
         using mask_value_type = _T;
@@ -50,19 +51,29 @@ namespace cftal {
 #else
         using mask_value_type = bit;
 #endif
+	// the used mask vec type 
         using mask_type = vec<mask_value_type, 1>;
-
+	// default constructor
         vec() = default;
+	// copy constructor
         vec(const vec& r) = default;
+	// move constructor
         vec(vec&& r) = default;
+	// copy assignment
         vec& operator=(const vec& r) = default;
+	// move assignment
         vec& operator=(vec&& r) = default;
+	// constructor from _T
         vec(const _T& v);
+	// constructor from _T, splat is ignored on vector length 1
         vec(const _T& v, bool splat);
+	// constructor from std::initializer_list
         vec(std::initializer_list<_T> l);
+	// constructor from init_list
         vec(init_list<_T> l);
+	// return a copy of _v
         _T operator()() const;
-
+	// constructor evaluating expression.
         template <template <class _U> class _OP,
                   class _L, class _R>
         vec(const expr<_OP<vec<_T, 1>>, _L, _R>& r);
