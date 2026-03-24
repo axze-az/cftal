@@ -51,10 +51,12 @@ namespace cftal {
         };
 
 #if __cplusplus >= 201103L
-        using propagate_on_container_move_assignment =
-            typename base_type::propagate_on_container_move_assignment;
-        using is_always_equal =
-            typename base_type::is_always_equal;
+        using propagate_on_container_move_assignment =  typename
+	    std::allocator_traits<base_type>::
+	    propagate_on_container_move_assignment;
+        using is_always_equal = typename
+	    std::allocator_traits<base_type>::
+	    is_always_equal;
 #endif
         using base_type::base_type;
 
