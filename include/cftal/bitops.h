@@ -36,19 +36,31 @@ namespace cftal {
     // returns the counted bits of every byte in every byte
     uint64_t __popcnt_8(uint64_t a);
 
+    // returns the counted bits of x
     unsigned popcnt(uint8_t x);
+    // returns the counted bits of x
     unsigned popcnt(uint16_t x);
+    // returns the counted bits of x
     unsigned popcnt(uint32_t x);
+    // returns the counted bits of x
     unsigned popcnt(uint64_t x);
 
+    // returns the reversed bits of x
     uint8_t bitrev(uint8_t x);
+    // returns the reversed bits of x
     uint16_t bitrev(uint16_t x);
+    // returns the reversed bits of x
     uint32_t bitrev(uint32_t x);
+    // returns the reversed bits of x
     uint64_t bitrev(uint64_t x);
 
+    // returns the leading zero bits of x
     unsigned lzcnt(uint8_t x);
+    // returns the leading zero bits of x
     unsigned lzcnt(uint16_t x);
+    // returns the leading zero bits of x
     unsigned lzcnt(uint32_t x);
+    // returns the leading zero bits of x
     unsigned lzcnt(uint64_t x);
 
     namespace impl {
