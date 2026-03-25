@@ -22,25 +22,31 @@
 
 namespace cftal {
 
+    // convert according to current rounding mode to _D from _S
+    // this template functions calls impl::cvt<_D, _S>::v(s);
     template <class _D, class _S>
     _D cvt(const _S& s);
 
+    // convert using round to zero rounding mode to _D from _S
+    // this template functions calls impl::cvt_rz<_D, _S>::v(s);
     template <class _D, class _S>
     _D cvt_rz(const _S& s);
 
     namespace impl {
-        // convert according to current rounding mode
-        // to _D from _S
+	// worker template for cftal::cvt
         template <typename _D, typename _S>
         struct cvt {
+	    // convert according to current rounding mode to _D from
+	    // _S
             static
             _D v(const _S& s);
         };
 
-        // convert with truncation (i.e. round to zero)
-        // to _D from _S
+	// worker template for cftal::cvt_rz
         template <typename _D, typename _S>
         struct cvt_rz {
+	    // convert with truncation (i.e. round to zero) to _D from
+	    // _S
             static
             _D v(const _S& s);
         };
