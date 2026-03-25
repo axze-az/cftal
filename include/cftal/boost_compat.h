@@ -34,6 +34,8 @@ namespace boost {
     namespace numeric {
         namespace odeint {
 
+	    // specialization of vector_space_norm_inf for
+	    // cftal::vec<_T, _N>
             template <typename _T, std::size_t _N>
             struct vector_space_norm_inf<cftal::vec<_T, _N> > {
                 using result_type = _T;
