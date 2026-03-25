@@ -23,12 +23,13 @@
 
 namespace cftal {
 
-    // compile time min
+    // compile time minimum
     template <uint32_t _N1, uint32_t _N2>
     struct const_min_u32 {
         enum { v = (_N1 < _N2 ? _N1 : _N2) };
     };
 
+    // compile time maximum
     template <uint32_t _N1, uint32_t _N2>
     struct const_max_u32 {
         enum { v = (_N1 > _N2 ? _N1 : _N2) };
