@@ -32,19 +32,23 @@ namespace cftal {
         _V _rec;
         _D _d;
     public:
+	// constructor performing 1/dd
         explicit
         divisor(const _D& dd) : _rec(_V(_D(1)/dd)), _d(dd) {}
+	// return the divisor
         const _D& d() const { return _d; }
+	// perform the divsion n/dd by calculating n * 1/dd
         _V divide(const _V& n) const { return n * _rec; }
     };
 
-
+    // division operator
     template <class _V, class _D>
     _V operator/(const _V& n, const divisor<_V, _D>& d)
     {
         return d.divide(n);
     }
 
+    // assignment division operator
     template <class _V, class _D>
     _V& operator/=(_V& n, const divisor<_V, _D>& d)
     {
@@ -55,6 +59,7 @@ namespace cftal {
 
     namespace impl {
 
+	// traits class for unsigned division setup
         template <typename _T>
         struct udiv_setup_traits {
             // sword udword types
@@ -62,6 +67,7 @@ namespace cftal {
             // _N as sizeof(uword) in bits
         };
 
+	// traits class for signed division setup
         template <typename _T>
         struct sdiv_setup_traits {
             // sword, udword types
@@ -69,22 +75,27 @@ namespace cftal {
             // _N as sizeof(sword) in bits
         };
 
+	// traits class for unsigned division
         template <typename _V, typename _D>
         struct udiv_traits {
+	    // return higher half of a*b
             static
             _V muluh(_V a, _V b) {
                 return mul_lo_hi(a, b).second;
             }
         };
 
+	// traits class for signed division
         template <typename _V, typename _D>
         struct sdiv_traits {
+	    // return higher half of a*b
             static
             _V mulsh(_V a, _V b) {
                 return mul_lo_hi(a, b).second;
             }
         };
 
+	// data setup class for unsigned division
         template <typename _D, typename _TR= udiv_setup_traits<_D> >
         class udiv_setup {
         public:
@@ -103,6 +114,7 @@ namespace cftal {
             bool _shift_only;
         };
 
+	// data setup class for signed division
         template <typename _D, typename _TR= sdiv_setup_traits<_D> >
         class sdiv_setup {
         public:
@@ -120,6 +132,7 @@ namespace cftal {
             sword _xsgn_d;
         };
 
+	// unsigned division class
         template <typename _V, typename _D,
                   typename _UDIV_TRAITS= udiv_traits<_V, _D>,
                   typename _UDIV_SETUP_TRAITS = udiv_setup_traits<_D> >
@@ -137,6 +150,7 @@ namespace cftal {
             _V divide(const _V& n) const;
         };
 
+	// signed division class
         template <typename _V, typename _D,
                   typename _SDIV_TRAITS= sdiv_traits<_V, _D>,
                   typename _SDIV_SETUP_TRAITS = sdiv_setup_traits<_D> >
@@ -153,6 +167,7 @@ namespace cftal {
             _V divide(const _V& n) const;
         };
 
+	// traits class for 16 bit division
         struct div16_traits {
             typedef int16_t sword;
             typedef uint16_t uword;
@@ -178,6 +193,7 @@ namespace cftal {
             };
         };
 
+	// traits class for 32 bit division
         struct div32_traits {
             typedef int32_t sword;
             typedef uint32_t uword;
@@ -203,6 +219,7 @@ namespace cftal {
             };
         };
 
+	// traits class for 64 bit division
         struct div64_traits {
             typedef int64_t sword;
             typedef uint64_t uword;
@@ -228,54 +245,62 @@ namespace cftal {
             };
         };
 
-        // unsigned div 16
+        // unsigned div 16 setup traits
         template <>
         struct udiv_setup_traits<uint16_t>
             : public div16_traits {};
+        // unsigned div 16 traits
         template <>
         struct udiv_traits<uint16_t, uint16_t>
             : public div16_traits {};
-        // signed div 16
+
+        // signed div 16 setup traits
         template <>
         struct sdiv_setup_traits<int16_t>
             : public div16_traits {};
+        // signed div 16 traits
         template <>
         struct sdiv_traits<int16_t, int16_t>
             : public div16_traits {};
 
-        // unsigned div 32
+        // unsigned div 32 setup traits
         template <>
         struct udiv_setup_traits<uint32_t>
             : public div32_traits {};
+        // unsigned div 32 traits
         template <>
         struct udiv_traits<uint32_t, uint32_t>
             : public div32_traits {};
 
-        // signed div 32
+        // signed div 32 setup traits
         template <>
         struct sdiv_setup_traits<int32_t>
             : public div32_traits {};
+        // signed div 32 traits
         template <>
         struct sdiv_traits<int32_t, int32_t>
             : public div32_traits {};
 
-
-        // unsigned div 64
+        // unsigned div 64 setup traits
         template <>
         struct udiv_setup_traits<uint64_t>
             : public div64_traits {};
+        // unsigned div 64 traits
         template <>
         struct udiv_traits<uint64_t, uint64_t>
             : public div64_traits {};
 
-        // signed div 64
+        // signed div 64 setup traits
         template <>
         struct sdiv_setup_traits<int64_t>
             : public div64_traits {};
+        // signed div 64 traits
         template <>
         struct sdiv_traits<int64_t, int64_t>
             : public div64_traits {};
 
+	// divison type selector to differentiate by signed and
+	// unsigned divisor types
         template <typename _U, typename _V>
         struct div_sel {
             using type = 
@@ -285,6 +310,7 @@ namespace cftal {
         };
     }
 
+    // divisor specialization for int16_t
     template <typename _T>
     class divisor<_T, int16_t>
         : public impl::sdiv<_T, int16_t> {
@@ -293,6 +319,7 @@ namespace cftal {
             impl::sdiv<_T, int16_t>(d) {}
     };
 
+    // divisor specialization for uint16_t
     template <typename _T>
     class divisor<_T, uint16_t>
         : public impl::udiv<_T, uint16_t> {
@@ -301,6 +328,7 @@ namespace cftal {
             impl::udiv<_T, uint16_t>(d) {}
     };
 
+    // divisor specialization for int32_t
     template <typename _T>
     class divisor<_T, int32_t>
         : public impl::sdiv<_T, int32_t> {
@@ -309,6 +337,7 @@ namespace cftal {
             impl::sdiv<_T, int32_t>(d) {}
     };
 
+    // divisor specialization for uint32_t
     template <typename _T>
     class divisor<_T, uint32_t>
         : public impl::udiv<_T, uint32_t> {
@@ -317,6 +346,7 @@ namespace cftal {
             impl::udiv<_T, uint32_t>(d) {}
     };
 
+    // divisor specialization for int64_t
     template <typename _T>
     class divisor<_T, int64_t>
         : public impl::sdiv<_T, int64_t> {
@@ -325,6 +355,7 @@ namespace cftal {
             impl::sdiv<_T, int64_t>(d) {}
     };
 
+    // divisor specialization for uint64_t
     template <typename _T>
     class divisor<_T, uint64_t>
         : public impl::udiv<_T, uint64_t> {
@@ -333,7 +364,7 @@ namespace cftal {
             impl::udiv<_T, uint64_t>(d) {}
     };
 
-
+    // modulo operator for division by int16_t
     template <class _V>
     _V operator%(const _V& n, const divisor<_V, int16_t>& d)
     {
@@ -342,6 +373,7 @@ namespace cftal {
         return remainder(n, dd, q);
     }
 
+    // modulo operator for division by uint16_t
     template <class _V>
     _V operator%(const _V& n, const divisor<_V, uint16_t>& d)
     {
@@ -350,6 +382,7 @@ namespace cftal {
         return remainder(n, dd, q);
     }
 
+    // modulo operator for division by int32_t
     template <class _V>
     _V operator%(const _V& n, const divisor<_V, int32_t>& d)
     {
@@ -358,6 +391,7 @@ namespace cftal {
         return remainder(n, dd, q);
     }
 
+    // modulo operator for division by uint32_t
     template <class _V>
     _V operator%(const _V& n, const divisor<_V, uint32_t>& d)
     {
@@ -366,6 +400,7 @@ namespace cftal {
         return remainder(n, dd, q);
     }
 
+    // modulo operator for division by int64_t
     template <class _V>
     _V operator%(const _V& n, const divisor<_V, int64_t>& d)
     {
@@ -374,19 +409,13 @@ namespace cftal {
         return remainder(n, dd, q);
     }
 
+    // modulo operator for division by uint64_t
     template <class _V>
     _V operator%(const _V& n, const divisor<_V, uint64_t>& d)
     {
         _V q(d.divide(n));
         _V dd(d.d());
         return remainder(n, dd, q);
-    }
-
-    namespace test {
-        bool div_u16();
-        bool div_s16();
-        bool div_u32();
-        bool div_s32();
     }
 }
 
