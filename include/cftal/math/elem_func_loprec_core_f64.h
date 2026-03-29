@@ -139,7 +139,7 @@ namespace cftal {
             vf_type
             exp10_k(arg_t<vf_type> x);
 
-            enum hyperbolic_func {
+            enum class hyperbolic_func {
                 c_sinh,
                 c_cosh,
                 c_tanh
@@ -159,7 +159,7 @@ namespace cftal {
             __reduce_log_arg(vf_type& xr,
                              arg_t<vf_type> x);
 
-            enum log_func {
+            enum class log_func {
                 c_log_e,
                 c_log_2,
                 c_log_10

@@ -58,7 +58,7 @@ namespace cftal {
             using d_ops=d_real_ops<vf_type,
                                    d_real_traits<vf_type>::fma>;
 
-            enum result_prec {
+            enum class result_prec {
                 normal,
                 medium,
                 high
@@ -373,7 +373,7 @@ namespace cftal {
             vf_type
             sig_k(arg_t<vf_type> x);
 
-            enum hyperbolic_func {
+            enum class hyperbolic_func {
                 c_sinh,
                 c_cosh,
                 c_tanh

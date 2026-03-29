@@ -56,7 +56,7 @@ namespace cftal {
             using vhi_type = typename f32_traits::vi_type;
             using vhmi_type = typename f32_traits::vmi_type;
 
-            enum result_prec {
+            enum class result_prec {
                 normal,
                 medium,
                 high
@@ -380,7 +380,7 @@ namespace cftal {
             vf_type
             sig_k(arg_t<vf_type> x);
 
-            enum hyperbolic_func {
+            enum class hyperbolic_func {
                 c_sinh,
                 c_cosh,
                 c_tanh

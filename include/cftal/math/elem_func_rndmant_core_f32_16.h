@@ -150,7 +150,7 @@ namespace cftal {
             vf_type
             exp10_k(arg_t<vf_type> x);
 
-            enum hyperbolic_func {
+            enum class hyperbolic_func {
                 c_sinh,
                 c_cosh,
                 c_tanh
@@ -174,7 +174,7 @@ namespace cftal {
             __reduce_log_arg(vf_type& xr,
                              arg_t<vf_type> x);
 
-            enum log_func {
+            enum class log_func {
                 c_log_e,
                 c_log_2,
                 c_log_10
@@ -1633,7 +1633,7 @@ asinh_k(arg_t<vf_type> xc)
         vf_type log_arg=_T::sel(x_huge,
                                 x,
                                 2.0f * x+ 1.0f/(sqrt(vf_type(x*x+1.0f))+x));
-        vf_type yl= __log_k<c_log_e>(log_arg);
+        vf_type yl= __log_k<log_func::c_log_e>(log_arg);
         yl += add_2_log;
         y = _T::sel(sel, yl, y);
     }
@@ -1726,7 +1726,7 @@ acosh_k(arg_t<vf_type> xc)
         vf_type log_arg=_T::sel(x_huge,
                                 x,
                                 2.0f*x - 1.0f/(x+sqrt(vf_type(x*x-1.0f))));
-        vf_type yl= __log_k<c_log_e>(log_arg);
+        vf_type yl= __log_k<log_func::c_log_e>(log_arg);
         yl += add_2_log;
         y= _T::sel(sel, yl, y);
     }
