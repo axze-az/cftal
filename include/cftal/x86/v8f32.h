@@ -148,7 +148,7 @@ namespace cftal {
     v8f32 sqrt(const v8f32& a);
 
     namespace x86 {
-        v8f32 round(const v8f32& v, rounding_mode::type m);
+        v8f32 round(const v8f32& v, rounding_mode m);
     }
 
     v8f32 rint(const v8f32& a);

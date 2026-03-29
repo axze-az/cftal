@@ -632,7 +632,7 @@ bool cftal::elements_equal(const v4f32& a)
 }
 
 inline
-cftal::v4f32 cftal::x86::round(const v4f32& a, const rounding_mode::type m)
+cftal::v4f32 cftal::x86::round(const v4f32& a, rounding_mode m)
 {
     v4f32 r;
 #if defined (__SSE4_1__)

@@ -103,7 +103,7 @@ cftal::test::read_double_file(const std::string& fn, bool two_args)
         t >> rh >> rl;
         a0 = (uint64_t(a0h) << 32) | a0l;
         r =  (uint64_t(rh) << 32) | rl;
-        unsigned m;
+        rounding_mode m;
         if (rm == "N" || rm == "RN") {
             m = rounding_mode::nearest;
         } else if (rm == "P" || rm == "RU") {

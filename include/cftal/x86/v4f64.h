@@ -153,7 +153,7 @@ namespace cftal {
     v4f64 sqrt(const v4f64& a);
 
     namespace x86 {
-        v4f64 round(const v4f64& v, rounding_mode::type m);
+        v4f64 round(const v4f64& v, rounding_mode m);
     }
 
     v4f64 rint(const v4f64& a);

@@ -626,7 +626,7 @@ bool cftal::elements_equal(const v8f32& a)
 }
 
 inline
-cftal::v8f32 cftal::x86::round(const v8f32& a, const rounding_mode::type m)
+cftal::v8f32 cftal::x86::round(const v8f32& a, rounding_mode m)
 {
     v8f32 r;
     switch (m) {

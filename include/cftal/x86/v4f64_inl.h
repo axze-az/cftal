@@ -612,7 +612,7 @@ cftal::hmin(const v4f64& v)
 
 
 inline
-cftal::v4f64 cftal::x86::round(const v4f64& a, rounding_mode::type m)
+cftal::v4f64 cftal::x86::round(const v4f64& a, rounding_mode m)
 {
     v4f64 r;
     switch (m) {

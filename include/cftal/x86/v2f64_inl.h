@@ -602,7 +602,7 @@ bool cftal::elements_equal(const v2f64& a)
 }
 
 inline
-cftal::v2f64 cftal::x86::round(const v2f64& a, rounding_mode::type m)
+cftal::v2f64 cftal::x86::round(const v2f64& a, rounding_mode m)
 {
 #if defined (__SSE4_1__)
     v2f64 r;

@@ -27,14 +27,13 @@
 #endif
 
 namespace cftal {
-    struct rounding_mode {
-        enum type {
-            nearest = 0,
-            downward = 1,
-            upward = 2,
-            towardzero = 3,
-            current = 4
-        };
+
+    enum class rounding_mode {
+	nearest = 0,
+	downward = 1,
+	upward = 2,
+	towardzero = 3,
+	current = 4
     };
 
     // switch on flush to zero and denormals are zero of x86
