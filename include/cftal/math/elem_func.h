@@ -201,97 +201,112 @@ namespace cftal {
             vf_type
             rootn(arg_t<vf_type> xc, arg_t <vi_type> yc);
 
+	    // sine and cosine function with error handling
             static
             void
             sincos(arg_t<vf_type> vf, vf_type* psin, vf_type* pcos);
 
+	    // sine function with error handling
             static
             vf_type
             sin(arg_t<vf_type> vf);
 
+	    // cosine function with error handling
             static
             vf_type
             cos(arg_t<vf_type> vf);
 
+	    // tangent function with error handling
             static
             vf_type
             tan(arg_t<vf_type> vf);
 
+	    // sine and cosine function of xi*pi with error handling
             static
             void
             sinpicospi(arg_t<vf_type> vf, vf_type* psin, vf_type* pcos);
 
+	    // sine function of xi*pi with error handling
             static
             vf_type
             sinpi(arg_t<vf_type> vf);
 
+	    // cosine function of xi*pi with error handling
             static
             vf_type
             cospi(arg_t<vf_type> vf);
 
+	    // tangent function of xi*pi with error handling
             static
             vf_type
             tanpi(arg_t<vf_type> vf);
 
+	    // arc tangent function of two arguments with error handling 
             static
             vf_type
             atan2(arg_t<vf_type> x, arg_t<vf_type> y);
 
+	    // arc tangent function of one arguments with error handling 
             static
             vf_type
             atan(arg_t<vf_type> x);
 
+	    // arc sine function with error handling
             static
             vf_type
             asin(arg_t<vf_type> x);
 
+	    // arc cosine function with error handling
             static
             vf_type
             acos(arg_t<vf_type> x);
 
+	    // arc hyperbolic sine function with error handling
             static
             vf_type
             asinh(arg_t<vf_type> x);
 
+	    // arc hyperbolic cosine function with error handling
             static
             vf_type
             acosh(arg_t<vf_type> x);
 
+	    // arc hyperbolic tangent function with error handling
             static
             vf_type
             atanh(arg_t<vf_type> x);
 
-            // returns e^(-x*x);
+            // returns e^(-x*x) with error handling
             static
             vf_type
             exp_mx2(arg_t<vf_type> x);
 
-            // returns e^(x*x);
+            // returns e^(x*x) with error handling
             static
             vf_type
             exp_px2(arg_t<vf_type> x);
 
-            // returns 2^(-x*x);
+            // returns 2^(-x*x) with error handling
             static
             vf_type
             exp2_mx2(arg_t<vf_type> x);
 
-            // returns 2^(x*x);
+            // returns 2^(x*x) with error handling
             static
             vf_type
             exp2_px2(arg_t<vf_type> x);
 
-            // returns 10^(-x*x);
+            // returns 10^(-x*x) with error handling
             static
             vf_type
             exp10_mx2(arg_t<vf_type> x);
 
-            // returns 10^(x*x);
+            // returns 10^(x*x) with error handling
             static
             vf_type
             exp10_px2(arg_t<vf_type> x);
 
-            // returns 1/(1+exp(-x))
+            // returns 1/(1+exp(-x)) with error handling
             static
             vf_type
             sig(arg_t<vf_type> x);
