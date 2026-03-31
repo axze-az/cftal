@@ -63,18 +63,22 @@ namespace cftal {
             using d_ops=d_real_ops<vf_type,
                                    d_real_traits<vf_type>::fma>;
 
+	    // definition of different result precisions
             enum class result_prec {
                 medium,
                 normal,
                 high
             };
 
+            // call a scalar function with one argument on all
+            // elements of x
             template <typename _SCALAR_FUNC>
             static
             vf_type
             call_scalar_func(arg_t<vf_type> x, _SCALAR_FUNC f);
 
-            // call a scalar function on x
+            // call a scalar function with two arguments on all
+            // elements of x, y
             template <typename _SCALAR_FUNC>
             static
             vf_type
@@ -88,10 +92,12 @@ namespace cftal {
             vf_type
             __fmod(arg_t<vf_type> v);
 
+	    // ldexp implementation with error handling
             static
             vf_type
             ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> e);
 
+	    // ldexp function, forwards to ldexp_k
             static
             vf_type
             ldexp(arg_t<vf_type> x,
