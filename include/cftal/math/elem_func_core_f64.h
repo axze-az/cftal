@@ -120,8 +120,9 @@ namespace cftal {
             vf_type
             frexp(arg_t<vf_type> x, vi_type* e);
 
+	    // return ilogb(x) + _X
             // the exponents are returned in the odd numbered
-            // elements of e
+            // elements of the returned value
             template <int32_t _X>
             static
             vi2_type
@@ -157,6 +158,7 @@ namespace cftal {
             vf_type
             root12_k(arg_t<vf_type> x);
 
+	    // result of a scaling operation split into two factors
             class scale_result {
                 vf_type _f0;
                 vf_type _f1;
@@ -390,25 +392,30 @@ namespace cftal {
             vf_type
             sig_k(arg_t<vf_type> x);
 
+	    // type of hyperbolic function to calculate
             enum class hyperbolic_func {
                 c_sinh,
                 c_cosh,
                 c_tanh
             };
 
+	    // calculate sinh or cosh
             template <hyperbolic_func _F>
             static
             vf_type
             sinh_cosh_k(arg_t< vf_type > xc);
 
+	    // calculate sinh
             static
             vf_type
             sinh_k(arg_t<vf_type> x);
 
+	    // calculate cosh
             static
             vf_type
             cosh_k(arg_t<vf_type> x);
 
+	    // calculate tanh
             static
             vf_type
             tanh_k(arg_t<vf_type> x);
@@ -435,7 +442,7 @@ namespace cftal {
                              vi_type& __restrict idx,
                              arg_t<vf_type> x);
 
-
+	    // calculate a log approximation
             static
             vf_type
             __log_poly_k(arg_t<vf_type> r);
@@ -466,44 +473,51 @@ namespace cftal {
             vdf_type
             __log_tbl_k12(arg_t<vf_type> xc);
 
-            // log1p usign polynomial
+            // log1p using polynomial
             static
             vf_type
             __log1p_poly_k(arg_t<vf_type> x);
 
+	    // calculate log_e(x)
             static
             vf_type
             log_k(arg_t<vf_type> x);
 
+	    // calculate log_e(x+1)
             static
             vf_type
             log1p_k(arg_t<vf_type> x);
 
+	    // multiply lnh, lnl by 1/ln2 and add kf
             static
             vf_type
             __mul_invln2_add_kf(arg_t<vf_type> lnh,
                                 arg_t<vf_type> lnl,
                                 arg_t<vf_type> kf);
 
+	    // calculate log_2(x)
             static
             vf_type
             log2_k(arg_t<vf_type> x);
 
+	    // calculate log_2(x+1)
             static
             vf_type
             log2p1_k(arg_t<vf_type> x);
 
-
+	    // multiply lnh, lnl by 1/ln10 and add kf
             static
             vf_type
             __mul_invln10_add_kflg2(arg_t<vf_type> lnh,
                                     arg_t<vf_type> lnl,
                                     arg_t<vf_type> kf);
 
+	    // calculate log_10(x)
             static
             vf_type
             log10_k(arg_t<vf_type> x);
 
+	    // calculate log_10(x+1)
             static
             vf_type
             log10p1_k(arg_t<vf_type> x);
@@ -600,38 +614,47 @@ namespace cftal {
             vdf_type
             __atan_0_1_k(arg_t<vf_type> xh, arg_t<vf_type> xl);
 
+	    // atan calculation
             static
             vf_type
             atan_k(arg_t<vf_type> x);
 
+	    // atan2 calculation
             static
             vf_type
             atan2_k(arg_t<vf_type> x, arg_t<vf_type> y);
 
+	    // asin and acos calculation helper
             static
             vf_type
             asin_k_poly(arg_t<vf_type> z2);
 
+	    // asin calculation
             static
             vf_type
             asin_k(arg_t<vf_type> x);
 
+	    // acos calculation
             static
             vf_type
             acos_k(arg_t<vf_type> x);
 
+	    // asinh calculation
             static
             vf_type
             asinh_k(arg_t<vf_type> x);
 
+	    // acosh calculation
             static
             vf_type
             acosh_k(arg_t<vf_type> x);
 
+	    // atanh calculation
             static
             vf_type
             atanh_k(arg_t<vf_type> x);
 
+	    // hypot calculation
             static
             vf_type
             hypot_k(arg_t<vf_type> x, arg_t<vf_type> y);
