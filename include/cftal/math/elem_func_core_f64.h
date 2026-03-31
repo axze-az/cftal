@@ -115,8 +115,7 @@ namespace cftal {
             vi2_type
             __frexp_k(vf_type& xr, arg_t<vf_type> x);
 
-            // the exponents are returned in the odd numbered
-            // elements of e
+	    // frexp function with error handling
             static
             vf_type
             frexp(arg_t<vf_type> x, vi_type* e);
@@ -128,10 +127,12 @@ namespace cftal {
             vi2_type
             __ilogb_plus(arg_t<vf_type> x);
 
+	    // ilogbp1: return ilogb(x)+1
             static
             vi_type
             ilogbp1(arg_t<vf_type> x);
 
+	    // ilogb function
             static
             vi_type
             ilogb(arg_t<vf_type> x);
