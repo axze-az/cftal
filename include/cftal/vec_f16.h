@@ -19,8 +19,6 @@
 #define __CFTAL_VEC_F16_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/vec.h>
-// this file should be included in vec_spec.h:
 #include <cftal/vxf16.h>
 
 #define V2F16_FUNCS 1
