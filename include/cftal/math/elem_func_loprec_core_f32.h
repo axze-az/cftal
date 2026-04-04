@@ -182,6 +182,7 @@ namespace cftal {
             vf_type
             sig_k(arg_t<vf_type> xc);
 
+	    // argument reduction of logarithmic functions
             static
             vi_type
             __reduce_log_arg(vf_type& xr,
