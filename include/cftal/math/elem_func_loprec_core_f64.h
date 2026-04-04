@@ -124,73 +124,88 @@ namespace cftal {
                              vi_type& k,
                              arg_t<vf_type> x);
 
+	    // return e^x or e^x - 1
             template <bool _EXP_M1>
             static
             vf_type
             exp_k(arg_t<vf_type> x);
 
+	    // return 2^x or 2^x - 1
             template <bool _EXP2_M1>
             static
             vf_type
             exp2_k(arg_t<vf_type> x);
 
-            template <bool _EXP2_M1>
+	    // return 10^x or 10^x - 1
+            template <bool _EXP10_M1>
             static
             vf_type
             exp10_k(arg_t<vf_type> x);
 
+	    // type of hyperbolic function to calculate
             enum class hyperbolic_func {
                 c_sinh,
                 c_cosh,
                 c_tanh
             };
 
+	    // calculate sinh or cosh
             template <hyperbolic_func _F>
             static
             vf_type
             sinh_cosh_k(arg_t<vf_type> xc);
 
+	    // calculate tanh
             static
             vf_type
             tanh_k(arg_t<vf_type> xc);
 
+	    // argument reduction of logarithmic functions
             static
             vi2_type
             __reduce_log_arg(vf_type& xr,
                              arg_t<vf_type> x);
 
+	    // type of logarithmic function to calculate
             enum class log_func {
                 c_log_e,
                 c_log_2,
                 c_log_10
             };
 
+	    // calculate log_{_LFUNC}(x)
             template <log_func _LFUNC>
             static
             vf_type
             __log_k(arg_t<vf_type> xc);
 
+	    // calculate log_{_LFUNC}(1+x)
             template <log_func _LFUNC>
             static
             vf_type
             __log1p_k(arg_t<vf_type> xc);
 
+	    // calculate log_{_LFUNC}(1+x) with higher result
+	    // precision for power function
             template <log_func _LFUNC>
             static
             vf_type
             __log_k12(arg_t<vf_type> xc);
 
+	    // power function
             static
             vf_type
             pow_k(arg_t<vf_type> x, arg_t<vf_type> y,
                   vf_type* p_ylnx=nullptr);
 
+	    // power/root_n function
             template <bool _CALC_ROOT>
             static
             vf_type
             powi_k(arg_t<vf_type> x, arg_t<vi_type> e,
                   vf_type* p_ylnx=nullptr);
 
+	    // hypot calculation
             static
             vf_type
             hypot_k(arg_t<vf_type> xc, arg_t<vf_type> yc);
