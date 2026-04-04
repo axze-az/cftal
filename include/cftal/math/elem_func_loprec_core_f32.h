@@ -46,8 +46,8 @@
 namespace cftal {
     namespace math {
 
-        // specialization of elem_func_loprec_core for double and different
-        // traits
+        // specialization of elem_func_loprec_core for float and
+        // different traits
         template <typename _T>
         struct elem_func_loprec_core<float, _T> {
             using vf_type = typename _T::vf_type;
@@ -64,18 +64,22 @@ namespace cftal {
             vi_type
             __frexp_k(vf_type& m, arg_t<vf_type> x);
 
+            // calculates x^-(1/2)
             static
             vf_type
             rsqrt_k(arg_t<vf_type> x);
 
+            // calculates x^(1/3)
             static
             vf_type
             cbrt_k(arg_t<vf_type> x);
 
+            // calculates x^-(1/3)
             static
             vf_type
             rcbrt_k(arg_t<vf_type> x);
 
+            // calculates x^(1/12)
             static
             vf_type
             root12_k(arg_t<vf_type> x);
@@ -137,36 +141,43 @@ namespace cftal {
                              vi_type& k,
                              arg_t<vf_type> x);
 
+	    // return e^x or e^x - 1
             template <bool _EXP_M1>
             static
             vf_type
             exp_k(arg_t<vf_type> x);
 
+	    // return 2^x or 2^x - 1
             template <bool _EXP2_M1>
             static
             vf_type
             exp2_k(arg_t<vf_type> x);
 
-            template <bool _EXP2_M1>
+	    // return 10^x or 10^x - 1
+            template <bool _EXP10_M1>
             static
             vf_type
             exp10_k(arg_t<vf_type> x);
 
+	    // type of hyperbolic function to calculate
             enum class hyperbolic_func {
                 c_sinh,
                 c_cosh,
                 c_tanh
             };
 
+	    // calculate sinh or cosh
             template <hyperbolic_func _F>
             static
             vf_type
             sinh_cosh_k(arg_t<vf_type> xc);
 
+	    // calculate tanh
             static
             vf_type
             tanh_k(arg_t<vf_type> xc);
 
+            // returns 1/(1+exp(-x)) with error handling
             static
             vf_type
             sig_k(arg_t<vf_type> xc);
@@ -176,61 +187,73 @@ namespace cftal {
             __reduce_log_arg(vf_type& xr,
                              arg_t<vf_type> x);
 
+	    // type of logarithmic function to calculate
             enum class log_func {
                 c_log_e,
                 c_log_2,
                 c_log_10
             };
 
+	    // calculate log_{_LFUNC}(x)
             template <log_func _LFUNC>
             static
             vf_type
             __log_k(arg_t<vf_type> xc);
 
+	    // calculate log_{_LFUNC}(1+x)
             template <log_func _LFUNC>
             static
             vf_type
             __log1p_k(arg_t<vf_type> xc);
 
 
+	    // calculate log_{_LFUNC}(1+x) with higher result
+	    // precision for power function
             template <log_func _LFUNC>
             static
             vf_type
             __log_k12(arg_t<vf_type> xc);
 
+	    // power function
             static
             vf_type
             pow_k(arg_t<vf_type> x, arg_t<vf_type> y,
                   vf_type* p_ylnx=nullptr);
 
+	    // power/root_n function
             template <bool _CALC_ROOT>
             static
             vf_type
             powi_k(arg_t<vf_type> x, arg_t<vi_type> e,
                   vf_type* p_ylnx=nullptr);
 
-
+	    // argument reduction for trigonometric functions
             static
             vi_type
             __reduce_trig_arg(vf_type& xr, arg_t<vf_type> x);
 
+	    // core sine cosine calculation
             static
             void
             __sin_cos_k(arg_t<vf_type> x, arg_t<vi_type> q,
                         vf_type* s, vf_type* c);
 
+	    // sine cosine calculation
             static
             void
             sin_cos_k(arg_t<vf_type> x, vf_type* s, vf_type* c);
 
+	    // core tangent calculation
             static
             vf_type
             __tan_k(arg_t<vf_type> x, arg_t<vi_type> q);
 
+	    // tangent calculation
             static
             vf_type
             tan_k(arg_t<vf_type> x);
 
+	    // argument reduction for xx_pi functions
             static
             vi_type
             __reduce_trigpi_arg(vf_type& __restrict xrh,
@@ -252,38 +275,47 @@ namespace cftal {
             vf_type
             __atan_0_1_k(arg_t<vf_type> x);
 
+	    // atan calculation
             static
             vf_type
             atan_k(arg_t<vf_type> x);
 
+	    // atan2 calculation
             static
             vf_type
             atan2_k(arg_t<vf_type> y, arg_t<vf_type> x);
 
+	    // asin and acos calculation helper
             static
             vf_type
             asin_k_poly(arg_t<vf_type> z2);
 
+	    // asin calculation
             static
             vf_type
             asin_k(arg_t<vf_type> x);
 
+	    // acos calculation
             static
             vf_type
             acos_k(arg_t<vf_type> x);
 
+	    // asinh calculation
             static
             vf_type
             asinh_k(arg_t<vf_type> x);
 
+	    // acosh calculation
             static
             vf_type
             acosh_k(arg_t<vf_type> x);
 
+	    // atanh calculation
             static
             vf_type
             atanh_k(arg_t<vf_type> x);
 
+	    // hypot calculation
             static
             vf_type
             hypot_k(arg_t<vf_type> xc, arg_t<vf_type> yc);
