@@ -24,7 +24,7 @@ namespace cftal {
 
     // namespace op containing operation classes for operators returning
     // expression of operator classes and left and right operands
-    // the default classes defines only the structure of the template
+    // the default classes define only the structure of the template
     // with one class/typename arguments
     namespace op {
         // template classes for the different operations
