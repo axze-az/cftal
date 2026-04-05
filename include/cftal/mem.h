@@ -30,13 +30,13 @@ namespace cftal {
         static
         _T
         load(const _T* p, ssize_t s = 1) {
-            return s<=0 ? _T(0) : _T(*p);
+            return s < 1 ? _T(0) : _T(*p);
         }
         // store to memory
         static
         void
         store(_T* p, const _T& v, ssize_t s = 1) {
-            if (s >= 1)
+            if (s > 0)
                 *p = v;
         }
     };
