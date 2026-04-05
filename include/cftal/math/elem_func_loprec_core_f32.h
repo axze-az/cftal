@@ -207,7 +207,6 @@ namespace cftal {
             vf_type
             __log1p_k(arg_t<vf_type> xc);
 
-
 	    // calculate log_{_LFUNC}(1+x) with higher result
 	    // precision for power function
             template <log_func _LFUNC>
@@ -221,7 +220,7 @@ namespace cftal {
             pow_k(arg_t<vf_type> x, arg_t<vf_type> y,
                   vf_type* p_ylnx=nullptr);
 
-	    // power/root_n function
+	    // integer exponent power/root_n function
             template <bool _CALC_ROOT>
             static
             vf_type
