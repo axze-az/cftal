@@ -52,7 +52,7 @@ namespace cftal {
 	// 1 0 1 0 -->  0  2 -1 -1
 
         template <typename _I, size_t _N>
-        struct compress_expand {
+        struct compress_expand_tbl {
             enum {
                 BITS=_N,
                 PERM_CNT=1<<BITS,
@@ -64,7 +64,7 @@ namespace cftal {
         };
 
         template <typename _I>
-        struct compress_expand<_I, 2>  {
+        struct compress_expand_tbl<_I, 2>  {
             enum {
                 BITS=2,
                 PERM_CNT=1<<BITS,
@@ -76,9 +76,10 @@ namespace cftal {
         };
 
         template <typename _I>
-        alignas(vec<_I, compress_expand<_I, 2>::BITS>)
+        alignas(vec<_I, compress_expand_tbl<_I, 2>::BITS>)
         const _I
-        compress_expand<_I, 2>::_compress[compress_expand<_I, 2>::ENTRIES]={
+        compress_expand_tbl<_I, 2>::
+	_compress[compress_expand_tbl<_I, 2>::ENTRIES]={
             -1, -1,
             0, -1,
             1, -1,
@@ -86,9 +87,10 @@ namespace cftal {
         };
 
         template <typename _I>
-        alignas(vec<_I, compress_expand<_I, 2>::BITS>)
+        alignas(vec<_I, compress_expand_tbl<_I, 2>::BITS>)
         const _I
-        compress_expand<_I, 2>::_expand[compress_expand<_I, 2>::ENTRIES]={
+        compress_expand_tbl<_I, 2>::
+	_expand[compress_expand_tbl<_I, 2>::ENTRIES]={
             -1, -1,
             0, -1,
             -1,  0,
@@ -97,7 +99,8 @@ namespace cftal {
 
         template <typename _I>
         const int8_t
-        compress_expand<_I, 2>::_pop_cnt[compress_expand<_I, 2>::PERM_CNT]={
+        compress_expand_tbl<_I, 2>::
+	_pop_cnt[compress_expand_tbl<_I, 2>::PERM_CNT]={
             0,
             1,
             1,
@@ -105,7 +108,7 @@ namespace cftal {
         };
 
         template <typename _I>
-        struct compress_expand<_I, 4>  {
+        struct compress_expand_tbl<_I, 4>  {
             enum {
                 BITS=4,
                 PERM_CNT=1<<BITS,
@@ -117,9 +120,10 @@ namespace cftal {
         };
 
         template <typename _I>
-        alignas(vec<_I, compress_expand<_I, 4>::BITS>)
+        alignas(vec<_I, compress_expand_tbl<_I, 4>::BITS>)
         const _I
-        compress_expand<_I, 4>::_compress[compress_expand<_I, 4>::ENTRIES]={
+        compress_expand_tbl<_I, 4>::
+	_compress[compress_expand_tbl<_I, 4>::ENTRIES]={
             -1, -1, -1, -1,
             0, -1, -1, -1,
             1, -1, -1, -1,
@@ -139,9 +143,10 @@ namespace cftal {
         };
 
         template <typename _I>
-        alignas(vec<_I, compress_expand<_I, 4>::BITS>)
+        alignas(vec<_I, compress_expand_tbl<_I, 4>::BITS>)
         const _I
-        compress_expand<_I, 4>::_expand[compress_expand<_I, 4>::ENTRIES]={
+        compress_expand_tbl<_I, 4>::
+	_expand[compress_expand_tbl<_I, 4>::ENTRIES]={
             -1, -1, -1, -1,
             0, -1, -1, -1,
             -1,  0, -1, -1,
@@ -162,7 +167,8 @@ namespace cftal {
 
         template <typename _I>
         const int8_t
-        compress_expand<_I, 4>::_pop_cnt[compress_expand<_I, 4>::PERM_CNT]={
+        compress_expand_tbl<_I, 4>::
+	_pop_cnt[compress_expand_tbl<_I, 4>::PERM_CNT]={
             0,
             1,
             1,
@@ -463,7 +469,7 @@ compress(const vec<_T, 2>& src,
 	 const typename vec<_T, 2>::mask_type& m)
 {
     auto cm=compress_mask(m);
-    using tbl_t=impl::compress_expand<_I, 2>;
+    using tbl_t=impl::compress_expand_tbl<_I, 2>;
     using idx_t=vec<_I, 2>;
     const idx_t idx=mem<idx_t>::load(tbl_t::_compress+2*cm());
     size_t n=tbl_t::_pop_cnt[cm()];
@@ -478,7 +484,7 @@ expand(const vec<_T, 2>& src,
        const typename vec<_T, 2>::mask_type& m)
 {
     auto cm=compress_mask(m);
-    using tbl_t=impl::compress_expand<_I, 2>;
+    using tbl_t=impl::compress_expand_tbl<_I, 2>;
     using idx_t=vec<_I, 2>;
     const idx_t idx=mem<idx_t>::load(tbl_t::_expand+2*cm());
     size_t n=tbl_t::_pop_cnt[cm()];
@@ -493,7 +499,7 @@ compress(const vec<_T, 4>& src,
 	 const typename vec<_T, 4>::mask_type& m)
 {
     auto cm=compress_mask(m);
-    using tbl_t=impl::compress_expand<_I, 4>;
+    using tbl_t=impl::compress_expand_tbl<_I, 4>;
     using idx_t=vec<_I, 4>;
     const idx_t idx=mem<idx_t>::load(tbl_t::_compress+4*cm());
     size_t n=tbl_t::_pop_cnt[cm()];
@@ -508,7 +514,7 @@ expand(const vec<_T, 4>& src,
        const typename vec<_T, 4>::mask_type& m)
 {
     auto cm=compress_mask(m);
-    using tbl_t=impl::compress_expand<_I, 4>;
+    using tbl_t=impl::compress_expand_tbl<_I, 4>;
     using idx_t=vec<_I, 4>;
     const idx_t idx=mem<idx_t>::load(tbl_t::_expand+4*cm());
     size_t n=tbl_t::_pop_cnt[cm()];
