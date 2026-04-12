@@ -186,17 +186,13 @@ namespace cftal {
         struct identity_index {
             struct table {
                 alignas(vec<_I, _N>) _I _idx[_N];
-                table() {
+                constexpr table() {
                     for (size_t i=0; i<_N; ++i)
                         _idx[i]=i;
                 }
             };
-            static const table _tbl;
+            static constexpr const table _tbl{};
         };
-
-        template <typename _I, size_t _N>
-        const typename identity_index<_I, _N>::table
-        identity_index<_I, _N>::_tbl;
 
         // compress vector
         // compress low half, nl elements used
