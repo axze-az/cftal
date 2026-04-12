@@ -42,7 +42,8 @@ namespace cftal {
 
     namespace impl {
 
-	// mask bit/elements to index
+	// convert mask bit/elements interpreted as integer to indices
+	// for vector permutations, bit mask left, permutations right:
 	// 0 0 0 0 --> -1 -1 -1 -1
 	// 1 0 0 0      0 -1 -1 -1
 	// 0 1 0 0      1 -1 -1 -1
