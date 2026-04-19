@@ -180,9 +180,7 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-#if defined (__FMA4__)
-                return _mm512_macc_pd(a(), b(), c());
-#elif defined (__FMA__)
+#if defined (__FMA__)
                 return _mm512_fmadd_pd(a(), b(), c());
 #else
                 return _mm512_add_pd(_mm512_mul_pd(a(), b()), c());
@@ -197,9 +195,7 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-#if defined (__FMA4__)
-                return _mm512_msub_pd(a(), b(), c());
-#elif defined (__FMA__)
+#if defined (__FMA__)
                 return _mm512_fmsub_pd(a(), b(), c());
 #else
                 return _mm512_sub_pd(_mm512_mul_pd(a(), b()), c());
@@ -214,9 +210,7 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-#if defined (__FMA4__)
-                return _mm512_nmacc_pd(a(), b(), c());
-#elif defined (__FMA__)
+#if defined (__FMA__)
                 return _mm512_fnmadd_pd(a(), b(), c());
 #else
                 return _mm512_sub_pd(c(), _mm512_mul_pd(a(), b()));
