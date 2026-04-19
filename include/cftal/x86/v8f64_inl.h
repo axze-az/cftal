@@ -423,9 +423,7 @@ inline
 cftal::v8f64
 cftal::fma(const v8f64& a, const v8f64& b, const v8f64& c)
 {
-#if defined (__FMA4__)
-    return _mm512_macc_pd(a(), b(), c());
-#elif defined (__FMA__)
+#if defined (__FMA__)
     return _mm512_fmadd_pd(a(), b(), c());
 #else
     // return impl::fma(a, b, c);
@@ -437,9 +435,7 @@ inline
 cftal::v8f64
 cftal::fms(const v8f64& a, const v8f64& b, const v8f64& c)
 {
-#if defined (__FMA4__)
-    return _mm512_msub_pd(a(), b(), c());
-#elif defined (__FMA__)
+#if defined (__FMA__)
     return _mm512_fmsub_pd(a(), b(), c());
 #else
     // return impl::fma(a, b, -c);
@@ -451,9 +447,7 @@ inline
 cftal::v8f64
 cftal::nfma(const v8f64& a, const v8f64& b, const v8f64& c)
 {
-#if defined (__FMA4__)
-    return _mm512_nmacc_pd(a(), b(), c());
-#elif defined (__FMA__)
+#if defined (__FMA__)
     return _mm512_fnmadd_pd(a(), b(), c());
 #else
     // return impl::fma(-a, b, c);
@@ -465,16 +459,13 @@ inline
 cftal::v8f64
 cftal::nfms(const v8f64& a, const v8f64& b, const v8f64& c)
 {
-#if defined (__FMA4__)
-    return _mm512_nmsub_pd(a(), b(), c());
-#elif defined (__FMA__)
+#if defined (__FMA__)
     return _mm512_fnmsub_pd(a(), b(), c());
 #else
     // return impl::fma(-a, b, -c);
     return -(a*b) - c;
 #endif
 }
-
 
 inline
 cftal::v8f64 cftal::copysign(const v8f64& x, const v8f64& y)
