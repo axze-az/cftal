@@ -204,10 +204,10 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-#if defined (__FMA4__)
-                return _mm256_macc_pd(a(), b(), c());
-#elif defined (__FMA__)
+#if defined (__FMA__)
                 return _mm256_fmadd_pd(a(), b(), c());
+#elif defined (__FMA4__)
+                return _mm256_macc_pd(a(), b(), c());
 #else
                 return _mm256_add_pd(_mm256_mul_pd(a(), b()), c());
 #endif
@@ -221,10 +221,10 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-#if defined (__FMA4__)
-                return _mm256_msub_pd(a(), b(), c());
-#elif defined (__FMA__)
+#if defined (__FMA__)
                 return _mm256_fmsub_pd(a(), b(), c());
+#elif defined (__FMA4__)
+                return _mm256_msub_pd(a(), b(), c());
 #else
                 return _mm256_sub_pd(_mm256_mul_pd(a(), b()), c());
 #endif
@@ -238,10 +238,10 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-#if defined (__FMA4__)
-                return _mm256_nmacc_pd(a(), b(), c());
-#elif defined (__FMA__)
+#if defined (__FMA__)
                 return _mm256_fnmadd_pd(a(), b(), c());
+#elif defined (__FMA4__)
+                return _mm256_nmacc_pd(a(), b(), c());
 #else
                 return _mm256_sub_pd(c(), _mm256_mul_pd(a(), b()));
 #endif
@@ -455,10 +455,10 @@ inline
 cftal::v4f64
 cftal::fma(const v4f64& a, const v4f64& b, const v4f64& c)
 {
-#if defined (__FMA4__)
-    return _mm256_macc_pd(a(), b(), c());
-#elif defined (__FMA__)
+#if defined (__FMA__)
     return _mm256_fmadd_pd(a(), b(), c());
+#elif defined (__FMA4__)
+    return _mm256_macc_pd(a(), b(), c());
 #else
     // return impl::fma(a, b, c);
     return a * b + c;
@@ -469,10 +469,10 @@ inline
 cftal::v4f64
 cftal::fms(const v4f64& a, const v4f64& b, const v4f64& c)
 {
-#if defined (__FMA4__)
-    return _mm256_msub_pd(a(), b(), c());
-#elif defined (__FMA__)
+#if defined (__FMA__)
     return _mm256_fmsub_pd(a(), b(), c());
+#elif defined (__FMA4__)
+    return _mm256_msub_pd(a(), b(), c());
 #else
     // return impl::fma(a, b, -c);
     return a * b - c;
@@ -483,10 +483,10 @@ inline
 cftal::v4f64
 cftal::nfma(const v4f64& a, const v4f64& b, const v4f64& c)
 {
-#if defined (__FMA4__)
-    return _mm256_nmacc_pd(a(), b(), c());
-#elif defined (__FMA__)
+#if defined (__FMA__)
     return _mm256_fnmadd_pd(a(), b(), c());
+#elif defined (__FMA4__)
+    return _mm256_nmacc_pd(a(), b(), c());
 #else
     // return impl::fma(-a, b, c);
     return c - a*b;
@@ -497,10 +497,10 @@ inline
 cftal::v4f64
 cftal::nfms(const v4f64& a, const v4f64& b, const v4f64& c)
 {
-#if defined (__FMA4__)
-    return _mm256_nmsub_pd(a(), b(), c());
-#elif defined (__FMA__)
+#if defined (__FMA__)
     return _mm256_fnmsub_pd(a(), b(), c());
+#elif defined (__FMA4__)
+    return _mm256_nmsub_pd(a(), b(), c());
 #else
     // return impl::fma(-a, b, -c);
     return -(a*b) - c;
