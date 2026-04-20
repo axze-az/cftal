@@ -92,7 +92,7 @@ namespace cftal {
 
     constexpr
     inline
-    mf_f16_t read_bits(f16_t v) {
+    mf_f16_t read_bits(const f16_t& v) {
         return v();
     }
 
