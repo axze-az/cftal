@@ -57,7 +57,9 @@ namespace cftal {
         _T _e[2];
     public:
         using value_type = _T;
-        constexpr fp_expansion() = default;
+
+	constexpr
+	fp_expansion() = default;
 
         template <typename _U>
         constexpr
@@ -65,8 +67,16 @@ namespace cftal {
 
         constexpr
         fp_expansion(const _T& h, const _T& l) : _e{h, l} {}
+
         constexpr
         fp_expansion(const _T& h) : _e{h, _T(0.0)} {}
+
+        template <std::size_t _M>
+        constexpr
+        explicit
+        fp_expansion(const fp_expansion<_T, _M>& r)
+	    : _e{ (_M>0 ? r[0] : _T(0)),
+	          (_M>1 ? r[1] : _T(0)) } {}
 
         constexpr
         const _T& operator[](std::size_t i) const {
