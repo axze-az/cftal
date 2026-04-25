@@ -114,6 +114,8 @@ namespace cftal {
         constexpr uint16_t u16() const { return _u16; }
         constexpr int16_t s16() const { return int16_t(_u16); }
     };
+
+    // compile time 2 byte union
     template <uint16_t _N>
     struct const_u16 {
         constexpr const_u16() {}
@@ -124,37 +126,66 @@ namespace cftal {
     template <uint16_t _N>
     const bytes2 const_u16<_N>::v;
 
+    // sign mask of int8_t
     using sign_s8_msk = const_u32<0x80808080>;
+    // ~sign mask of int8_t
     using not_sign_s8_msk = const_u32<0x7f7f7f7f>;
 
+    // sign mask of int16_t
     using sign_s16_msk = const_u16<0x8000>;
+    // ~sign mask of int16_t
     using not_sign_s16_msk = const_u16<0x7fff>;
+    // sign mask of f16_t
     using sign_f16_msk=sign_s16_msk;
+    // ~sign mask of f16_t
     using not_sign_f16_msk = not_sign_s16_msk;
+    // exponent mask of f16_t
     using exp_f16_msk= const_u16<0x7c00>;
+    // significand mask of f16_t
     using sig_f16_msk = const_u16<0x03ff>;
+    // exponent bias of f16_t
     const int bias_f16 = 0xf;
+    // exponent shift of f16_t
     const int exp_shift_f16 = 10;
+    // exponent mask after exponent shift of f16_t
     const int exp_msk_f16 = 0x1f;
 
+    // sign mask of int32_t
     using sign_s32_msk = const_u32<0x80000000>;
+    // ~sign mask of int32_t
     using not_sign_s32_msk = const_u32<0x7fffffff>;
+    // sign mask of f32_t
     using sign_f32_msk = sign_s32_msk;
+    // ~sign mask of f32_t
     using not_sign_f32_msk = not_sign_s32_msk;
+    // exponent mask of f32_t
     using exp_f32_msk = const_u32<0x7f800000>;
+    // significand mask of f32_t
     using sig_f32_msk = const_u32<0x007fffff>;
+    // exponent bias of f32_t
     const int bias_f32 = 0x7f;
+    // exponent shift of f32_t
     const int exp_shift_f32 = 23;
+    // exponent mask after exponent shift of f32_t
     const int exp_msk_f32 = 0xff;
 
+    // sign mask of int64_t
     using sign_s64_msk= const_u64<0x00000000, 0x80000000>;
+    // ~sign mask of int64_t
     using not_sign_s64_msk = const_u64<0xffffffff, 0x7fffffff>;
+    // sign mask of f64_t
     using sign_f64_msk = sign_s64_msk;
+    // ~sign mask of f64_t
     using not_sign_f64_msk = not_sign_s64_msk;
+    // exponent mask of f64_t
     using exp_f64_msk = const_u64<0x00000000, 0x7ff00000>;
+    // significand mask of f64_t
     using sig_f64_msk = const_u64<0xffffffff, 0x000fffff>;
+    // exponent bias of f64_t
     const int bias_f64 = 0x3ff;
+    // exponent shift of f64_t
     const int exp_shift_f64 = 52;
+    // exponent mask after exponent shift of f64_t
     const int exp_msk_f64 = 0x7ff;
 
     namespace const_shift {
