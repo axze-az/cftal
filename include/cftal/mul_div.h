@@ -139,7 +139,7 @@ namespace cftal {
             std::pair<uint64_t, uint64_t>
             operator()(const uint64_t a, const uint64_t b)
                 const {
-                typedef unsigned __int128 u128_t;
+                using u128_t = unsigned __int128;
                 u128_t p(u128_t(a)*b);
                 uint64_t l(p);
                 uint64_t h(p>>64);
@@ -152,7 +152,7 @@ namespace cftal {
             std::pair<int64_t, int64_t>
             operator()(const int64_t a, const int64_t b)
                 const {
-                typedef __int128 i128_t;
+                using i128_t = __int128;
                 i128_t p(i128_t(a)*b);
                 int64_t l(p);
                 int64_t h(p>>64);
@@ -441,7 +441,7 @@ cftal::impl::smul_lo_hi<_S>::operator()(const _S& x, const _S& y)
     enum {
         N = sizeof(_S)* 8
     };
-    typedef typename make_unsigned<_S>::type _U;
+    using _U = typename make_unsigned<_S>::type;
     _U xu(x);
     _U yu(y);
     umul_lo_hi<_U> m;
