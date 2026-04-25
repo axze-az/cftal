@@ -481,9 +481,7 @@ namespace cftal {
 #endif
         typedef const_v4u32<0x007fffff, 0x007fffff,
                             0x007fffff, 0x007fffff> v_sig_f32_msk;
-        const int sign_f32_msk = 0x0f;
-        const int exp_shift_f32 = 23;
-        const int exp_msk_f32 = 0xff;
+        const int sign_v4f32_msk = 0x0f;
 
         // f64 constants
         typedef v_sign_v2s64_msk v_sign_v2f64_msk;
@@ -512,11 +510,8 @@ namespace cftal {
                             0x00000000,0x7ff00000> v_exp_v2f64_msk;
         typedef const_v4u32<0xffffffff,0x000fffff,
                             0xffffffff,0x000fffff> v_sig_v2f64_msk;
-        const int sign_f64_msk = 0x03;
-        const int bias_f64 = 0x3ff;
-        const int exp_shift_f64 = 52;
-        const int exp_msk_f64 = 0x7ff;
-
+        const int sign_v2f64_msk = 0x03;
+	
         // definition of common used constants
         typedef const_v4u32<0x01010101, 0x01010101,
                             0x01010101, 0x01010101> v_uint8_0x01;
