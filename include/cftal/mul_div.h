@@ -376,7 +376,7 @@ namespace cftal {
                             : "cc");
                 }
 #else
-                typedef unsigned __int128 u128_t;
+                using u128_t unsigned __int128;
                 u128_t u((u128_t(u1)<<64)|u0);
                 u128_t q(u/v);
                 uint64_t r(u%v);
@@ -570,8 +570,8 @@ cftal::mul_lo_hi(const _T& x, const _T& y)
     static_assert(is_integral<_T>::value,
                   "_T must be an integral type");
     using mul_type = select_t<cftal::is_signed<_T>::value,
-			      impl::smul_lo_hi<_T>,
-			      impl::umul_lo_hi<_T> >;
+                              impl::smul_lo_hi<_T>,
+                              impl::umul_lo_hi<_T> >;
     mul_type m;
     return m(x, y);
 }
