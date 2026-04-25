@@ -727,9 +727,9 @@ cftal::x86::select_v2f64<_P0, _P1>::v(__m128d a, __m128d b)
     return _mm_blend_pd(b, a, sm & 3);
 #else
     constexpr const uint32_t m1=-1;
-    typedef const_v4u32<
+    using mask_type = const_v4u32<
         (_P0 ? m1 : 0), (_P0 ? m1 : 0),
-        (_P1 ? m1 : 0), (_P1 ? m1 : 0)> mask_type;
+        (_P1 ? m1 : 0), (_P1 ? m1 : 0)>;
     __m128d am = _mm_and_pd(mask_type::dv(), a);
     __m128d bm = _mm_andnot_pd(mask_type::dv(), b);
     return _mm_or_pd(am, bm);
@@ -745,9 +745,9 @@ cftal::x86::select_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
     return _mm_blend_ps(b, a, sm & 0xf);
 #else
     constexpr const uint32_t m1=-1;
-    typedef const_v4u32<
+    using mask_type = const_v4u32<
         (_P0 ? m1 : 0), (_P1 ? m1 : 0),
-        (_P2 ? m1 : 0), (_P3 ? m1 : 0)> mask_type;
+        (_P2 ? m1 : 0), (_P3 ? m1 : 0)>;
     __m128 am = _mm_and_ps(mask_type::fv(), a);
     __m128 bm = _mm_andnot_ps(mask_type::fv(), b);
     return _mm_or_ps(am, bm);
@@ -786,11 +786,11 @@ select_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m128i a, __m128i b)
     enum { sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val };
     return _mm_blend_epi16(b, a, sm);
 #else
-    typedef const_v8u16<
+    using mask_type= const_v8u16<
         uint16_t(_P0 ? -1 : 0), uint16_t(_P1 ? -1 : 0),
         uint16_t(_P2 ? -1 : 0), uint16_t(_P3 ? -1 : 0),
         uint16_t(_P4 ? -1 : 0), uint16_t(_P5 ? -1 : 0),
-        uint16_t(_P6 ? -1 : 0), uint16_t(_P7 ? -1 : 0)> mask_type;
+        uint16_t(_P6 ? -1 : 0), uint16_t(_P7 ? -1 : 0)>;
     __m128i am = _mm_and_si128(mask_type::iv(), a);
     __m128i bm = _mm_andnot_si128(mask_type::iv(), b);
     return _mm_or_si128(am, bm);
