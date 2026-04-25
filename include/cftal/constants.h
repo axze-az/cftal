@@ -64,6 +64,8 @@ namespace cftal {
         static
         constexpr const bytes8 v{_L, _H};
     };
+
+    // static data of const_u64
     template <uint32_t _L, uint32_t _H>
     constexpr const bytes8 const_u64<_L, _H>::v;
 
@@ -101,6 +103,7 @@ namespace cftal {
         constexpr const bytes4 v{_N};
     };
 
+    // static data of const_u32
     template <uint32_t _N>
     constexpr const bytes4 const_u32<_N>::v;
 
@@ -123,6 +126,7 @@ namespace cftal {
         constexpr const bytes2 v{_N};
     };
 
+    // static data of const_u16
     template <uint16_t _N>
     const bytes2 const_u16<_N>::v;
 
