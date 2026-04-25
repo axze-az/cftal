@@ -32,12 +32,12 @@ namespace cftal {
         _V _rec;
         _D _d;
     public:
-	// constructor performing 1/dd
+        // constructor performing 1/dd
         explicit
         divisor(const _D& dd) : _rec(_V(_D(1)/dd)), _d(dd) {}
-	// return the divisor
+        // return the divisor
         const _D& d() const { return _d; }
-	// perform the divsion n/dd by calculating n * 1/dd
+        // perform the divsion n/dd by calculating n * 1/dd
         _V divide(const _V& n) const { return n * _rec; }
     };
 
@@ -59,7 +59,7 @@ namespace cftal {
 
     namespace impl {
 
-	// traits class for unsigned division setup
+        // traits class for unsigned division setup
         template <typename _T>
         struct udiv_setup_traits {
             // sword udword types
@@ -67,7 +67,7 @@ namespace cftal {
             // _N as sizeof(uword) in bits
         };
 
-	// traits class for signed division setup
+        // traits class for signed division setup
         template <typename _T>
         struct sdiv_setup_traits {
             // sword, udword types
@@ -75,33 +75,33 @@ namespace cftal {
             // _N as sizeof(sword) in bits
         };
 
-	// traits class for unsigned division
+        // traits class for unsigned division
         template <typename _V, typename _D>
         struct udiv_traits {
-	    // return higher half of a*b
+            // return higher half of a*b
             static
             _V muluh(_V a, _V b) {
                 return mul_lo_hi(a, b).second;
             }
         };
 
-	// traits class for signed division
+        // traits class for signed division
         template <typename _V, typename _D>
         struct sdiv_traits {
-	    // return higher half of a*b
+            // return higher half of a*b
             static
             _V mulsh(_V a, _V b) {
                 return mul_lo_hi(a, b).second;
             }
         };
 
-	// data setup class for unsigned division
+        // data setup class for unsigned division
         template <typename _D, typename _TR= udiv_setup_traits<_D> >
         class udiv_setup {
         public:
-            typedef typename _TR::uword uword;
-            typedef typename _TR::udword udword;
-                        explicit
+            using uword = typename _TR::uword;
+            using udword = typename _TR::udword;
+            explicit
             udiv_setup(const uword& d);
             const uword& m() const { return _m; }
             const uword& s1() const { return _s1; }
@@ -114,14 +114,14 @@ namespace cftal {
             bool _shift_only;
         };
 
-	// data setup class for signed division
+        // data setup class for signed division
         template <typename _D, typename _TR= sdiv_setup_traits<_D> >
         class sdiv_setup {
         public:
-            typedef typename _TR::sword sword;
-            typedef typename std::make_unsigned<sword>::type uword;
-            typedef typename _TR::udword udword;
-                        explicit
+            using sword = typename _TR::sword;
+            using uword = typename std::make_unsigned<sword>::type;
+            using udword = typename _TR::udword;
+            explicit
             sdiv_setup(const sword& d);
             const sword& m() const { return _m; }
             const sword& s() const { return _s; }
@@ -132,7 +132,7 @@ namespace cftal {
             sword _xsgn_d;
         };
 
-	// unsigned division class
+        // unsigned division class
         template <typename _V, typename _D,
                   typename _UDIV_TRAITS= udiv_traits<_V, _D>,
                   typename _UDIV_SETUP_TRAITS = udiv_setup_traits<_D> >
@@ -143,14 +143,14 @@ namespace cftal {
             uint32_t _s2;
             bool _shift_only;
         public:
-                        explicit
+            explicit
             udiv(const _D& d) { set(d); }
             void set(const _D& d);
             const _D& d() const { return _d; }
             _V divide(const _V& n) const;
         };
 
-	// signed division class
+        // signed division class
         template <typename _V, typename _D,
                   typename _SDIV_TRAITS= sdiv_traits<_V, _D>,
                   typename _SDIV_SETUP_TRAITS = sdiv_setup_traits<_D> >
@@ -160,18 +160,18 @@ namespace cftal {
             _D _d;
             uint32_t _s;
         public:
-                        explicit
+            explicit
             sdiv(const _D& d) { set(d); }
             void set(const _D& d);
             const _D& d() const { return _d; }
             _V divide(const _V& n) const;
         };
 
-	// traits class for 16 bit division
+        // traits class for 16 bit division
         struct div16_traits {
-            typedef int16_t sword;
-            typedef uint16_t uword;
-            typedef uint32_t udword;
+            using sword = int16_t;
+            using uword = uint16_t;
+            using udword = uint32_t;
             static
             uword ceil_log2(uword t) {
                 return 16 - lzcnt(uword(t-1));
@@ -193,11 +193,11 @@ namespace cftal {
             };
         };
 
-	// traits class for 32 bit division
+        // traits class for 32 bit division
         struct div32_traits {
-            typedef int32_t sword;
-            typedef uint32_t uword;
-            typedef uint64_t udword;
+            using sword = int32_t;
+            using uword = uint32_t;
+            using udword = uint64_t;
             static
             uword ceil_log2(uword t) {
                 return 32 - lzcnt(t-1);
@@ -219,11 +219,11 @@ namespace cftal {
             };
         };
 
-	// traits class for 64 bit division
+        // traits class for 64 bit division
         struct div64_traits {
-            typedef int64_t sword;
-            typedef uint64_t uword;
-            typedef duint<uint64_t> udword;
+            using sword = int64_t;
+            using uword = uint64_t;
+            using udword = duint<uint64_t>;
             static
             uword ceil_log2(uword t) {
                 return 64 - lzcnt(t-1);
@@ -299,11 +299,11 @@ namespace cftal {
         struct sdiv_traits<int64_t, int64_t>
             : public div64_traits {};
 
-	// divison type selector to differentiate by signed and
-	// unsigned divisor types
+        // divison type selector to differentiate by signed and
+        // unsigned divisor types
         template <typename _U, typename _V>
         struct div_sel {
-            using type = 
+            using type =
                 select_t<cftal::is_signed<_V>::value,
                          sdiv<_U, _V>,
                          udiv<_U, _V> >;
