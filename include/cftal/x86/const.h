@@ -394,7 +394,7 @@ namespace cftal {
 
         // template for constant selects/blends with 8 elements
         template <int _P0, int _P1, int _P2, int _P3,
-                    int _P4, int _P5, int _P6, int _P7>
+                  int _P4, int _P5, int _P6, int _P7>
         struct csel8 {
             enum {
                 val =
@@ -410,122 +410,122 @@ namespace cftal {
         };
 
         // (u)int16_t constants
-        typedef const_v8u16<0x8080, 0x8080,
-                            0x8080, 0x8090,
-                            0x8080, 0x8090,
-                            0x8080, 0x8080> v_sign_v16s8_msk;
+        using v_sign_v16s8_msk = const_v8u16<0x8080, 0x8080,
+                                             0x8080, 0x8090,
+                                             0x8080, 0x8090,
+                                             0x8080, 0x8080>;
 
-        typedef const_v8u16<0x7f7f, 0x7f7f,
-                            0x7f7f, 0x7f7f,
-                            0x7f7f, 0x7f7f,
-                            0x7f7f, 0x7f7f> v_not_sign_v16s8_msk;
+        using v_not_sign_v16s8_msk = const_v8u16<0x7f7f, 0x7f7f,
+                                                 0x7f7f, 0x7f7f,
+                                                 0x7f7f, 0x7f7f,
+                                                 0x7f7f, 0x7f7f>;
         const int sign_v16s8_msk = 0xFFFF;
 
         // (u)int16_t constants
-        typedef const_v8u16<0x8000, 0x8000,
-                            0x8000, 0x8000,
-                            0x8000, 0x8000,
-                            0x8000, 0x8000> v_sign_v8s16_msk;
+        using v_sign_v8s16_msk = const_v8u16<0x8000, 0x8000,
+                                             0x8000, 0x8000,
+                                             0x8000, 0x8000,
+                                             0x8000, 0x8000>;
 
-        typedef const_v8u16<0x7fff, 0x7fff,
-                            0x7fff, 0x7fff,
-                            0x7fff, 0x7fff,
-                            0x7fff, 0x7fff> v_not_sign_v8s16_msk;
+        using v_not_sign_v8s16_msk = const_v8u16<0x7fff, 0x7fff,
+                                                 0x7fff, 0x7fff,
+                                                 0x7fff, 0x7fff,
+                                                 0x7fff, 0x7fff>;
         const int sign_v8s16_msk = 0xAAAA;
 
         // (u)int32_t constants
-        typedef const_v4u32<0x80000000, 0x80000000,
-                            0x00000000, 0x00000000> v_sign_v2s32_msk;
-        typedef const_v4u32<0x7fffffff, 0x7fffffff,
-                            0xffffffff, 0xffffffff> v_not_sign_v2s32_msk;
+        using v_sign_v2s32_msk = const_v4u32<0x80000000, 0x80000000,
+                                             0x00000000, 0x00000000>;
+        using v_not_sign_v2s32_msk = const_v4u32<0x7fffffff, 0x7fffffff,
+                                                 0xffffffff, 0xffffffff>;
         const int sign_v2s32_msk = 0x88;
 
-        typedef const_v4u32<0x80000000, 0x80000000,
-                            0x80000000, 0x80000000> v_sign_v4s32_msk;
-        typedef const_v4u32<0x7fffffff, 0x7fffffff,
-                            0x7fffffff, 0x7fffffff> v_not_sign_v4s32_msk;
+        using v_sign_v4s32_msk = const_v4u32<0x80000000, 0x80000000,
+                                             0x80000000, 0x80000000>;
+        using v_not_sign_v4s32_msk = const_v4u32<0x7fffffff, 0x7fffffff,
+                                                 0x7fffffff, 0x7fffffff>;
         const int sign_v4s32_msk = 0x8888;
 
         // (u)int64_t constants
-        typedef const_v4u32<0x00000000, 0x80000000,
-                            0x00000000, 0x80000000> v_sign_v2s64_msk;
-        typedef const_v4u32<0xffffffff, 0x7fffffff,
-                            0xffffffff, 0x7fffffff> v_not_sign_v2s64_msk;
+        using v_sign_v2s64_msk = const_v4u32<0x00000000, 0x80000000,
+                                             0x00000000, 0x80000000>;
+        using v_not_sign_v2s64_msk = const_v4u32<0xffffffff, 0x7fffffff,
+                                                 0xffffffff, 0x7fffffff>;
         const int sign_v2s64_msk = 0x8080;
 
         // f32 constants
-        typedef v_sign_v4s32_msk v_sign_v4f32_msk;
-        typedef v_not_sign_v4s32_msk v_not_sign_f32_msk;
+        using v_sign_v4f32_msk = v_sign_v4s32_msk;
+        using v_not_sign_f32_msk = v_not_sign_v4s32_msk;
 
 #if defined (__AVX__)
-        typedef const_v8u32<0x7fffffff, 0x7fffffff,
-                            0x7fffffff, 0x7fffffff,
-                            0x7fffffff, 0x7fffffff,
-                            0x7fffffff, 0x7fffffff> v_not_sign_v8f32_msk;
+        using v_not_sign_v8f32_msk = const_v8u32<0x7fffffff, 0x7fffffff,
+                                                 0x7fffffff, 0x7fffffff,
+                                                 0x7fffffff, 0x7fffffff,
+                                                 0x7fffffff, 0x7fffffff>;
 
-        typedef const_v8u32<0x80000000, 0x80000000,
-                            0x80000000, 0x80000000,
-                            0x80000000, 0x80000000,
-                            0x80000000, 0x80000000> v_sign_v8f32_msk;
+        using v_sign_v8f32_msk = const_v8u32<0x80000000, 0x80000000,
+                                             0x80000000, 0x80000000,
+                                             0x80000000, 0x80000000,
+                                             0x80000000, 0x80000000>;
         using v_sign_v8s32_msk = v_sign_v8f32_msk;
 #endif
 
-        typedef const_v4u32<0x7f800000, 0x7f800000,
-                            0x7f800000, 0x7f800000> v_exp_f32_msk;
+        using v_exp_f32_msk = const_v4u32<0x7f800000, 0x7f800000,
+                                          0x7f800000, 0x7f800000>;
 
 #if defined (__AVX__)
-        typedef const_v8u32<0x7f800000, 0x7f800000,
-                            0x7f800000, 0x7f800000,
-                            0x7f800000, 0x7f800000,
-                            0x7f800000, 0x7f800000> v_exp_v8f32_msk;
+        using v_exp_v8f32_msk = const_v8u32<0x7f800000, 0x7f800000,
+                                            0x7f800000, 0x7f800000,
+                                            0x7f800000, 0x7f800000,
+                                            0x7f800000, 0x7f800000>;
 #endif
-        typedef const_v4u32<0x007fffff, 0x007fffff,
-                            0x007fffff, 0x007fffff> v_sig_f32_msk;
+        using v_sig_f32_msk = const_v4u32<0x007fffff, 0x007fffff,
+                                          0x007fffff, 0x007fffff>;
         const int sign_v4f32_msk = 0x0f;
 
         // f64 constants
-        typedef v_sign_v2s64_msk v_sign_v2f64_msk;
-        typedef v_not_sign_v2s64_msk v_not_sign_v2f64_msk;
+        using v_sign_v2f64_msk = v_sign_v2s64_msk;
+        using v_not_sign_v2f64_msk = v_not_sign_v2s64_msk;
 
 #if defined (__AVX__)
-        typedef const_v8u32<0x00000000, 0x80000000,
-                            0x00000000, 0x80000000,
-                            0x00000000, 0x80000000,
-                            0x00000000, 0x80000000> v_sign_v4f64_msk;
-        typedef const_v8u32<0xffffffff, 0x7fffffff,
-                            0xffffffff, 0x7fffffff,
-                            0xffffffff, 0x7fffffff,
-                            0xffffffff, 0x7fffffff> v_not_sign_v4f64_msk;
-        typedef const_v8u32<0xffffffff,0x000fffff,
-                            0xffffffff,0x000fffff,
-                            0xffffffff,0x000fffff,
-                            0xffffffff,0x000fffff> v_sig_v4f64_msk;
-        typedef const_v8u32<0x00000000,0x7ff00000,
-                            0x00000000,0x7ff00000,
-                            0x00000000,0x7ff00000,
-                            0x00000000,0x7ff00000> v_exp_v4f64_msk;
+        using v_sign_v4f64_msk = const_v8u32<0x00000000, 0x80000000,
+                                             0x00000000, 0x80000000,
+                                             0x00000000, 0x80000000,
+                                             0x00000000, 0x80000000>;
+        using v_not_sign_v4f64_msk = const_v8u32<0xffffffff, 0x7fffffff,
+                                                 0xffffffff, 0x7fffffff,
+                                                 0xffffffff, 0x7fffffff,
+                                                 0xffffffff, 0x7fffffff>;
+        using v_sig_v4f64_msk = const_v8u32<0xffffffff,0x000fffff,
+                                            0xffffffff,0x000fffff,
+                                            0xffffffff,0x000fffff,
+                                            0xffffffff,0x000fffff>;
+        using v_exp_v4f64_msk = const_v8u32<0x00000000,0x7ff00000,
+                                            0x00000000,0x7ff00000,
+                                            0x00000000,0x7ff00000,
+                                            0x00000000,0x7ff00000>;
 #endif
 
-        typedef const_v4u32<0x00000000,0x7ff00000,
-                            0x00000000,0x7ff00000> v_exp_v2f64_msk;
-        typedef const_v4u32<0xffffffff,0x000fffff,
-                            0xffffffff,0x000fffff> v_sig_v2f64_msk;
+        using v_exp_v2f64_msk = const_v4u32<0x00000000,0x7ff00000,
+                                            0x00000000,0x7ff00000>;
+        using v_sig_v2f64_msk = const_v4u32<0xffffffff,0x000fffff,
+                                            0xffffffff,0x000fffff>;
         const int sign_v2f64_msk = 0x03;
-	
-        // definition of common used constants
-        typedef const_v4u32<0x01010101, 0x01010101,
-                            0x01010101, 0x01010101> v_uint8_0x01;
-        typedef const_v4u32<0x33333333, 0x33333333,
-                            0x33333333, 0x33333333> v_uint8_0x33;
-        typedef const_v4u32<0x55555555, 0x55555555,
-                            0x55555555, 0x55555555> v_uint8_0x55;
-        typedef const_v4u32<0x0f0f0f0f, 0x0f0f0f0f,
-                            0x0f0f0f0f, 0x0f0f0f0f> v_uint8_0x0f;
 
-        typedef const_v4u32<0x00ff00ff, 0x00ff00ff,
-                            0x00ff00ff, 0x00ff00ff> v_uint16_0x00ff;
-        typedef const_v4u32<0x00010001, 0x00010001,
-                            0x00010001, 0x00010001> v_uint16_0x0001;
+        // definition of common used constants
+        using v_uint8_0x01 = const_v4u32<0x01010101, 0x01010101,
+                                         0x01010101, 0x01010101>;
+        using v_uint8_0x33 = const_v4u32<0x33333333, 0x33333333,
+                                         0x33333333, 0x33333333>;
+        using v_uint8_0x55 = const_v4u32<0x55555555, 0x55555555,
+                                         0x55555555, 0x55555555>;
+        using v_uint8_0x0f = const_v4u32<0x0f0f0f0f, 0x0f0f0f0f,
+                                         0x0f0f0f0f, 0x0f0f0f0f>;
+
+        using v_uint16_0x00ff = const_v4u32<0x00ff00ff, 0x00ff00ff,
+                                            0x00ff00ff, 0x00ff00ff>;
+        using v_uint16_0x0001 = const_v4u32<0x00010001, 0x00010001,
+                                            0x00010001, 0x00010001>;
     }
 }
 
