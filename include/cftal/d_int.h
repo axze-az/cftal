@@ -468,11 +468,11 @@ namespace cftal {
         : public is_unsigned<_T> { };
     template <class _T>
     struct make_signed<duint<_T> > {
-        typedef dint<_T> type;
+        using type = dint<_T>;
     };
     template <class _T>
     struct make_unsigned<duint<_T> > {
-        typedef duint<_T> type;
+        using type = duint<_T>;
     };
     template <class _T>
     struct is_integral<duint<_T> >
@@ -486,11 +486,11 @@ namespace cftal {
         : public is_unsigned<_T> { };
     template <class _T>
     struct make_signed<dint<_T> > {
-        typedef dint<_T> type;
+        using type = dint<_T>;
     };
     template <class _T>
     struct make_unsigned<dint<_T> > {
-        typedef duint<_T> type;
+        using type = duint<_T>;
     };
     template <class _T>
     struct is_integral<dint<_T> >
@@ -736,8 +736,8 @@ cftal::duint<_T> cftal::operator-(const _T& a, const duint<_T>& b)
 template <typename _T>
 cftal::duint<_T> cftal::operator*(const duint<_T>& a, const duint<_T>& b)
 {
-    typedef typename duint<_T>::type type;
-    typedef std::pair<type, type> pair_type;
+    using type = typename duint<_T>::type;
+    using pair_type = std::pair<type, type>;
     // [2^ 0, 2^N2 )
     pair_type al_bl(mul_lo_hi(a.l(), b.l()));
     // [2^(N2/2),  2^(N2*2/2) )
@@ -750,8 +750,8 @@ cftal::duint<_T> cftal::operator*(const duint<_T>& a, const duint<_T>& b)
 template <typename _T>
 cftal::duint<_T> cftal::operator*(const duint<_T>& a, const _T& b)
 {
-    typedef typename duint<_T>::type type;
-    typedef std::pair<type, type> pair_type;
+    using type = typename duint<_T>::type;
+    using pair_type = std::pair<type, type>;
     // [2^ 0, 2^N2 )
     pair_type al_b(mul_lo_hi(a.l(), b));
     // [2^(N2/2),  2^(N2*2/2) )
@@ -769,7 +769,7 @@ cftal::duint<_T> cftal::operator*(const _T& a, const duint<_T>& b)
 template <typename _T>
 cftal::duint<_T> cftal::operator/(const duint<_T>& a, const _T& b)
 {
-    typedef impl::udiv_2by1<_T, _T> div_type;
+    using div_type = impl::udiv_2by1<_T, _T>;
     impl::udiv_result<_T> qr(div_type::d(a.l(), a.uh(), b));
     return duint<_T>(qr._q0, qr._q1);
 }
@@ -777,7 +777,7 @@ cftal::duint<_T> cftal::operator/(const duint<_T>& a, const _T& b)
 template <typename _T>
 cftal::duint<_T> cftal::operator/(const duint<_T>& a, const duint<_T>& b)
 {
-    typedef impl::udiv_2by1<duint<_T>, _T> div_type;
+    using div_type = impl::udiv_2by1<duint<_T>, _T>;
     impl::udiv_result<duint<_T> > qr(div_type::d(a, duint<_T>(0), b));
     return qr._q0;
 }
@@ -792,7 +792,7 @@ cftal::duint<_T> cftal::operator/(const _T& a, const duint<_T>& b)
 template <typename _T>
 cftal::duint<_T> cftal::operator%(const duint<_T>& a, const _T& b)
 {
-    typedef impl::udiv_2by1<_T, _T> div_type;
+    using div_type = impl::udiv_2by1<_T, _T>;
     impl::udiv_result<_T> qr(div_type::d(a.l(), a.uh(), b));
     return duint<_T>(qr._r);
 }
@@ -800,7 +800,7 @@ cftal::duint<_T> cftal::operator%(const duint<_T>& a, const _T& b)
 template <typename _T>
 cftal::duint<_T> cftal::operator%(const duint<_T>& a, const duint<_T>& b)
 {
-    typedef impl::udiv_2by1<duint<_T>, _T> div_type;
+    using div_type = impl::udiv_2by1<duint<_T>, _T>;
     impl::udiv_result<duint<_T> > qr(div_type::d(a, duint<_T>(0), b));
     return qr._r;
 }
@@ -1257,7 +1257,7 @@ cftal::dint<_T> cftal::operator^(const _T& a, const dint<_T>& b)
 template <typename _T>
 cftal::dint<_T> cftal::operator+(const dint<_T>& a, const dint<_T>& b)
 {
-    typedef typename dint<_T>::base_type du_t;
+    using du_t = typename dint<_T>::base_type;
     return static_cast<const du_t&>(a) +
         static_cast<const du_t&>(b);
 }
@@ -1277,7 +1277,7 @@ cftal::dint<_T> cftal::operator+(const _T& a, const dint<_T>& b)
 template <typename _T>
 cftal::dint<_T> cftal::operator-(const dint<_T>& a, const dint<_T>& b)
 {
-    typedef typename dint<_T>::base_type du_t;
+    using du_t = typename dint<_T>::base_type;
     return static_cast<const du_t&>(a) -
         static_cast<const du_t&>(b);
 }
@@ -1297,7 +1297,7 @@ cftal::dint<_T> cftal::operator-(const _T& a, const dint<_T>& b)
 template <typename _T>
 cftal::dint<_T> cftal::operator*(const dint<_T>& a, const dint<_T>& b)
 {
-    typedef typename dint<_T>::base_type du_t;
+    using du_t = typename dint<_T>::base_type;
     return static_cast<const du_t&>(a) *
         static_cast<const du_t&>(b);
 }
@@ -1305,8 +1305,8 @@ cftal::dint<_T> cftal::operator*(const dint<_T>& a, const dint<_T>& b)
 template <typename _T>
 cftal::dint<_T> cftal::operator*(const dint<_T>& a, const _T& b)
 {
-    typedef typename dint<_T>::base_type du_t;
-    typedef typename make_unsigned<_T>::type u_t;
+    using du_t = typename dint<_T>::base_type;
+    using u_t = typename make_unsigned<_T>::type;
     du_t p(static_cast<const du_t&>(a) *
            static_cast<const u_t&>(b));
     if (impl::get_sign(b))
@@ -1324,8 +1324,8 @@ template <typename _T>
 cftal::dint<_T> cftal::operator/(const dint<_T>& a, const _T& b)
 {
     bool flip_a(impl::get_sign(a)), flip_b(impl::get_sign(b));
-    typedef typename make_unsigned<_T>::type u_t;
-    typedef typename dint<_T>::base_type du_t;
+    using u_t = typename make_unsigned<_T>::type;
+    using du_t = typename dint<_T>::base_type;
     du_t ap(flip_a ? -a : a);
     u_t bp(flip_b ? -b : b);
     dint<_T> q(ap / bp);
@@ -1338,7 +1338,7 @@ template <typename _T>
 cftal::dint<_T> cftal::operator/(const dint<_T>& a, const dint<_T>& b)
 {
     bool flip_a(impl::get_sign(a)), flip_b(impl::get_sign(b));
-    typedef typename dint<_T>::base_type du_t;
+    using du_t = typename dint<_T>::base_type;
     du_t ap(flip_a ? -a : a);
     du_t bp(flip_b ? -b : b);
     dint<_T> q(ap / bp);
@@ -1378,7 +1378,7 @@ cftal::dint<_T> cftal::operator%(const _T& a, const dint<_T>& b)
 template <typename _T>
 cftal::dint<_T> cftal::operator<<(const dint<_T>& a, unsigned s)
 {
-    typedef typename dint<_T>::base_type du_t;
+    using du_t = typename dint<_T>::base_type;
     return static_cast<const du_t&>(a) << s;
 }
 
@@ -1392,7 +1392,7 @@ template <typename _T>
 cftal::dint<_T> cftal::operator>>(const dint<_T>& a, unsigned s)
 {
     // arithmetic shift from logical shift:
-    typedef typename dint<_T>::base_type du_t;
+    using du_t = typename dint<_T>::base_type;
     const du_t& au = static_cast<const du_t&>(a);
     du_t t(- (au >> (dint<_T>::N-1)));
     du_t a_xor_t(a^ t);
@@ -1549,7 +1549,7 @@ cftal::dint<_T>& cftal::operator>>=(dint<_T>& a, int s)
 template <typename _T>
 bool cftal::operator<(const dint<_T>& a, const dint<_T>& b)
 {
-    typedef typename dint<_T>::base_type du_t;
+    using du_t = typename dint<_T>::base_type;
     bool r(static_cast<const du_t&>(a) < static_cast<const du_t&>(b));
     return impl::get_sign(a) ^ impl::get_sign(b) ^ r;
 }
@@ -1557,8 +1557,8 @@ bool cftal::operator<(const dint<_T>& a, const dint<_T>& b)
 template <typename _T>
 bool cftal::operator<(const _T& a, const dint<_T>& b)
 {
-    typedef typename dint<_T>::base_type du_t;
-    typedef typename dint<_T>::utype u_t;
+    using du_t = typename dint<_T>::base_type;
+    using u_t = typename dint<_T>::utype;
     bool r(static_cast<const u_t&>(a) < static_cast<const du_t&>(b));
     return impl::get_sign(a) ^ impl::get_sign(b) ^ r;
 }
@@ -1566,8 +1566,8 @@ bool cftal::operator<(const _T& a, const dint<_T>& b)
 template <typename _T>
 bool cftal::operator<(const dint<_T>& a, const _T& b)
 {
-    typedef typename dint<_T>::base_type du_t;
-    typedef typename dint<_T>::utype u_t;
+    using du_t = typename dint<_T>::base_type;
+    using u_t = typename dint<_T>::utype;
     bool r(static_cast<const du_t&>(a) < static_cast<const u_t&>(b));
     return impl::get_sign(a) ^ impl::get_sign(b) ^ r;
 }
@@ -1575,7 +1575,7 @@ bool cftal::operator<(const dint<_T>& a, const _T& b)
 template <typename _T>
 bool cftal::operator<=(const dint<_T>& a, const dint<_T>& b)
 {
-    typedef typename dint<_T>::base_type du_t;
+    using du_t = typename dint<_T>::base_type;
     bool r(static_cast<const du_t&>(a) <= static_cast<const du_t&>(b));
     return impl::get_sign(a) ^ impl::get_sign(b) ^ r;
 }
@@ -1583,8 +1583,8 @@ bool cftal::operator<=(const dint<_T>& a, const dint<_T>& b)
 template <typename _T>
 bool cftal::operator<=(const _T& a, const dint<_T>& b)
 {
-    typedef typename dint<_T>::base_type du_t;
-    typedef typename dint<_T>::utype u_t;
+    using du_t = typename dint<_T>::base_type;
+    using u_t = typename dint<_T>::utype;
     bool r(static_cast<const u_t&>(a) <= static_cast<const du_t&>(b));
     return impl::get_sign(a) ^ impl::get_sign(b) ^ r;
 }
@@ -1592,8 +1592,8 @@ bool cftal::operator<=(const _T& a, const dint<_T>& b)
 template <typename _T>
 bool cftal::operator<=(const dint<_T>& a, const _T& b)
 {
-    typedef typename dint<_T>::base_type du_t;
-    typedef typename dint<_T>::utype u_t;
+    using du_t = typename dint<_T>::base_type;
+    using u_t = typename dint<_T>::utype;
     bool r(static_cast<const du_t&>(a) <= static_cast<const u_t&>(b));
     return impl::get_sign(a) ^ impl::get_sign(b) ^ r;
 }
@@ -1601,54 +1601,53 @@ bool cftal::operator<=(const dint<_T>& a, const _T& b)
 template <typename _T>
 bool cftal::operator==(const dint<_T>& a, const dint<_T>& b)
 {
-    typedef typename dint<_T>::base_type du_t;
-    // typedef typename dint<_T>::utype u_t;
+    using du_t = typename dint<_T>::base_type;
     return static_cast<const du_t&>(a) == static_cast<const du_t&>(b);
 }
 
 template <typename _T>
 bool cftal::operator==(const _T& a, const dint<_T>& b)
 {
-    typedef typename dint<_T>::base_type du_t;
-    typedef typename dint<_T>::utype u_t;
+    using du_t = typename dint<_T>::base_type;
+    using u_t = typename dint<_T>::utype;
     return static_cast<const u_t&>(a) == static_cast<const du_t&>(b);
 }
 
 template <typename _T>
 bool cftal::operator==(const dint<_T>& a, const _T& b)
 {
-    typedef typename dint<_T>::base_type du_t;
-    typedef typename dint<_T>::utype u_t;
+    using du_t = typename dint<_T>::base_type;
+    using u_t = typename dint<_T>::utype;
     return static_cast<const du_t&>(a) == static_cast<const u_t&>(b);
 }
 
 template <typename _T>
 bool cftal::operator!=(const dint<_T>& a, const dint<_T>& b)
 {
-    typedef typename dint<_T>::base_type du_t;
+    using du_t = typename dint<_T>::base_type;
     return static_cast<const du_t&>(a) != static_cast<const du_t&>(b);
 }
 
 template <typename _T>
 bool cftal::operator!=(const _T& a, const dint<_T>& b)
 {
-    typedef typename dint<_T>::base_type du_t;
-    typedef typename dint<_T>::utype u_t;
+    using du_t = typename dint<_T>::base_type;
+    using u_t = typename dint<_T>::utype;
     return static_cast<const u_t&>(a) != static_cast<const du_t&>(b);
 }
 
 template <typename _T>
 bool cftal::operator!=(const dint<_T>& a, const _T& b)
 {
-    typedef typename dint<_T>::base_type du_t;
-    typedef typename dint<_T>::utype u_t;
+    using du_t = typename dint<_T>::base_type;
+    using u_t = typename dint<_T>::utype;
     return static_cast<const du_t&>(a) != static_cast<const u_t&>(b);
 }
 
 template <typename _T>
 bool cftal::operator>=(const dint<_T>& a, const dint<_T>& b)
 {
-    typedef typename dint<_T>::base_type du_t;
+    using du_t = typename dint<_T>::base_type;
     bool r(static_cast<const du_t&>(a) >= static_cast<const du_t&>(b));
     return impl::get_sign(a) ^ impl::get_sign(b) ^ r;
 }
@@ -1656,8 +1655,8 @@ bool cftal::operator>=(const dint<_T>& a, const dint<_T>& b)
 template <typename _T>
 bool cftal::operator>=(const _T& a, const dint<_T>& b)
 {
-    typedef typename dint<_T>::base_type du_t;
-    typedef typename dint<_T>::utype u_t;
+    using du_t = typename dint<_T>::base_type;
+    using u_t = typename dint<_T>::utype;
     bool r(static_cast<const u_t&>(a) >= static_cast<const du_t&>(b));
     return impl::get_sign(a) ^ impl::get_sign(b) ^ r;
 }
@@ -1665,8 +1664,8 @@ bool cftal::operator>=(const _T& a, const dint<_T>& b)
 template <typename _T>
 bool cftal::operator>=(const dint<_T>& a, const _T& b)
 {
-    typedef typename dint<_T>::base_type du_t;
-    typedef typename dint<_T>::utype u_t;
+    using du_t = typename dint<_T>::base_type;
+    using u_t = typename dint<_T>::utype;
     bool r(static_cast<const du_t&>(a) >= static_cast<const u_t&>(b));
     return impl::get_sign(a) ^ impl::get_sign(b) ^ r;
 }
@@ -1674,7 +1673,7 @@ bool cftal::operator>=(const dint<_T>& a, const _T& b)
 template <typename _T>
 bool cftal::operator>(const dint<_T>& a, const dint<_T>& b)
 {
-    typedef typename dint<_T>::base_type du_t;
+    using du_t = typename dint<_T>::base_type;
     bool r(static_cast<const du_t&>(a) > static_cast<const du_t&>(b));
     return impl::get_sign(a) ^ impl::get_sign(b) ^ r;
 }
@@ -1682,8 +1681,8 @@ bool cftal::operator>(const dint<_T>& a, const dint<_T>& b)
 template <typename _T>
 bool cftal::operator>(const _T& a, const dint<_T>& b)
 {
-    typedef typename dint<_T>::base_type du_t;
-    typedef typename dint<_T>::utype u_t;
+    using du_t = typename dint<_T>::base_type;
+    using u_t = typename dint<_T>::utype;
     bool r(static_cast<const u_t&>(a) > static_cast<const du_t&>(b));
     return impl::get_sign(a) ^ impl::get_sign(b) ^ r;
 }
@@ -1691,8 +1690,8 @@ bool cftal::operator>(const _T& a, const dint<_T>& b)
 template <typename _T>
 bool cftal::operator>(const dint<_T>& a, const _T& b)
 {
-    typedef typename dint<_T>::base_type du_t;
-    typedef typename dint<_T>::utype u_t;
+    using du_t = typename dint<_T>::base_type;
+    using u_t = typename dint<_T>::utype;
     bool r(static_cast<const du_t&>(a) > static_cast<const u_t&>(b));
     return impl::get_sign(a) ^ impl::get_sign(b) ^ r;
 }
