@@ -59,40 +59,47 @@ namespace cftal {
         _T* data();
     };
 
+    // output operator for fp_expansion
     template <typename _T, size_t _N>
     std::ostream&
     operator<<(std::ostream& s, const fp_expansion<_T, _N>& e);
 
+    // less than operator for fp_expansions
     template <typename _T, size_t _N>
     auto
     operator<(const fp_expansion<_T, _N>& a,
               const fp_expansion<_T, _N>& b)
         ->decltype(_T{} < _T{});
 
+    // less than or equal operator for fp_expansions
     template <typename _T, size_t _N>
     auto
     operator<=(const fp_expansion<_T, _N>& a,
                const fp_expansion<_T, _N>& b)
         ->decltype(_T{}<=_T{});
 
+    // equality operator for fp_expansions
     template <typename _T, size_t _N>
     auto
     operator==(const fp_expansion<_T, _N>& a,
                const fp_expansion<_T, _N>& b)
         ->decltype(_T{}==_T{});
 
+    // non equality operator for fp_expansions
     template <typename _T, size_t _N>
     auto
     operator!=(const fp_expansion<_T, _N>& a,
                const fp_expansion<_T, _N>& b)
         ->decltype(_T{}!=_T{});
 
+    // greater than or equal operator for fp_expansions
     template <typename _T, size_t _N>
     auto
     operator>=(const fp_expansion<_T, _N>& a,
                const fp_expansion<_T, _N>& b)
         ->decltype(_T{}>=_T{});
 
+    // greater than operator for fp_expansions
     template <typename _T, size_t _N>
     auto
     operator>(const fp_expansion<_T, _N>& a,
