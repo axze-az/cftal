@@ -247,9 +247,6 @@ namespace cftal {
         // l is inherited from base_tpye.
         constexpr const type& sh() const {
             return reinterpret_cast<const type&>(base_type::uh());
-            // const utype& _uh= base_type::uh();
-            // const type* ph= reinterpret_cast<const type*>(&_uh);
-            // return *ph;
         }
         explicit constexpr operator _T() const {
             return type(this->l());
