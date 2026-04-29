@@ -24,7 +24,7 @@
 
 namespace cftal {
 
-    // double unsigned integer
+    // double length unsigned integer
     template <typename _T>
     class duint {
         static_assert(is_unsigned<_T>::value, "_T must be unsigned");
@@ -231,7 +231,7 @@ namespace cftal {
     template <typename _T>
     bool operator>(const duint<_T>& a, const _T& b);
 
-    // double signed integer
+    // double length signed integer
     template <typename _T>
     class dint : public duint<typename make_unsigned<_T>::type> {
         static_assert(is_signed<_T>::value, "_T must be signed");
