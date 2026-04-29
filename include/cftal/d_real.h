@@ -50,7 +50,6 @@ namespace cftal {
         return fma(-a, b, -c);
     }
 
-
     // specialization of a fp_expansion with 2 elements
     template <typename _T>
     class fp_expansion<_T, 2> {
@@ -98,8 +97,8 @@ namespace cftal {
     template <typename _T>
     using d_real = fp_expansion<_T, 2>;
 
-    // basic operations for double real class independent
-    // of fused multiply and add
+    // basic operations for double real class independent of fused
+    // multiply and add
     template <class _T>
     struct d_real_ops_common {
 
@@ -172,14 +171,14 @@ namespace cftal {
 
     };
 
-    // fused muliply and add dependent operations for double
-    // real arithmetic
+    // fused muliply and add dependent operations for double real
+    // arithmetic
     template <class _T, bool _FMA>
     struct d_real_ops_fma : public d_real_ops_common<_T> {
     };
 
-    // fused muliply and add dependent operations for double
-    // real arithmetic, specialization using no fma
+    // fused muliply and add dependent operations for double real
+    // arithmetic, specialization using no fma
     template <class _T>
     struct d_real_ops_fma<_T, false> : public d_real_ops_common<_T> {
         using base_type=d_real_ops_common<_T>;
@@ -269,8 +268,8 @@ namespace cftal {
               const _T& xh, const _T& xl);
     };
 
-    // fused muliply and add dependent operations for double
-    // real arithmetic, specialization using fma
+    // fused muliply and add dependent operations for double real
+    // arithmetic, specialization using fma
     template <class _T>
     struct d_real_ops_fma<_T, true> : public d_real_ops_common<_T> {
         using base_type=d_real_ops_common<_T>;
@@ -359,7 +358,8 @@ namespace cftal {
               const _T& ah, const _T& al);
     };
 
-    // operation class for double real operations
+    // operation class for double real operations shared by
+    // implementations with and without fma
     template <class _T, bool _FMA>
     struct d_real_ops : public d_real_ops_fma<_T, _FMA> {
         using base_type=d_real_ops_fma<_T, _FMA>;
