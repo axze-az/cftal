@@ -25,7 +25,7 @@
 
 namespace cftal {
 
-    // a floating point expansion
+    // a floating point expansion of type _T with _N elements
     template <typename _T, size_t _N>
     class fp_expansion {
         _T _e[_N];
