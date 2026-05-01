@@ -23,23 +23,6 @@
 
 namespace cftal {
 
-    namespace impl {
-
-        // struct using a vector of indices to load a vector
-        template <typename _VEC, typename _INDEX_VEC>
-        struct load_indices {
-        };
-
-        template <typename _VEC, typename _STRIDE_TYPE>
-        struct indices_from_stride {
-        };
-
-        // struct using a stride to load a vector
-        template <typename _VEC, typename _STRIDE_TYPE>
-        struct load_strided {
-        };
-    }
-
     // load a vector _VEC containing the elements
     // r[i] = src[indices[i] + offset] for i=[0, indices.size())
     template <typename _VEC, typename _T, typename _INDEX_VEC>
@@ -82,6 +65,30 @@ namespace cftal {
 
     namespace impl {
 
+        // definition of a implementation struct to load a vector from
+        // a pointer plus a vector of indices
+        // specializations may define their own interfaces
+        template <typename _VEC, typename _INDEX_VEC>
+        struct load_indices {
+        };
+
+        // definition of a implementation struct for converting a
+        // stride to a vector of indices
+        // specializations may define their own interfaces
+        template <typename _VEC, typename _STRIDE_TYPE>
+        struct indices_from_stride {
+        };
+
+        // definition of a implementation struct to load a vector from
+        // a pointer plus a stride
+        // specializations may define their own interfaces
+        template <typename _VEC, typename _STRIDE_TYPE>
+        struct load_strided {
+        };
+    }
+
+    namespace impl {
+
         // load indices specialization for vec<_T, _N> and vec<_I, _N>
         template <typename _T, typename _I, size_t _N>
         struct load_indices<vec<_T, _N>, vec<_I, _N> > {
@@ -90,7 +97,7 @@ namespace cftal {
             from(const _T* src, const vec<_I, _N>& iv, ssize_t offset);
         };
 
-        // indices_from_strides pecialization forvec<_I, _N> and _I
+        // indices_from_stride specialization for vec<_I, _N> and _I
         template <typename _I, size_t _N>
         struct indices_from_stride<vec<_I, _N>, _I> {
             struct alignas(vec<_I, _N>) data {
