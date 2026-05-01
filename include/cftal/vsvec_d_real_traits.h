@@ -24,6 +24,7 @@
 
 namespace cftal {
 
+    // d_real_traits specialized for vsvec<double, _A>
     template <typename _A>
     struct d_real_traits<vsvec<double,_A> > : public has_fma<double> {
         using cmp_result_type = typename vsvec<double, _A>::mask_type;
@@ -77,7 +78,7 @@ namespace cftal {
 
     };
 
-
+    // d_real_traits specialized for vsvec<float, _A>
     template <typename _A>
     struct d_real_traits<vsvec<float, _A> > : public has_fma<float> {
         using cmp_result_type = typename vsvec<float, _A>::mask_type;
