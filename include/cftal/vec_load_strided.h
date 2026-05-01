@@ -103,9 +103,9 @@ namespace cftal {
             struct alignas(vec<_I, _N>) data {
                 // stores only stride 1
                 _I _v[_N];
-                data();
+                constexpr data();
             };
-            static const data _dta;
+            static constexpr const data _dta{};
             static
             vec<_I, _N>
             create(_I stride);
@@ -175,6 +175,7 @@ from(const _T* src, const vec<_I, _N>& iv, ssize_t offset)
 }
 
 template <typename _I, size_t _N>
+constexpr
 cftal::impl::indices_from_stride<cftal::vec<_I, _N>, _I>::
 data::data()
 {
@@ -191,12 +192,6 @@ create(_I stride)
     vec<_I, _N> r=mem<vec<_I, _N> >::load(_dta._v, _N);
     return r*stride;
 }
-
-template <typename _I, size_t _N>
-const typename
-cftal::impl::
-indices_from_stride<cftal::vec<_I, _N>, _I>::data
-cftal::impl::indices_from_stride<cftal::vec<_I, _N>, _I>::_dta{};
 
 template <typename _T, size_t _N, typename _STRIDE_TYPE>
 cftal::vec<_T, _N>
