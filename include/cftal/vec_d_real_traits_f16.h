@@ -25,6 +25,7 @@
 
 namespace cftal {
 
+    // d_real_traits specialized of vec<f16_t, _N>
     template <std::size_t _N>
     struct d_real_traits<vec<f16_t, _N> > : public has_fma<f16_t> {
         using cmp_result_type = typename vec<f16_t, _N>::mask_type;
