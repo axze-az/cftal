@@ -153,9 +153,6 @@ namespace cftal {
     nfms(const vec<double, 1>& a, const vec<double, 1>& b,
          const vec<double, 1>& c);
 
-// TODO: --------------------------------------------------------------------
-// TODO: test for the functions above
-
     // frexp
     template <size_t _N>
     vec<double, _N>
