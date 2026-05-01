@@ -100,18 +100,22 @@ namespace cftal {
     nmad(const vec<float, _N>& a, const vec<float, _N>& b,
          const vec<float, _N>& c);
 
+    // check for zero
     template <size_t _N>
     typename vec<float, _N>::mask_type
     iszero(const vec<float, _N>& v);
 
+    // check for infinity
     template <size_t _N>
     typename vec<float, _N>::mask_type
     isinf(const vec<float, _N>& v);
 
+    // check for nan
     template <size_t _N>
     typename vec<float, _N>::mask_type
     isnan(const vec<float, _N>& v);
 
+    // check for finite numbers
     template <size_t _N>
     typename vec<float, _N>::mask_type
     isfinite(const vec<float, _N>& v);
