@@ -28,8 +28,9 @@
 
 namespace cftal {
 
+    // rounding modes (nearest to odd is missing)
     enum class rounding_mode {
-	nearest = 0,
+	nearest = 0, // exactly nearest to even
 	downward = 1,
 	upward = 2,
 	towardzero = 3,
