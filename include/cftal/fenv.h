@@ -63,8 +63,12 @@ cftal::scoped_ftz_daz_mode::scoped_ftz_daz_mode()
 #endif
 {
 #if defined (__SSE__)
+#if defined _MM_DENORMALS_ZERO_ON
+    uint32_t ncsr=_csr | _MM_FLUSH_ZERO_MASK | _MM_DENORMALS_ZERO_ON;
+#else
     constexpr const uint32_t _MM_DAZ_MASK=1<<6;
     uint32_t ncsr=_csr | _MM_FLUSH_ZERO_MASK | _MM_DAZ_MASK;
+#endif    
     if (ncsr != _csr) {
         _mm_setcsr(ncsr);
         _restore=true;
