@@ -36,12 +36,14 @@ namespace cftal {
 
     namespace impl {
 
+	// convert a bfloat16 stored in a mf_bf16_t into a float
 #if __cpp_lib_bit_cast>0
         constexpr
 #endif
         f32_t
         _cvt_bf16_to_f32(mf_bf16_t f);
 
+	// convert a float into a bfloat16 stored in a mf_bf16_t
 #if __cpp_lib_bit_cast>0
         constexpr
 #endif
