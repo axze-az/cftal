@@ -32,6 +32,7 @@ namespace cftal {
         // value_type type alias
         using value_type = _T;
 
+	// default constructor
         constexpr
         fp_expansion() = default;
 
