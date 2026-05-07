@@ -55,39 +55,52 @@ namespace cftal {
     class fp_expansion<_T, 2> {
         _T _e[2];
     public:
+        // value_type type alias
         using value_type = _T;
 
-	constexpr
-	fp_expansion() = default;
+        // default constructor
+        constexpr
+        fp_expansion() = default;
 
+        // constructor from _T
+        constexpr
+        fp_expansion(const _T& h) : _e{h, _T(0.0)} {}
+
+        // constructor from _T h and _T l
+        constexpr
+        fp_expansion(const _T& h, const _T& l) : _e{h, l} {}
+
+        // constructor from any convertible fp_expansion<_U, 2>
         template <typename _U>
         constexpr
         fp_expansion(const fp_expansion<_U, 2>& r) : _e{_T(r[0]), _T(r[1])} {}
 
-        constexpr
-        fp_expansion(const _T& h, const _T& l) : _e{h, l} {}
-
-        constexpr
-        fp_expansion(const _T& h) : _e{h, _T(0.0)} {}
-
+        // constructor from any convertible fp_expansion<_U, _M>
         template <std::size_t _M>
         constexpr
         explicit
         fp_expansion(const fp_expansion<_T, _M>& r)
-	    : _e{ (_M>0 ? r[0] : _T(0)),
-	          (_M>1 ? r[1] : _T(0)) } {}
+            : _e{ (_M>0 ? r[0] : _T(0)),
+                  (_M>1 ? r[1] : _T(0)) } {}
 
+        // array operator read only
         constexpr
         const _T& operator[](std::size_t i) const {
             return _e[i];
         }
+
+        // array operator read write
         _T& operator[](std::size_t i) {
             return _e[i];
         }
+
+        // return constant poiner to data
         constexpr
         const _T* data() const {
             return _e;
         }
+
+        // return poiner to data
         _T* data() {
             return _e;
         }
