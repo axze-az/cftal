@@ -27,6 +27,7 @@ namespace cftal {
     // the default classes define only the structure of the template
     // with one class/typename arguments
     namespace op {
+
         // template classes for the different operations
         // these operation classes must export a static member function v
         // returning and taking the right arguments, the return type of v
@@ -87,39 +88,47 @@ namespace cftal {
         template <typename _T>
         struct fnma {};
 
-        // bitwise logical operations
+        // bitwise or 
         template <typename _T>
         struct bit_or {};
 
+        // bitwise and
         template <typename _T>
         struct bit_and {};
 
+        // bitwise xor
         template <typename _T>
         struct bit_xor {};
 
+        // bitwise not
         template <typename _T>
         struct bit_not  {};
 
         // scalar shift left operator
         template <typename _T>
         struct shl {};
+	
         // scalar shift right operator
         template <typename _T>
         struct shr { };
+
         // vector shift left operator
         template <typename _T>
         struct vshl {};
-        // vector shift right operator
+
+	// vector shift right operator
         template <typename _T>
         struct vshr {};
 
-        // logical operations
+        // logical or
         template <typename _T>
         struct log_or {};
 
+	// logical and 
         template <typename _T>
         struct log_and {};
 
+	// logical not
         template <typename _T>
         struct log_not  {};
 
