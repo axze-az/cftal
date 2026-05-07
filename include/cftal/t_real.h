@@ -29,43 +29,65 @@ namespace cftal {
     class fp_expansion<_T, 3> {
         _T _e[3];
     public:
+        // value_type type alias
         using value_type = _T;
-        constexpr fp_expansion(): _e{_T(0), _T(0), _T(0)} {}
+
         constexpr
-        fp_expansion(_T v) : _e{v, _T(0), _T(0)} {}
+        fp_expansion() = default;
+
+        // constructor from _T
         constexpr
-        fp_expansion(_T v0, _T v1) : _e{v0, v1, _T(0)} {}
+        fp_expansion(_T h) : _e{h, _T(0), _T(0)} {}
+
+        // constructor from _T h and _T m
         constexpr
-        fp_expansion(_T v0, _T v1, _T v2) : _e{v0, v1, v2} {}
+        fp_expansion(const _T& h, const _T& m) : _e{h, m, _T(0)} {}
+
+        // constructor from _T h, _T m and _T l
+        constexpr
+        fp_expansion(const _T& h, const _T& m, const _T&  l)
+            : _e{h, m, l} {
+        }
+
+        // constructor from any convertible fp_expansion<_U, 3>
         template <typename _U>
         constexpr
         fp_expansion(const fp_expansion<_U, 3>& r)
             : _e{_T(r[0]), _T(r[1]), _T(r[2])} {}
+
+        // constructor from any convertible fp_expansion<_U, 2> and _T l
         template<typename _U>
         constexpr
         fp_expansion(const fp_expansion<_U, 2>& r, const _U& l=_U(0))
             : _e{_T(r[0]), _T(r[1]),_T(l)} {}
 
+        // constructor from any convertible fp_expansion<_U, _M>
         template <std::size_t _M>
         constexpr
         explicit
         fp_expansion(const fp_expansion<_T, _M>& r)
-	    : _e{ (_M>0 ? r[0] : _T(0)),
-	          (_M>1 ? r[1] : _T(0)),
-		  (_M>2 ? r[2] : _T(0))} {}
+            : _e{ (_M>0 ? r[0] : _T(0)),
+                  (_M>1 ? r[1] : _T(0)),
+                  (_M>2 ? r[2] : _T(0))} {}
 
+        // array operator read only
         constexpr
         const _T& operator[](std::size_t i) const {
             return _e[i];
         }
+
+        // array operator read write
         _T& operator[](std::size_t i) {
             return _e[i];
         }
 
+        // return constant poiner to data
         constexpr
         const _T* data() const {
             return _e;
         }
+
+        // return poiner to data
         _T* data() {
             return _e;
         }
