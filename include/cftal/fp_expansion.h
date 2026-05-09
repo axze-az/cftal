@@ -30,32 +30,44 @@ namespace cftal {
     class fp_expansion {
         _T _e[_N];
     public:
+        // value_type type alias
         using value_type = _T;
 
+        // default constructor
         constexpr
         fp_expansion() = default;
 
+        // constructor from _T
         constexpr
         fp_expansion(const _T& h);
 
+        // constructor from initializer list of type convertible to _T
         template <typename _E>
         constexpr
         fp_expansion(std::initializer_list<_E> l);
 
+        // constructor from fp_expansion<_T, _M> of size _M
         template <size_t _M>
         constexpr
         explicit
         fp_expansion(const fp_expansion<_T, _M>& r);
 
+        // assignment operator from fp_expansion<_T, _M> of size _M
         template <size_t _M>
         fp_expansion& operator=(const fp_expansion<_T, _M>& r);
 
+        // array operator read only
         constexpr
         const _T& operator[](size_t i) const;
+
+        // array operator read write
         _T& operator[](size_t i);
 
+        // return constant poiner to data
         constexpr
         const _T* data() const;
+
+        // return poiner to data
         _T* data();
     };
 
@@ -258,7 +270,7 @@ operator<=(const fp_expansion<_T, _N>& a, const fp_expansion<_T, _N>& b)
         r |= ri;
         auto ei= a[i] == b[i];
         all_aibi_eq &= ei;
-     }
+    }
     auto ci= a[_N-1] <= b[_N-1];
     r |= (all_aibi_eq & ci);
     return r;
@@ -309,7 +321,7 @@ operator>=(const fp_expansion<_T, _N>& a, const fp_expansion<_T, _N>& b)
         r |= ri;
         auto ei= a[i] == b[i];
         all_aibi_eq &= ei;
-     }
+    }
     auto ci= a[_N-1] > b[_N-1];
     auto ri= all_aibi_eq & ci;
     r |= ri;
