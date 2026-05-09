@@ -117,11 +117,11 @@ cmp_eq(const vsvec<_T, _A>& a, const vsvec<_T, _A>& b)
     return r;
 }
 
-template <typename _T, typename _A>
+template <typename _T, typename _A, typename _CMP>
 typename cftal::vsvec<_T, _A>::mask_type
 cftal::test::
 cmp_eq(const vsvec<_T, _A>& a, const vsvec<_T, _A>& b,
-       cmp_ulp<_T> cmp)
+       _CMP cmp)
 {
     typename vsvec<_T, _A>::mask_type::value_type z(0);
     typename vsvec<_T, _A>::mask_type r(z, a.size());
