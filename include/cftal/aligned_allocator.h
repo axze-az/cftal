@@ -88,11 +88,10 @@ allocate(size_type n, const void* p)
 	if (rr==0)
 	    break;
 	auto new_hdlr=std::get_new_handler();
-	if (new_hdlr) {
-	    new_hdlr();
-	} else {
+	if (new_hdlr==nullptr) {
 	    throw std::bad_alloc();
 	}
+	new_hdlr();
     }
     return static_cast<_T*>(r);
 #endif
