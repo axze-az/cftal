@@ -80,7 +80,21 @@ allocate(size_type n, const void* p)
     std::align_val_t a= std::align_val_t(min_align());
     return static_cast<_T*>(::operator new(n*sizeof(_T), a));
 #else
-    return static_cast<_T*>(posix_memalign(n, min_align()));
+    void* r;
+    size_type na= n * sizeof(_T);
+    size_type nm= na < sizeof(void*) ? sizeof(void*) : na;
+    while (true) {
+	int rr=posix_memalign(&r, min_align(), nm);
+	if (rr==0)
+	    break;
+	auto new_hdlr=std::get_new_handler();
+	if (new_hdlr) {
+	    new_hdlr();
+	} else {
+	    throw std::bad_alloc();
+	}
+    }
+    return static_cast<_T*>(r);
 #endif
 }
 
