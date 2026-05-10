@@ -50,6 +50,9 @@ namespace cftal {
     template <class _T>
     unsigned lzcnt(const duint<_T>& a);
 
+    template <class _T>
+    unsigned popcnt(const duint<_T>& a);
+
     template <typename _T>
     duint<_T> operator~(const duint<_T>& a);
     template <typename _T>
@@ -538,6 +541,13 @@ unsigned cftal::lzcnt(const duint<_T>& a)
     unsigned res(a.uh() == 0 ?
                  lzcnt(a.l()) + duint<_T>::N2 :
                  lzcnt(a.uh()));
+    return res;
+}
+
+template <class _T>
+unsigned cftal::popcnt(const duint<_T>& a)
+{
+    unsigned res(popcnt(a.l())+popcnt(a.h()));
     return res;
 }
 
