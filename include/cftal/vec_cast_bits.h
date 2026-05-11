@@ -28,6 +28,7 @@ namespace cftal {
     namespace impl {
 #if defined (__SSE2__)
 
+        // cast to v2f64 from v4s32
         template <>
         struct cast_bits<v2f64, v4s32> {
             static
@@ -36,6 +37,7 @@ namespace cftal {
             }
         };
 
+        // cast to v2f64 from v4u32
         template <>
         struct cast_bits<v2f64, v4u32> {
             static
@@ -46,6 +48,8 @@ namespace cftal {
 #endif
 #if defined (__AVX__)
 #if !defined (__AVX2__)
+
+        // cast to v4f64 from v8s32
         template <>
         struct cast_bits<v4f64, v8s32> {
             static
@@ -55,6 +59,7 @@ namespace cftal {
             }
         };
 
+        // cast to v4f64 from v8u32
         template <>
         struct cast_bits<v4f64, v8u32> {
             static
@@ -64,6 +69,8 @@ namespace cftal {
             }
         };
 #else
+
+        // cast to v4f64 from v8s32
         template <>
         struct cast_bits<v4f64, v8s32> {
             static
@@ -72,6 +79,7 @@ namespace cftal {
             }
         };
 
+        // cast to v4f64 from v8u32
         template <>
         struct cast_bits<v4f64, v8u32> {
             static
