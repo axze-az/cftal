@@ -34,6 +34,9 @@ namespace cftal {
 	// constructor from a range
         constexpr init_list(const _T* b, const _T* e) noexcept
             : _begin(b), _end(e) {}
+	// constructor from pointer and size
+	constexpr init_list(const _T* b, size_t n) noexcept
+	    : _begin(b), _end(b+n) {}
 	// first element
         constexpr const _T* begin() const noexcept { return _begin; }
 	// one past last element
@@ -41,6 +44,20 @@ namespace cftal {
 	// number of elements
         constexpr size_t size() const noexcept { return end() - begin(); }
     };
+
+    // return the begin of an init_list
+    template <typename _T>
+    constexpr const _T*
+    begin(const init_list<_T>& l) {
+	return l.begin();
+    }
+
+    // return the end of an init_list
+    template <typename _T>
+    constexpr const _T*
+    end(const init_list<_T>& l) {
+	return l.end();
+    }
 
     // return the lower half of an init_list
     template <typename _T, size_t _N>
