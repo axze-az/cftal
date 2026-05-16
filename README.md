@@ -7,28 +7,30 @@ vectorized elementary functions.
 
 Cftal is a c++-20 template based short vector library with specializations
 using intrinsic functions.
+
 The library contains vectorized elementary and some special functions
 (erf, erfc, tgamma, lgamma, j0, y0, j1 and y1) which are part of the standard
 c++ math library for
+
 - double (binary64),
 - single (binary32),
 - half (binary16) and
 - bfloat16 (brain floating point)
 
-precision arguments and results. The functions are probably faithfully rounded
-for double, single and half precision and bfloat16.
-The elementary functions for half precision and bfloat16 with one argument are
-faithfully rounded (if mpfr rounds correctly).
-Tests for a  subset of the numbers for single and double precision show
-faithfully rounding compared to mpfr.
-The implemented special functions are fully tabulated for half and bfloat16
-precision.
+precision arguments and results.  These functions are probably
+faithfully rounded for double, single and half precision and bfloat16
+arguments.  The elementary functions for half precision and bfloat16
+with one argument are faithfully rounded (if mpfr rounds correctly).
+Tests for a subset of the numbers for single and double precision show
+faithfully rounding compared to mpfr.  The implemented special
+functions are fully tabulated for half and bfloat16 precision.
 
-Specializations for x86 processors with instructions set extensions up to AVX2
-are implemented and tested.
-The vector specializations for processors with AVX512 extensions are not 
-well tested yet.
-AArch64 code is not tested.
+Specializations of short vectors of different sizes of all integer
+types, float, double for x86 processors with instructions set
+extensions up to AVX2 (including SSE/SSE2/SSE3/SSE4) are implemented
+and tested. This includes the functions mentioned above.  The vector
+specializations for processors with AVX512 extensions are not well
+tested yet. The code for AArch64 code is not tested.
 
 The library also contains vectors with variable sizes. These use the
 short vectors of the library for their implementation.
