@@ -4511,15 +4511,6 @@ hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
     ma *= factor;
     mi *= factor;
 
-#if 1
-    vf_type smah, smal;
-    d_ops::sqr12(smah, smal, ma);
-    vf_type smih=mi*mi;
-    vf_type sh, sl;
-    d_ops::add212(sh, sl, smah, smal, smih);
-    vf_type r;
-    d_ops::sqrt21(r, sh, sl);
-#else
     vf_type smah, smal;
     d_ops::sqr12(smah, smal, ma);
     vf_type smih, smil;
@@ -4528,7 +4519,6 @@ hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
     d_ops::add22(sh, sl, smah, smal, smih, smil);
     vf_type r;
     d_ops::sqrt21(r, sh, sl);
-#endif
     r *= scale;
     return r;
 }
