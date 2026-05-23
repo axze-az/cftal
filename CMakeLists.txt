@@ -32,7 +32,7 @@ if (UNIX)
   endif()
 endif()
 
-project (CFTAL)
+project (cftal)
 set (CFTAL_VERSION_MAJ 0)
 set (CFTAL_VERSION_MIN 8)
 set (CFTAL_VERSION_PLV 0)
