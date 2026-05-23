@@ -222,7 +222,7 @@ endif()
 
 set(CFTAL_CFG_ENABLE_AVX512 0)
 option(CFTAL_CONFIG_ENABLE_AVX512
-       "allow usage of AVX512XX" OFF)
+       "allow usage of avx512" OFF)
 if (CFTAL_CONFIG_ENABLE_AVX512)
     message("use avx512: yes")
     set(CFTAL_CFG_ENABLE_AVX512 1)
