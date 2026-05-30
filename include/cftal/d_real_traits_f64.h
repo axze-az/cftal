@@ -45,23 +45,22 @@ namespace cftal {
         // corresponding integer type for ldexp, frexp
         using int_type = int32_t;
 
-        static constexpr double eps() {
-            // 2^-104
-            return 4.93038065763132e-32;
-        }
-
         // return true if any in b is true
         static bool any_of_v(const cmp_result_type& b) {
             return b;
         }
-        // select an value
+
+	// select on_true if s is true on_false otherwise
         static double sel(const cmp_result_type& s,
                           const double& on_true,
                           const double& on_false) {
             return s ? on_true : on_false;
         }
 
-        static
+	// split of a double, similiar to veltkamp split but without
+	// the requirement to scale the argument if the magnitude is
+	// to large
+	static
         void split(double a, double& hi, double& lo) {
             const uint64_t msk=
                 const_u64<0xf8000000U, 0xffffffffU>::v.u64();
@@ -104,6 +103,8 @@ namespace cftal {
             }
         }
 
+	// return the smallest absolute value of division arguments
+	// where scaling is not required
         static
         constexpr
         double
