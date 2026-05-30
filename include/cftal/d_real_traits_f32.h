@@ -45,16 +45,21 @@ namespace cftal {
         // corresponding integer type for ldexp, frexp
         using int_type = int32_t;
 
+	// any_of set in b? return b.
         static bool any_of_v(const cmp_result_type& b) {
             return b;
         }
+
+	// select on_true if s is true on_false otherwise
         static float sel(const cmp_result_type& s,
                          const float& on_true,
                          const float& on_false) {
             return s ? on_true : on_false;
         }
 
-        // veltkamp split of a float
+	// split of a float, similiar to veltkamp split but without
+	// the requirement to scale the argument if the magnitude is
+	// to large
         static
         void split(float a, float& hi, float& lo) {
             const uint32_t msk=
@@ -93,6 +98,8 @@ namespace cftal {
             }
         }
 
+	// return the smallest absolute value of division arguments
+	// where scaling is not required
         static
         constexpr
         float
