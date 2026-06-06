@@ -46,18 +46,50 @@ namespace cftal {
                 _T v=call_mpfr::func(a, mpfr_rec_sqrt, &i);
                 return std::make_tuple(v, i.first, i.second);
             }
+
+	    static
+	    float
+	    _s(const float& a) {
+		return ::rsqrtf(a);
+	    }
+
+	    static
+	    double
+	    _s(const double& a) {
+		return ::rsqrt(a);
+	    }
+
             static
-            _T
-            s(const _T& a) {
-                if (a==std::numeric_limits<_T>::infinity()) {
+            bf16_t
+            _s(const bf16_t& a) {
+                return static_cast<bf16_t>(_s(static_cast<float>(a)));
+            }
+
+            static
+            f16_t
+            _s(const f16_t& a) {
+                return static_cast<f16_t>(_s(static_cast<float>(a)));
+            }    
+
+	    template <typename _T1>
+	    _T1
+	    _s(const _T1& a) {
+                if (a==std::numeric_limits<_T1>::infinity()) {
                     return _T(0.0);
                 }
                 if (a==0) {
-                    return std::numeric_limits<_T>::infinity();
+                    return std::numeric_limits<_T1>::infinity();
                 }
                 using std::sqrt;
-                return _T(1.0)/sqrt(a);
+                return _T1(1.0)/sqrt(a);
+	    }    
+	    
+            static
+            _T
+            s(const _T& a) {
+		return _s(a);
             }
+	    
             static
             const char* fname() { return "rsqrt"; }
         };
