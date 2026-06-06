@@ -47,6 +47,7 @@ namespace cftal {
                 return std::make_tuple(v, i.first, i.second);
             }
 
+#if 0	    
 	    static
 	    float
 	    _s(const float& a) {
@@ -58,31 +59,33 @@ namespace cftal {
 	    _s(const double& a) {
 		return ::rsqrt(a);
 	    }
-
-            static
-            bf16_t
-            _s(const bf16_t& a) {
-                return static_cast<bf16_t>(_s(static_cast<float>(a)));
-            }
-
-            static
-            f16_t
-            _s(const f16_t& a) {
-                return static_cast<f16_t>(_s(static_cast<float>(a)));
-            }    
+#endif	    
 
 	    template <typename _T1>
+	    static
 	    _T1
 	    _s(const _T1& a) {
                 if (a==std::numeric_limits<_T1>::infinity()) {
-                    return _T(0.0);
+                    return _T1(0.0);
                 }
-                if (a==0) {
+                if (a==_T1(0.0)) {
                     return std::numeric_limits<_T1>::infinity();
                 }
                 using std::sqrt;
                 return _T1(1.0)/sqrt(a);
 	    }    
+
+            static
+            bf16_t
+            _s(const bf16_t& a) {
+                return static_cast<bf16_t>(_s<float>(static_cast<float>(a)));
+            }
+
+            static
+            f16_t
+            _s(const f16_t& a) {
+                return static_cast<f16_t>(_s<float>(static_cast<float>(a)));
+            }    
 	    
             static
             _T
