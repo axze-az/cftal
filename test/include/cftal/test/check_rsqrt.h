@@ -52,7 +52,7 @@ namespace cftal {
                 return std::make_tuple(v, i.first, i.second);
             }
 
-#if 0	    
+#if 0
 	    static
 	    float
 	    _s(const float& a) {
@@ -72,9 +72,6 @@ namespace cftal {
 	    _s(const _T1& a) {
                 if (a==std::numeric_limits<_T1>::infinity()) {
                     return _T1(0.0);
-                }
-                if (a==_T1(0.0)) {
-                    return std::numeric_limits<_T1>::infinity();
                 }
                 using std::sqrt;
                 return _T1(1.0)/sqrt(a);
