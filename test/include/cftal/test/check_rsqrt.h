@@ -52,7 +52,6 @@ namespace cftal {
                 return std::make_tuple(v, i.first, i.second);
             }
 
-#if 0
 	    static
 	    float
 	    _s(const float& a) {
@@ -64,7 +63,6 @@ namespace cftal {
 	    _s(const double& a) {
 		return ::rsqrt(a);
 	    }
-#endif	    
 
 	    template <typename _T1>
 	    static
@@ -80,13 +78,13 @@ namespace cftal {
             static
             bf16_t
             _s(const bf16_t& a) {
-                return static_cast<bf16_t>(_s<float>(static_cast<float>(a)));
+                return static_cast<bf16_t>(_s(static_cast<float>(a)));
             }
 
             static
             f16_t
             _s(const f16_t& a) {
-                return static_cast<f16_t>(_s<float>(static_cast<float>(a)));
+                return static_cast<f16_t>(_s(static_cast<float>(a)));
             }    
 	    
             static
