@@ -336,7 +336,7 @@ rsqrt(arg_t<vf_type> x)
     // y=_T::sel(x == _T::pinf(), vf_type(0), y);
     y=_T::sel_val_or_zero(x != _T::pinf(), y);
     y=_T::sel(signbit(x) | isnan(x), _T::nan(), y);
-    y=_T::sel(iszero(x), _T::pinf(), y);
+    y=_T::sel(iszero(x), _T::pinf() | x, y);
     return y;
 }
 
