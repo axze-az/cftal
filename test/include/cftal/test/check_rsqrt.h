@@ -44,6 +44,11 @@ namespace cftal {
             r(const _T& a) {
                 std::pair<_T, _T> i;
                 _T v=call_mpfr::func(a, mpfr_rec_sqrt, &i);
+		using std::signbit;
+		if (a==_T(0.0) && signbit(a)) {
+		    v = -std::numeric_limits<_T>::infinity();
+		    i = std::make_pair(v, v);
+		}
                 return std::make_tuple(v, i.first, i.second);
             }
 
