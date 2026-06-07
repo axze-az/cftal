@@ -44,36 +44,36 @@ namespace cftal {
             r(const _T& a) {
                 std::pair<_T, _T> i;
                 _T v=call_mpfr::func(a, mpfr_rec_sqrt, &i);
-		using std::signbit;
-		if (a==_T(0.0) && signbit(a)) {
-		    v = -std::numeric_limits<_T>::infinity();
-		    i = std::make_pair(v, v);
-		}
+                using std::signbit;
+                if (a==_T(0.0) && signbit(a)) {
+                    v = -std::numeric_limits<_T>::infinity();
+                    i = std::make_pair(v, v);
+                }
                 return std::make_tuple(v, i.first, i.second);
             }
 
-	    static
-	    float
-	    _s(const float& a) {
-		return ::rsqrtf(a);
-	    }
+            static
+            float
+            _s(const float& a) {
+                return ::rsqrtf(a);
+            }
 
-	    static
-	    double
-	    _s(const double& a) {
-		return ::rsqrt(a);
-	    }
+            static
+            double
+            _s(const double& a) {
+                return ::rsqrt(a);
+            }
 
-	    template <typename _T1>
-	    static
-	    _T1
-	    _s(const _T1& a) {
+            template <typename _T1>
+            static
+            _T1
+            _s(const _T1& a) {
                 if (a==std::numeric_limits<_T1>::infinity()) {
                     return _T1(0.0);
                 }
                 using std::sqrt;
                 return _T1(1.0)/sqrt(a);
-	    }    
+            }
 
             static
             bf16_t
@@ -85,14 +85,14 @@ namespace cftal {
             f16_t
             _s(const f16_t& a) {
                 return static_cast<f16_t>(_s(static_cast<float>(a)));
-            }    
-	    
+            }
+
             static
             _T
             s(const _T& a) {
-		return _s(a);
+                return _s(a);
             }
-	    
+
             static
             const char* fname() { return "rsqrt"; }
         };
