@@ -88,7 +88,7 @@ namespace cftal {
         template <typename _T>
         struct fnma {};
 
-        // bitwise or 
+        // bitwise or
         template <typename _T>
         struct bit_or {};
 
@@ -107,7 +107,7 @@ namespace cftal {
         // scalar shift left operator
         template <typename _T>
         struct shl {};
-	
+
         // scalar shift right operator
         template <typename _T>
         struct shr { };
@@ -116,7 +116,7 @@ namespace cftal {
         template <typename _T>
         struct vshl {};
 
-	// vector shift right operator
+        // vector shift right operator
         template <typename _T>
         struct vshr {};
 
@@ -124,11 +124,11 @@ namespace cftal {
         template <typename _T>
         struct log_or {};
 
-	// logical and 
+        // logical and
         template <typename _T>
         struct log_and {};
 
-	// logical not
+        // logical not
         template <typename _T>
         struct log_not  {};
 
