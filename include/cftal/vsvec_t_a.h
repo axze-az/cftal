@@ -789,7 +789,7 @@ cftal::vsvec<_T, _A>::operator=(const vsvec& r)
     }
     // gcc12 warns if (n!=0) is not in front of std::copy
     if (_n != 0) {
-	std::copy(r.cbegin(), r.cend(), begin());
+        std::copy(r.cbegin(), r.cend(), begin());
     }
     return *this;
 }
