@@ -137,11 +137,10 @@ cftal::v4f64 lorenzv(cftal::v4f64 x, cftal::v4f64& dxdt, const double t)
     return r;
 }
 
-
-using namespace boost::numeric::odeint;
-
 int main()
 {
+    using namespace boost::numeric::odeint;
+
     const double end_p = 10.0;
     const double abs_err = 1e-15;
     const double rel_err = 1e-15;
