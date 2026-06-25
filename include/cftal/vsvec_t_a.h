@@ -263,20 +263,32 @@ namespace cftal {
     // compared to the size of the arguments i.e.
     // comparison of eval_size and eval_result_size
     enum class result_size {
+        // result size is smaller than argument size
         lt_size,
+        // result size is equal to argument size
         eq_size,
+        // result size is greater than argument size
         gt_size
     };
 
-    // evaluation of the number of operands of an expression and
-    // of the result size of an expression compared to the input size
+    // evaluation of the number of operands of an expression and of
+    // the result size of an expression compared to the input size
+    //
+    // the static method count returns a measure of effort of
+    // performing operations on _T and defaults to one.
+    //
+    // sizes returns the estimated result size on operations on _T
     template <typename _T>
     struct operand {
+        // most operations have simple efforts - for instance all
+        // standard operators
         static
         constexpr
         size_t count() {
             return 1;
         }
+        // the default result size of an operation on a variable sized
+        // vector is the size of the argument
         static
         constexpr
         result_size sizes() {
@@ -284,13 +296,16 @@ namespace cftal {
         }
     };
 
+    // operand specialization for void
     template <>
     struct operand<void> {
+        // no effort at all
         static
         constexpr
         size_t count() {
             return 0;
         }
+        // return a useful default
         static
         constexpr
         result_size sizes() {
@@ -298,15 +313,20 @@ namespace cftal {
         }
     };
 
+    // operand specialization for expressions
     template <typename _T, typename _A,
               template <class _U, class _UA> class _OP,
               class _L, class _R>
     struct operand<expr<_OP<_T, _A>, _L, _R> > {
+        // return the sum of the left and right hand side of the
+        // expression as count (measure of effort)
         static
         constexpr
         size_t count() {
             return operand<_L>::count() + operand<_R>::count();
         }
+        // the default result size of an operation on a variable sized
+        // vector is the size of the argument
         static
         constexpr
         result_size sizes() {
@@ -314,7 +334,8 @@ namespace cftal {
         }
     };
 
-    // evaluation of the i-th component of expressions
+    // evaluation of the i-th component of _T using short vectors of
+    // size _N - default function returns the object itself
     template <size_t _N, typename _T>
     inline
     const _T&
@@ -322,13 +343,20 @@ namespace cftal {
         return v;
     }
 
+    // evaluation of the i-th component of vsvec<_T, _A> using short
+    // vectors of size _N - default return vec<_T, _N> loaded from
+    // position i in v,
+    // some special cases are allowed if v.size() < i + _N
+    // v.size() == 1: return vec<_T, _N>(v[0]
+    // i % v.size() == 0: return a padded vec<_T, _N>(v[0], v[1],
+    // ... v[0], v[1] ..)
     template <size_t _N, typename _T, typename _A>
     inline
     vec<_T, _N>
     eval_i(const vsvec<_T, _A>& v, size_t i) {
         const size_t vs=size(v);
         if (__unlikely(vs < i + _N)) {
-            // Allow vectors of size 1 to behave like scalars. This
+            // allow vectors of size 1 to behave like scalars. This
             // allows construction of vectors without explicit size.
             if (__likely(vs == 1)) {
                 const _T& v0=v[0];
@@ -337,12 +365,14 @@ namespace cftal {
             // determine the best condition here
             if (((i % vs) != 0)) {
                 std::ostringstream s;
-                s << "oops\n";
-                s << "i= " << i << " N=" << _N << '\n';
-                s << v << '\n';
+                s << "programming error, unexpected vsvec.size()="
+                  << vs << '\n'
+                  << "i= " << i << " N=" << _N << '\n'
+                  << v << '\n';
                 throw std::runtime_error(s.str());
             }
-            // Allow vectors with sizes less than _N to expand their values
+            // allow vectors with sizes less than _N to expand their values
+            // up to _N
             _T vi[_N];
             const size_t vsmax=_N < vs ? _N : vs;
             for (size_t j = 0; j<_N; j+= vs) {
@@ -355,6 +385,9 @@ namespace cftal {
         return v.template loadv<_N>(i);
     }
 
+    // evaluation of the i-th component of a binary expression by
+    // evaluating the left and right part of the expression and
+    // combining the results.
     template <size_t _N,
               typename _T, typename _A,
               template <class _U> class _OP,
@@ -363,9 +396,11 @@ namespace cftal {
     vec<_T, _N>
     eval_i(const expr<_OP<vsvec<_T, _A>>, _L, _R>& e, size_t i) {
         return _OP<vsvec<_T, _A>>::v(eval_i<_N, _T>(e._l, i),
-                                    eval_i<_N, _T>(e._r, i));
+                                     eval_i<_N, _T>(e._r, i));
     }
 
+    // evaluation of the i-th component of a unary expression by
+    // evaluating the left part of the expression
     template <size_t _N,
               typename _T, typename _A,
               template <class _U> class _OP,
