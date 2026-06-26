@@ -26,7 +26,7 @@
 
 namespace cftal {
 
-    // a long vector of _T
+    // a variable sized vector of _T
     template <typename _T, typename _A=aligned_allocator<_T, 64> >
     class vsvec : private _A {
         using _A_traits= std::allocator_traits<_A>;
@@ -35,6 +35,8 @@ namespace cftal {
             // elements
             _SVOPT = sizeof(void*)/sizeof(_T)
         };
+	// uniom containing either the pointer to the data or the
+	// data itself
         union data_ptr {
             _T* __restrict _d;
             char _buf[sizeof(_T*)];
@@ -128,11 +130,14 @@ namespace cftal {
         vsvec(const _T& r, size_t n=1);
         // initialize l.size() elements with l
         vsvec(std::initializer_list<_T> l);
-        // constructor from range
+        // constructor if _ITER is an integer where b is the value and
+        // e is the size
         template <typename _ITER>
         vsvec(_ITER b, _ITER e, std::true_type);
+        // constructor from range if _ITER is not an integer
         template <typename _ITER>
         vsvec(_ITER b, _ITER e, std::false_type);
+        // constructor from range
         template <typename _ITER>
         vsvec(_ITER b, _ITER e);
         // construction from expression template
@@ -198,35 +203,49 @@ namespace cftal {
     template <typename _T, typename _A>
     std::ostream& operator<<(std::ostream& s, const vsvec<_T, _A>& v);
 
+    // variable sized vector of int8_t
     using vxs8 = vsvec<int8_t>;
+    // variable sized vector of uint8_t
     using vxu8 = vsvec<uint8_t>;
+    // variable sized vector of int16_t
     using vxu16 = vsvec<uint16_t>;
+    // variable sized vector of uint16_t
     using vxs16 = vsvec<int16_t>;
+    // variable sized vector of int32_t
     using vxu32 = vsvec<uint32_t>;
+    // variable sized vector of uint32_t
     using vxs32 = vsvec<int32_t>;
+    // variable sized vector of int64_t
     using vxu64 = vsvec<uint64_t>;
+    // variable sized vector of uint64_t
     using vxs64 = vsvec<int64_t>;
+    // variable sized vector of f32 (float)
     using vxf32 = vsvec<float>;
+    // variable sized vector of f64 (double)
     using vxf64 = vsvec<double>;
 
+    // expr_traits specialization for vsvec<_T, _A>
     template <typename _T, typename _A>
     struct expr_traits<vsvec<_T, _A> > {
         using type = const vsvec<_T, _A>&;
     };
 
-    // evaluation of the maximum size of expressions
+    // evaluation of the argument size of expressions, defaults to 1
     template <typename _T>
     inline
     size_t eval_size(const _T&) {
         return 1;
     }
 
+    // evaluation of the argument size of expressions containing
+    // vsvec<_T, _A> objects, return v.size()
     template <typename _T, typename _A>
     inline
     size_t eval_size(const vsvec<_T, _A>& v) {
         return v.size();
     }
 
+    // evaluation of the argument size of expressions with 2 arguments
     template <typename _T, typename _A,
               template <class _U> class _OP,
               class _L, class _R>
@@ -242,6 +261,8 @@ namespace cftal {
         return std::max(l, r);
     }
 
+    // evaluation of the argument size of expressions without second
+    // argument
     template <typename _T, typename _A,
               template <class _U> class _OP,
               class _L>
