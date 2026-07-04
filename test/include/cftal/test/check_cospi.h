@@ -49,25 +49,25 @@ namespace cftal {
             static
             f16_t
             _s(const f16_t& a) {
-                return f16_t(::tanpif(float(a)));
+                return f16_t(::cospif(float(a)));
             }
 
             static
             bf16_t
             _s(const bf16_t& a) {
-                return bf16_t(::tanpif(float(a)));
+                return bf16_t(::cospif(float(a)));
             }
 
             static
             float
             _s(const float& a) {
-                return ::tanpif(a);
+                return ::cospif(a);
             }
 
             static
             double
             _s(const double& a) {
-                return ::tanpi(a);
+                return ::cospi(a);
             }
 
             static
