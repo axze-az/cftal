@@ -74,7 +74,7 @@ namespace cftal {
             _T
             s(const _T& a) {
                 return _s(a);
-	    }
+            }
 
             static
             const char* fname() { return "sinpi"; }
