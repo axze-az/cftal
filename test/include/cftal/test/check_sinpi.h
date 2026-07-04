@@ -45,12 +45,36 @@ namespace cftal {
                 _T v=call_mpfr::func(a, mpfr_sinpi, &i);
                 return std::make_tuple(v, i.first, i.second);
             }
+
+            static
+            f16_t
+            _s(const f16_t& a) {
+                return f16_t(::sinpif(float(a)));
+            }
+
+            static
+            bf16_t
+            _s(const bf16_t& a) {
+                return bf16_t(::sinpif(float(a)));
+            }
+
+            static
+            float
+            _s(const float& a) {
+                return ::sinpif(a);
+            }
+
+            static
+            double
+            _s(const double& a) {
+                return ::sinpi(a);
+            }
+
             static
             _T
             s(const _T& a) {
-                using std::sin;
-                return sin(a*_T(M_PI));
-            }
+                return _s(a);
+	    }
 
             static
             const char* fname() { return "sinpi"; }
