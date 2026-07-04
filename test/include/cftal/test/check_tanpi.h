@@ -45,12 +45,37 @@ namespace cftal {
                 _T v=call_mpfr::func(a, mpfr_tanpi, &i);
                 return std::make_tuple(v, i.first, i.second);
             }
+
+            static
+            f16_t
+            _s(const f16_t& a) {
+                return f16_t(::tanpif(float(a)));
+            }
+
+            static
+            bf16_t
+            _s(const bf16_t& a) {
+                return bf16_t(::tanpif(float(a)));
+            }
+
+            static
+            float
+            _s(const float& a) {
+                return ::tanpif(a);
+            }
+
+            static
+            double
+            _s(const double& a) {
+                return ::tanpi(a);
+            }
+
             static
             _T
             s(const _T& a) {
-                using std::tan;
-                return tan(a*_T(M_PI));
+                return _s(a);
             }
+	    
             static
             const char* fname() { return "tanpi"; }
         };
