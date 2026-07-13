@@ -499,18 +499,22 @@ namespace cftal {
     d_real<_T>
     operator+(const _T& a, const d_real<_T>& b);
 
+    // addition
     template <typename _T>
     d_real<_T>
     operator+(const d_real<_T>& a, const _T& b);
 
+    // addition
     template <typename _T>
     d_real<_T>
     operator+(const d_real<_T>& a,  const d_real<_T>& b);
 
+    // addition
     template <typename _T>
     d_real<_T>&
     operator+=(d_real<_T>& a, const _T& b);
 
+    // addition
     template <typename _T>
     d_real<_T>&
     operator+=(d_real<_T>& a, const d_real<_T>& b);
@@ -520,18 +524,22 @@ namespace cftal {
     d_real<_T>
     operator-(const _T& a, const d_real<_T>& b);
 
+    // subtraction
     template <typename _T>
     d_real<_T>
     operator-(const d_real<_T>& a, const _T& b);
 
+    // subtraction
     template <typename _T>
     d_real<_T>
     operator-(const d_real<_T>& a, const d_real<_T>& b);
 
+    // subtraction
     template <typename _T>
     d_real<_T>&
     operator-=(d_real<_T>& a, const _T& b);
 
+    // subtraction
     template <typename _T>
     d_real<_T>&
     operator-=(d_real<_T>& a, const d_real<_T>& b);
@@ -541,18 +549,22 @@ namespace cftal {
     d_real<_T>
     operator*(const _T& a, const d_real<_T>& b);
 
+    // multiplication
     template <typename _T>
     d_real<_T>
     operator*(const d_real<_T>& a, const _T& b);
 
+    // multiplication
     template <typename _T>
     d_real<_T>
     operator*(const d_real<_T>& a, const d_real<_T>& b);
 
+    // multiplication
     template <typename _T>
     d_real<_T>&
     operator*=(d_real<_T>& a, const _T& b);
 
+    // multiplication
     template <typename _T>
     d_real<_T>&
     operator*=(d_real<_T>& a, const d_real<_T>& b);
@@ -562,46 +574,68 @@ namespace cftal {
     d_real<_T>
     operator/(const d_real<_T>& a, const d_real<_T>& b);
 
+    // division
     template <typename _T>
     d_real<_T>
     operator/(const _T& a, const d_real<_T>& b);
 
+    // division
     template <typename _T>
     d_real<_T>
     operator/(const d_real<_T>& a, const _T& b);
 
+    // division
     template <typename _T>
     d_real<_T>&
     operator/=(d_real<_T>& a, const _T& b);
 
+    // division
     template <typename _T>
     d_real<_T>&
     operator/=(d_real<_T>& a, const d_real<_T>& b);
 
+    // reciprocal
     template <typename _T>
     d_real<_T> rcp(const d_real<_T>& r);
 
+    // absolute value
     template <typename _T>
     d_real<_T> abs(const d_real<_T>& r);
+
+    // round to integer
     template <typename _T>
     d_real<_T> rint(const d_real<_T>& r);
+
+    // floor - round down
     template <typename _T>
     d_real<_T> floor(const d_real<_T>& r);
+
+    // ceil - round up
     template <typename _T>
     d_real<_T> ceil(const d_real<_T>& r);
+
+    // truncate - round to zero
     template <typename _T>
     d_real<_T> trunc(const d_real<_T>& r);
 
+    // r to power of e
     template <typename _T>
     d_real<_T> powi(const d_real<_T>& r, int e);
 
+    // square
     template <typename _T>
     d_real<_T> sqr(const d_real<_T>& r);
+
+    // multiply by power of 2, b must be an exact power of 2 otherwise
+    // the function fails
     template <typename _T>
     d_real<_T> mul_pwr2(const d_real<_T>& a, const _T& b);
+
+    // square root
     template <typename _T>
     d_real<_T> sqrt(const d_real<_T>& a);
 
+    // selection of value similar to  m ? on_true : false
     template <typename _T>
     std::enable_if_t<!std::is_same_v<typename d_real_traits<_T>::cmp_result_type,
                                      bool>,
@@ -610,25 +644,29 @@ namespace cftal {
            const d_real<_T>& on_true,
            const d_real<_T>& on_false);
 
+    // selection of value similar to  m ? on_true : false
     template <typename _T>
     d_real<_T>
     select(const typename d_real_traits<_T>::cmp_result_type& m,
            const _T& on_true,
            const d_real<_T>& on_false);
 
+    // selection of value simiiar to  m ? on_true : false
     template <typename _T>
     d_real<_T>
     select(const typename d_real_traits<_T>::cmp_result_type& m,
            const d_real<_T>& on_true,
            const _T& on_false);
 
+    // return the minimum value of a, b
     template <typename _T>
-    d_real<_T> min(const d_real<_T>& on_true,
-                   const d_real<_T>& on_false);
+    d_real<_T> min(const d_real<_T>& a,
+                   const d_real<_T>& b);
 
+    // return the maximum value of a, b
     template <typename _T>
-    d_real<_T> max(const d_real<_T>& on_true,
-                   const d_real<_T>& on_false);
+    d_real<_T> max(const d_real<_T>& a,
+                   const d_real<_T>& b);
 }
 
 template <typename _T>
