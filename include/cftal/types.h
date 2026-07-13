@@ -24,10 +24,16 @@
 
 namespace cftal {
 
+    // unsigned 128 bit integer
     using uint128_t = duint<uint64_t>;
+
+    // signed 128 bit integer
     using int128_t = dint<int64_t>;
 
+    // unsigned 256 bit integer
     using uint256_t = duint<uint128_t>;
+
+    // unsigned 256 bit integer
     using int256_t = dint<int128_t>;
 
 }
