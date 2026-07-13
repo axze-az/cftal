@@ -24,7 +24,7 @@
 
 namespace cftal {
 
-    // is_integral similiar to std::is_integral but we want
+    // is_integral similar to std::is_integral but we want
     // to add specializations
     template <typename _T>
     struct is_integral : public std::is_integral<_T> {};
@@ -33,7 +33,7 @@ namespace cftal {
     inline constexpr bool
     is_integral_v = is_integral<T>::value;
 
-    // is_floating_point similiar to std::is_floating_point but we
+    // is_floating_point similar to std::is_floating_point but we
     // want to add specializations
     template <typename _T>
     struct is_floating_point : public std::is_floating_point<_T> {};
@@ -42,7 +42,7 @@ namespace cftal {
     inline constexpr bool
     is_floating_point_v = is_floating_point<T>::value;
 
-    // is_signed similiar to std::is_signed but we want
+    // is_signed similar to std::is_signed but we want
     // to add specializations
     template <typename _T>
     struct is_signed : public std::is_signed<_T> {};
@@ -51,7 +51,7 @@ namespace cftal {
     inline constexpr bool
     is_signed_v = is_signed<T>::value;
 
-    // is_unsigned similiar to std::is_unsigned but we want
+    // is_unsigned similar to std::is_unsigned but we want
     // to add specializations
     template <typename _T>
     struct is_unsigned : public std::is_unsigned<_T> {};
@@ -60,7 +60,7 @@ namespace cftal {
     inline constexpr bool
     is_unsigned_v = is_unsigned<T>::value;
 
-    // make_signed similiar to std::make_signed but we want
+    // make_signed similar to std::make_signed but we want
     // to add specializations
     template <typename _T>
     struct make_signed : public std::make_signed<_T> {};
@@ -68,7 +68,7 @@ namespace cftal {
     template< class T >
     using make_signed_t = typename make_signed<T>::type;
 
-    // make_unsigned similiar to std::make_unsigned but we want
+    // make_unsigned similar to std::make_unsigned but we want
     // to add specializations
     template <typename _T>
     struct make_unsigned : public std::make_unsigned<_T> {};
