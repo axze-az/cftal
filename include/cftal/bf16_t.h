@@ -252,8 +252,8 @@ namespace cftal {
          expr<op::mul<bf16_t>, _L2, _R2> >& e) {
 #if 1
         return op::fnma<bf16_t>::v(eval(e._r._l),
-                                  eval(e._r._r),
-                                  eval(e._l));
+                                   eval(e._r._r),
+                                   eval(e._l));
 #else
         return op::fms<bf16_t>::v(eval(e._l._l),
                                  eval(e._l._r),
