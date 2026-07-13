@@ -42,7 +42,7 @@ namespace cftal {
         }
     };
 
-    // conversion from vec<bit, _N> to vec<int32_t, _N/2>
+    // conversion from vec<bit, _N> to vec<bit, _N/2>
     template <size_t _N>
     struct cvt_mask<vec<bit, _N/2>, vec<bit, _N> > {
         static
@@ -55,7 +55,7 @@ namespace cftal {
         }
     };
 
-    // conversion from vec<bit, _N> to vec<int32_t, 2*_N>
+    // conversion from vec<bit, _N> to vec<bit, 2*_N>
     template <size_t _N>
     struct cvt_mask<vec<bit, 2*_N>, vec<bit, _N> > {
         static
