@@ -27,6 +27,50 @@
 
 namespace cftal {
 
+    namespace impl {
+
+        template <typename _T>
+        struct less_than_mag {
+            auto
+            operator()(const _T& a, const _T& b) const {
+                using std::abs;
+                return abs(a) < abs(b);
+            }
+        };
+
+        template <typename _T>
+        struct greater_than_mag {
+            auto
+            operator()(const _T& a, const _T& b) const {
+                using std::abs;
+                return abs(a) > abs(b);
+            }
+        };
+
+        template <bool _HANDLE_NAN, typename _T, typename _CMP>
+        std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
+        fcmp_res_or_nan(const _T& a, const _T& b, _CMP cmp);
+
+    }
+
+    // return number with maximum magnitude or nan if a or b are nan
+    template <typename _T>
+    std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
+    fmaximum_mag(const _T& a, const _T& b);
+
+    // return number with maximum magnitude without nan handling
+    template <typename _T>
+    std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
+    maximum_mag(const _T& a, const _T& b);
+
+    // return number with minimum magnitude or nan if a or b are nan
+    template <typename _T>
+    std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
+    fminimum_mag(const _T& a, const _T& b);
+
+    template <typename _T>
+    std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
+    minimum_mag(const _T& a, const _T& b);
 
     // returns linear interpolation between a and b
     template <typename _T, typename _T1, std::size_t _N>
@@ -137,6 +181,56 @@ namespace cftal {
     combine_f32pair_to_f64(const vec<float, _N>& h, const vec<float, _N>& l);
 }
 
+template <bool _HANDLE_NAN, typename _T, typename _CMP>
+std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
+cftal::impl::fcmp_res_or_nan(const _T& a, const _T& b, _CMP cmp)
+{
+    auto cmp_r=  cmp(a, b);
+    _T r= select(cmp_r, a, b);
+    if (_HANDLE_NAN) {
+        using std::isnan;
+        auto a_nan = isnan(a);
+        auto b_nan = isnan(b);
+        auto a_or_b_nan= a_nan | b_nan;
+        if (any_of(a_or_b_nan)) {
+            r=select(a_nan, a, r);
+            r=select(b_nan, b, r);
+        }
+    }
+    return r;
+}
+
+template <typename _T>
+std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
+cftal::fmaximum_mag(const _T& a, const _T& b)
+{
+    return impl::fcmp_res_or_nan<true>(a, b,
+                                       impl::greater_than_mag<_T>());
+}
+
+template <typename _T>
+std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
+cftal::maximum_mag(const _T& a, const _T& b)
+{
+    return impl::fcmp_res_or_nan<false>(a, b,
+                                        impl::greater_than_mag<_T>());
+}
+
+template <typename _T>
+std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
+cftal::fminimum_mag(const _T& a, const _T& b)
+{
+    return impl::fcmp_res_or_nan<true>(a, b,
+                                       impl::less_than_mag<_T>());
+}
+
+template <typename _T>
+std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
+cftal::minimum_mag(const _T& a, const _T& b)
+{
+    return impl::fcmp_res_or_nan<false>(a, b,
+                                        impl::less_than_mag<_T>());
+}
 
 template <typename _T, typename _T1, std::size_t _N>
 inline
