@@ -29,25 +29,27 @@ namespace cftal {
 
     namespace impl {
 
-        template <typename _T>
+        template <typename _T, bool _ORDER_BY_SIGN>
         struct less_than_mag {
+            // return abs(a) < abs(b) if _ORDER_BY_SIGN is false
+            // otherwise
+            // return abs(a)==abs(b) && signbit(a) ||
+            //        abs(a) < abs(b)
             auto
-            operator()(const _T& a, const _T& b) const {
-                using std::abs;
-                return abs(a) < abs(b);
-            }
+            operator()(const _T& a, const _T& b) const;
         };
 
-        template <typename _T>
+        template <typename _T, bool _ORDER_BY_SIGN>
         struct greater_than_mag {
+            // return abs(a) > abs(b) if _ORDER_BY_SIGN is false
+            // otherwise
+            // return abs(a)==abs(b) && signbit(b) ||
+            //        abs(a) > abs(b)
             auto
-            operator()(const _T& a, const _T& b) const {
-                using std::abs;
-                return abs(a) > abs(b);
-            }
+            operator()(const _T& a, const _T& b) const;
         };
 
-        template <bool _HANDLE_NAN, typename _T, typename _CMP>
+        template <bool _HANDLE_ZERO, typename _T, typename _CMP>
         std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
         fcmp_res_or_nan(const _T& a, const _T& b, _CMP cmp);
 
@@ -58,7 +60,8 @@ namespace cftal {
     std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
     fmaximum_mag(const _T& a, const _T& b);
 
-    // return number with maximum magnitude without nan handling
+    // return number with maximum magnitude without nan handling and
+    // sign ordering of equal values
     template <typename _T>
     std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
     maximum_mag(const _T& a, const _T& b);
@@ -68,6 +71,8 @@ namespace cftal {
     std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
     fminimum_mag(const _T& a, const _T& b);
 
+    // return number with minimum magnitude without nan handling and
+    // sign ordering of equal values
     template <typename _T>
     std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
     minimum_mag(const _T& a, const _T& b);
@@ -181,9 +186,44 @@ namespace cftal {
     combine_f32pair_to_f64(const vec<float, _N>& h, const vec<float, _N>& l);
 }
 
+template <typename _T, bool _ORDER_BY_SIGN>
+auto
+cftal::impl::less_than_mag<_T, _ORDER_BY_SIGN>::
+operator()(const _T& a, const _T& b)
+    const
+{
+    using std::abs;
+    auto aa=abs(a);
+    auto ab=abs(b);
+    auto r= aa < ab;
+    if (_ORDER_BY_SIGN) {
+        using std::signbit;
+        r |= ((aa == ab) & signbit(a));
+    }
+    return r;
+}
+
+template <typename _T, bool _ORDER_BY_SIGN>
+auto
+cftal::impl::greater_than_mag<_T, _ORDER_BY_SIGN>::
+operator()(const _T& a, const _T& b)
+    const
+{
+    using std::abs;
+    auto aa=abs(a);
+    auto ab=abs(b);
+    auto r= aa > ab;
+    if (_ORDER_BY_SIGN) {
+        using std::signbit;
+        r |= ((aa == ab) & signbit(b));
+    }
+    return r;
+}
+
 template <bool _HANDLE_NAN, typename _T, typename _CMP>
 std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
-cftal::impl::fcmp_res_or_nan(const _T& a, const _T& b, _CMP cmp)
+cftal::impl::
+fcmp_res_or_nan(const _T& a, const _T& b, _CMP cmp)
 {
     auto cmp_r=  cmp(a, b);
     _T r= select(cmp_r, a, b);
@@ -202,34 +242,38 @@ cftal::impl::fcmp_res_or_nan(const _T& a, const _T& b, _CMP cmp)
 
 template <typename _T>
 std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
-cftal::fmaximum_mag(const _T& a, const _T& b)
+cftal::
+fmaximum_mag(const _T& a, const _T& b)
 {
     return impl::fcmp_res_or_nan<true>(a, b,
-                                       impl::greater_than_mag<_T>());
+                                       impl::greater_than_mag<_T, true>());
 }
 
 template <typename _T>
 std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
-cftal::maximum_mag(const _T& a, const _T& b)
+cftal::
+maximum_mag(const _T& a, const _T& b)
 {
     return impl::fcmp_res_or_nan<false>(a, b,
-                                        impl::greater_than_mag<_T>());
+                                        impl::greater_than_mag<_T, false>());
 }
 
 template <typename _T>
 std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
-cftal::fminimum_mag(const _T& a, const _T& b)
+cftal::
+fminimum_mag(const _T& a, const _T& b)
 {
     return impl::fcmp_res_or_nan<true>(a, b,
-                                       impl::less_than_mag<_T>());
+                                       impl::less_than_mag<_T, true>());
 }
 
 template <typename _T>
 std::enable_if_t<cftal::is_floating_point_v<_T>, _T>
-cftal::minimum_mag(const _T& a, const _T& b)
+cftal::
+minimum_mag(const _T& a, const _T& b)
 {
     return impl::fcmp_res_or_nan<false>(a, b,
-                                        impl::less_than_mag<_T>());
+                                        impl::less_than_mag<_T, false>());
 }
 
 template <typename _T, typename _T1, std::size_t _N>
