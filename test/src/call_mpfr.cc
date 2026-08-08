@@ -895,6 +895,10 @@ int
 cftal::test::mpfr_ext::
 rootn(mpfr_t y, const mpfr_t x, long int n, mpfr_rnd_t rm)
 {
+#if (MPFR_VERSION_MAJOR > 4) || \
+    ((MPFR_VERSION_MAJOR == 4) && (MPFR_VERSION_MINOR >= 2))
+    int r=mpfr_rootn_si(y, x, n, rm);
+#else
     if ((n & 1)==0 && mpfr_cmp_si(x, 0L) < 0) {
         mpfr_set_nan(y);
         return 0;
@@ -925,6 +929,7 @@ rootn(mpfr_t y, const mpfr_t x, long int n, mpfr_rnd_t rm)
         r=mpfr_rootn_ui(y, x, n, rm);
 #endif
     }
+#endif
     return r;
 }
 
