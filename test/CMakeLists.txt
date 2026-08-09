@@ -160,6 +160,7 @@ test_prog(test-div-s16)
 test_prog(test-intops)
 
 test_prog(devel)
+test_prog(func)
 
 #add_executable(dev-func dev-func.cc)
 #target_add_test_libs(dev-func)
