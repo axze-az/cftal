@@ -539,6 +539,12 @@ namespace cftal {
     f16_t
     nextafter(f16_t a, f16_t b);
 
+    f16_t
+    fmin(f16_t a, f16_t b);
+
+    f16_t
+    fmax(f16_t a, f16_t b);
+
     f16_t frexp(f16_t x, int* e);
     f16_t ldexp(f16_t x, int e);
     int16_t ilogb(f16_t x);
@@ -1281,6 +1287,28 @@ cftal::nextafter(f16_t xc, f16_t yc)
     f16_t rf=as<f16_t>(r);
     rf = (isnan(xc) || isnan(yc)) ? std::numeric_limits<f16_t>::quiet_NaN() : rf;
     return rf;
+}
+
+inline
+cftal::f16_t
+cftal::fmin(f16_t x, f16_t y)
+{
+    float fx=static_cast<float>(x);
+    float fy=static_cast<float>(y);
+    using std::fmin;
+    float m=fmin(fx, fy);
+    return f16_t(m);
+}
+
+inline
+cftal::f16_t
+cftal::fmax(f16_t x, f16_t y)
+{
+    float fx=static_cast<float>(x);
+    float fy=static_cast<float>(y);
+    using std::fmax;
+    float m=fmax(fx, fy);
+    return f16_t(m);
 }
 
 inline
