@@ -25,6 +25,7 @@ test_prog(test-ceil)
 test_prog(test-trunc)
 test_prog(test-rint)
 test_prog(test-nextafter)
+test_prog(test-fmin)
 
 test_prog(test-poly)
 test_prog(test-sqrt-f64)
