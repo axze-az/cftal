@@ -230,12 +230,9 @@ fcmp_res_or_nan(const _T& a, const _T& b, _CMP cmp)
     if (_HANDLE_NAN) {
         using std::isnan;
         auto a_nan = isnan(a);
+        r=select(a_nan, a, r);
         auto b_nan = isnan(b);
-        auto a_or_b_nan= a_nan | b_nan;
-        if (any_of(a_or_b_nan)) {
-            r=select(a_nan, a, r);
-            r=select(b_nan, b, r);
-        }
+        r=select(b_nan, b, r);
     }
     return r;
 }
