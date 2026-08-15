@@ -28,6 +28,7 @@ test_prog(test-nextafter)
 test_prog(test-fmin)
 test_prog(test-fmax)
 test_prog(test-fmaximum_mag)
+test_prog(test-fminimum_mag)
 
 test_prog(test-poly)
 test_prog(test-sqrt-f64)
