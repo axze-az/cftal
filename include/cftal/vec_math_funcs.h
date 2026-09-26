@@ -107,7 +107,15 @@ namespace cftal {
     std::enable_if_t<cftal::is_integral_v<_T>, _T>
     average(const _T& a, const _T& b);
 
+    template <typename _U>
+    std::enable_if_t<cftal::is_unsigned_v<_U> && cftal::is_integral_v<_U>, _U>
+    sqrt(const _U& a);
 
+    template <typename _U, size_t _N>
+    std::enable_if_t<cftal::is_unsigned_v<_U> && cftal::is_integral_v<_U>,
+		     vec<_U, _N> >
+    sqrt(const vec<_U, _N>& a);
+    
     namespace impl {
         // round the last _BITS to nearest, ties to even
         template <typename _VEC_FLOAT, typename _FLOAT,
@@ -384,6 +392,50 @@ cftal::average(const _T& a, const _T&  b)
     // return (a >> 1) + (b >> 1) + (((a & 1) + (b & 1) + 1) >> 1);
     return (a & b) + (((a^b)+1)>>1);
 }
+
+template <typename _U>
+std::enable_if_t<cftal::is_unsigned_v<_U> && cftal::is_integral_v<_U>, _U>
+cftal::sqrt(const _U& a)
+{
+    // Dynamically calculate the highest power of 4 based on the
+    // type's bit width
+    _U m = static_cast<_U>(1) << (sizeof(_U) * 8 - 2);
+    _U y = 0;
+    _U x = a;
+
+    while (m != 0) {
+        _U b = y + m;
+        y = y >> 1;
+        if (x >= b) {
+            x = x - b;
+            y = y + m;
+        }
+        m = m >> 2;
+    }
+    return y;
+}
+
+template <typename _U, size_t _N>
+std::enable_if_t<cftal::is_unsigned_v<_U> && cftal::is_integral_v<_U>,
+		 cftal::vec<_U, _N> >
+cftal::sqrt(const vec<_U, _N>& a)
+{
+    _U m = static_cast<_U>(1) << (sizeof(_U) * 8 - 2);
+    vec<_U, _N> y = 0;
+    vec<_U, _N> x = a;
+
+    while (m != 0) {
+        vec<_U, _N> b = y + m;
+        y = y >> 1;
+	// typename vec<_U, _N>::mask_type x_ge_b = x >= b;
+	typename vec<_U, _N>::mask_type x_lt_b = x < b;
+	x = select(x_lt_b, x, x - b);
+	y = select(x_lt_b, y, y + m);
+        m = m >> 2;
+    }
+    return y;
+}
+
 
 // round the last _BITS to nearest, ties to even
 template <typename _VEC_FLOAT, typename _FLOAT,
