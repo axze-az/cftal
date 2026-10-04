@@ -1180,9 +1180,7 @@ cftal::f16_t cftal::abs(const f16_t& v)
 inline
 cftal::f16_t cftal::fabs(const f16_t& v)
 {
-    const mf_f16_t& vi= read_bits(v);
-    mf_f16_t abs_vi= vi & not_sign_f16_msk::v.u16();
-    return as<f16_t>(abs_vi);
+    return abs(v);
 }
 
 inline
