@@ -531,6 +531,7 @@ namespace cftal {
     bool isnan(const bf16_t& v);
     bool isinf(const bf16_t& v);
     bf16_t abs(const bf16_t& v);
+    bf16_t fabs(const bf16_t& v);
     bool signbit(const bf16_t& v);
 
     // math functions for bf16_t are missing
@@ -1169,6 +1170,12 @@ cftal::bf16_t cftal::abs(const bf16_t& v)
     const mf_bf16_t& vi= read_bits(v);
     mf_bf16_t abs_vi= vi & not_sign_f32_msk::v.s16h();
     return as<bf16_t>(abs_vi);
+}
+
+inline
+cftal::bf16_t cftal::fabs(const bf16_t& v)
+{
+    return abs(v);
 }
 
 inline
