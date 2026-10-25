@@ -23,6 +23,7 @@
 
 namespace cftal {
     namespace func {
+
         // data structure for expressions requiring three arguments
         template <typename _T>
         struct tri_data {};
@@ -137,7 +138,7 @@ namespace cftal {
 
         template <typename _T>
         struct f_log10p1 {};
-	
+
         template <typename _T>
         struct f_sin {};
 
@@ -167,7 +168,6 @@ namespace cftal {
 
         template <typename _T>
         struct f_tgamma {};
-
     }
 }
 
