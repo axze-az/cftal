@@ -22,7 +22,7 @@
 #include <cftal/cvt_bf16.h>
 #include <cftal/constants.h>
 #include <cftal/type_traits.h>
-#define __USE_STDCPP_BFLOAT16_T__ 0
+#define __USE_STDCPP_BFLOAT16_T__ 1
 #if (__USE_STDCPP_BFLOAT16_T__ > 0)
 #if __has_include(<stdfloat>)
 #include <stdfloat>
