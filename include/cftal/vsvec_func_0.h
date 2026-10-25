@@ -510,6 +510,45 @@ namespace cftal {
             }
         };
 
+        template <typename _T>
+        struct f_j0 {
+            template <size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return j0(a);
+            }
+        };
+
+        template <typename _T>
+        struct f_y0 {
+            template <size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return y0(a);
+            }
+        };
+
+        template <typename _T>
+        struct f_j1 {
+            template <size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return j1(a);
+            }
+        };
+
+        template <typename _T>
+        struct f_y1 {
+            template <size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return y1(a);
+            }
+        };
     }
 
     namespace func {
@@ -702,6 +741,21 @@ namespace cftal {
         struct f_tgamma<vsvec<_T, _A>> :
             public op_4_vsvec::f_tgamma<_T> {};
 
+        template <typename _T, typename _A>
+        struct f_j0<vsvec<_T, _A>> :
+            public op_4_vsvec::f_j0<_T> {};
+
+        template <typename _T, typename _A>
+        struct f_y0<vsvec<_T, _A>> :
+            public op_4_vsvec::f_y0<_T> {};
+
+        template <typename _T, typename _A>
+        struct f_j1<vsvec<_T, _A>> :
+            public op_4_vsvec::f_j1<_T> {};
+
+        template <typename _T, typename _A>
+        struct f_y1<vsvec<_T, _A>> :
+            public op_4_vsvec::f_y1<_T> {};
     }
 
 #define OPINFO(optype, opcount)                                 \
@@ -1058,6 +1112,26 @@ namespace cftal {
     FUNC_A1(tgamma, double, func::f_tgamma)
     FUNC_A1(tgamma, f16_t, func::f_tgamma)
     FUNC_A1(tgamma, bf16_t, func::f_tgamma)
+
+    FUNC_A1(j0, float, func::f_j0)
+    FUNC_A1(j0, double, func::f_j0)
+    FUNC_A1(j0, f16_t, func::f_j0)
+    FUNC_A1(j0, bf16_t, func::f_j0)
+
+    FUNC_A1(y0, float, func::f_y0)
+    FUNC_A1(y0, double, func::f_y0)
+    FUNC_A1(y0, f16_t, func::f_y0)
+    FUNC_A1(y0, bf16_t, func::f_y0)
+
+    FUNC_A1(j1, float, func::f_j1)
+    FUNC_A1(j1, double, func::f_j1)
+    FUNC_A1(j1, f16_t, func::f_j1)
+    FUNC_A1(j1, bf16_t, func::f_j1)
+
+    FUNC_A1(y1, float, func::f_y1)
+    FUNC_A1(y1, double, func::f_y1)
+    FUNC_A1(y1, f16_t, func::f_y1)
+    FUNC_A1(y1, bf16_t, func::f_y1)
 
     MFUNC_A1(iszero, float, func::f_iszero)
     MFUNC_A1(iszero, double, func::f_iszero)
