@@ -44,16 +44,25 @@ namespace cftal {
             // construct from __m128, use the fact that floating point
             // vectors are stored in xmm/ymm registers
             rep_v2_f32(__m128 v) {
+#if 0
+                *this=std::bit_cast<rep_v2_f32>(
+                    _mm_cvtsd_f64(_mm_castps_pd(v)));
+#else
                 // use the assembler to remove redundant moves
                 __asm__ ("\n"
                          ".ifnc %0,%1\n\t"
                          "vmovaps %1, %0\n"
                          ".endif\n\t"
                          : "=x" (*this) : "x" (v));
+#endif
             }
             // convert to __m128, use the fact that floating point
             // vectors are stored in xmm/ymm registers
             __m128 operator()() const {
+#if 0
+                __m128 r=_mm_castpd_ps(
+                    _mm_set1_pd(std::bit_cast<double>(*this)));
+#else
                 __m128 r;
                 // use the assembler to remove redundant moves
                 __asm__ ("\n"
@@ -61,6 +70,7 @@ namespace cftal {
                          "vmovaps %1, %0\n"
                          ".endif\n\t"
                          : "=x" (r) : "x" (*this));
+#endif
                 return r;
             }
         };
