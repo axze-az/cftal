@@ -73,10 +73,10 @@ namespace cftal {
     struct mem< vec<float, 4> > {
         static
         vec<float, 4>
-	load(const float* p, ssize_t n=4);
+        load(const float* p, ssize_t n=4);
         static
         void
-	store(float* p, const vec<float, 4>& v, ssize_t n=4);
+        store(float* p, const vec<float, 4>& v, ssize_t n=4);
     };
 
     vec<float, 2>
@@ -142,7 +142,9 @@ namespace cftal {
     v4f32 max(const v4f32& a, const v4f32& b);
     v4f32 min(const v4f32& a, const v4f32& b);
     v4f32 abs(const v4f32& a);
+#if __CFTAL_CFG_USE_8_BYTE_VECS_ON_X86__==0
     v2f32 sqrt(const v2f32& a);
+#endif
     v4f32 sqrt(const v4f32& a);
 
     namespace x86 {

@@ -302,6 +302,7 @@ vec(init_list<float> l)
 {
 }
 
+#if __CFTAL_CFG_USE_8_BYTE_VECS_ON_X86__==0
 inline
 cftal::vec<float, 4>::
 vec(const vec<float, 2>& lh, const vec<float, 2>& hh)
@@ -309,6 +310,16 @@ vec(const vec<float, 2>& lh, const vec<float, 2>& hh)
           low_half(hh)(), high_half(hh)()}
 {
 }
+#else
+inline
+cftal::vec<float, 4>::
+vec(const vec<float, 2>& lh, const vec<float, 2>& hh)
+    : base_type(_mm_castpd_ps(
+        _mm_unpacklo_pd(_mm_castps_pd(lh()),
+                        _mm_castps_pd(hh()))))
+{
+}
+#endif
 
 template <template <class _U> class _OP,
           class _L, class _R>
@@ -362,16 +373,24 @@ inline
 cftal::vec<float, 2>
 cftal::low_half(const vec<float, 4>& v)
 {
+#if __CFTAL_CFG_USE_8_BYTE_VECS_ON_X86__>0
+    return v();
+#else
     auto t=x86::extract_u64<0>(_mm_castps_si128(v()));
     return as<vec<float, 2> >(t);
+#endif
 }
 
 inline
 cftal::vec<float, 2>
 cftal::high_half(const vec<float, 4>& v)
 {
+#if __CFTAL_CFG_USE_8_BYTE_VECS_ON_X86__>0
+    return permute<2, 3, 2, 3>(v)();
+#else
     auto t=x86::extract_u64<1>(_mm_castps_si128(v()));
     return as<vec<float, 2> >(t);
+#endif
 }
 
 template <cftal::size_t _I>
@@ -464,7 +483,7 @@ cftal::permute(const v4f32& s, const v4s32& idx)
     return x86::permute_v4f32_v4s32(s(), idx());
 }
 
-#if __CFTAL_CFG_USE_X86_V2F32__==0
+#if __CFTAL_CFG_USE_8_BYTE_VECS_ON_X86__==0
 inline
 cftal::v2f32 cftal::sqrt(const v2f32& a)
 {
@@ -855,4 +874,4 @@ fromp(const float* tbl) const
 // Local variables:
 // mode: c++
 // end:
-#endif // __CFTAL_X86_V4F32__
+#endif // __CFTAL_X86_V4F32_INL__
