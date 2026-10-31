@@ -220,6 +220,16 @@ else()
     message("use f32 vectors in f16 functions: no")
 endif()
 
+set(CFTAL_CFG_USE_8_BYTE_VECS_ON_X86 0)
+option(CFTAL_CONFIG_USE_8_BYTE_VECS_ON_X86
+       "use specialized 8 byte vectors on x86" OFF)
+if (CFTAL_CONFIG_USE_8_BYTE_VECS_ON_X86)
+    message("use specialized 8 byte vectors on x86: yes")
+    set(CFTAL_CFG_USE_8_BYTE_VECS_ON_X86 1)
+else()
+    message("use specialized 8 byte vectors on x86: no")
+endif()
+
 set(CFTAL_CFG_ENABLE_AVX512 0)
 option(CFTAL_CONFIG_ENABLE_AVX512
        "allow usage of avx512" OFF)
