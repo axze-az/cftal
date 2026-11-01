@@ -2830,7 +2830,11 @@ __log_poly_k(arg_t<vf_type> xc)
     vf_type ei;
     d_ops::add12(l, ei, l, r2c2);
     e += ei;
-    d_ops::add12(l, ei, l, kf*ctbl::m_ln2_cw[1]);
+    if (d_real_traits<vf_type>::fma == true) {
+	d_ops::muladd12(l, ei, l, kf, ctbl::m_ln2_cw[1]);
+    } else {
+	d_ops::add12(l, ei, l, kf*ctbl::m_ln2_cw[1]);
+    }
     e += ei;
 #if 0
     d_ops::add12(l, ei, l, r2*(r*p));
@@ -3151,9 +3155,12 @@ __log1p_poly_k(arg_t<vf_type> xc)
     vf_type ei;
     d_ops::add12(l, ei, l, r2c2);
     e += ei;
-    d_ops::add12(l, ei, l, kf*ctbl::m_ln2_cw[1]);
+    if (d_real_traits<vf_type>::fma == true) {
+	d_ops::muladd12(l, ei, l, kf, ctbl::m_ln2_cw[1]);
+    } else {
+	d_ops::add12(l, ei, l, kf*ctbl::m_ln2_cw[1]);
+    }
     e += ei;
-
     vf_type ll=e + r2*(r*p);
     return l+ll;
 
@@ -3177,7 +3184,11 @@ __log1p_poly_k(arg_t<vf_type> xc)
     vf_type ei;
     d_ops::add12(l, ei, l, r2c2);
     e += ei;
-    d_ops::add12(l, ei, l, kf*ctbl::m_ln2_cw[1]);
+    if (d_real_traits<vf_type>::fma == true) {
+	d_ops::muladd12(l, ei, l, kf, ctbl::m_ln2_cw[1]);
+    } else {
+	d_ops::add12(l, ei, l, kf*ctbl::m_ln2_cw[1]);
+    }
     e += ei;
     // assume y == xrh, x == xrl:
     // f(x) := log(1+y+x);
