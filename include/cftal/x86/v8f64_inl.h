@@ -515,7 +515,7 @@ cftal::min(const v8f64& a, const v8f64& b)
 }
 
 inline
-cftal::v8f64 cftal::x86::round(const v8f64& a, rounding_mode::type m)
+cftal::v8f64 cftal::x86::round(const v8f64& a, rounding_mode m)
 {
     v8f64 r;
     switch (m) {

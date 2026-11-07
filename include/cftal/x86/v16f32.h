@@ -121,7 +121,7 @@ namespace cftal {
     v16f32 sqrt(const v16f32& a);
 
     namespace x86 {
-        v16f32 round(const v16f32& v, rounding_mode::type m);
+        v16f32 round(const v16f32& v, rounding_mode m);
     }
 
     v16f32 rint(const v16f32& a);
