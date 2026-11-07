@@ -25,6 +25,10 @@
 #include <cftal/vec_math_funcs.h>
 #include <cmath>
 
+#if defined (__SSE__)
+#define __CFTAL_CFG_SSE_NATIVE_RSQRT 1
+#endif
+
 #define V2F32_FUNCS 1
 #if 1
 #define V4F32_FUNCS                                     \
@@ -1549,7 +1553,7 @@ namespace cftal {
 #endif
 
     namespace native {
-#if defined (__SSE__)
+#if (__CFTAL_CFG_SSE_NATIVE_RSQRT > 0)
         vec<float, 1>
         rsqrt_11b(const vec<float, 1>& x);
 
@@ -1561,6 +1565,10 @@ namespace cftal {
 #if defined (__AVX__)
         vec<float, 8>
         rsqrt_11b(const vec<float, 8>& x);
+#endif
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+        vec<float, 16>
+        rsqrt_11b(const vec<float, 16>& x);
 #endif
 #endif
 
@@ -2676,7 +2684,7 @@ cftal::sig(const vec<float, _N>& x)
     return r;
 }
 
-#if defined(__SSE__)
+#if (__CFTAL_CFG_SSE_NATIVE_RSQRT > 0)
 inline
 cftal::vec<float, 1>
 cftal::native::rsqrt_11b(const vec<float, 1>& x)
@@ -2708,14 +2716,24 @@ cftal::native::rsqrt_11b(const vec<float, 8>& x)
     return _mm256_rsqrt_ps(x());
 }
 #endif
-#endif // __SSE__
+
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+inline
+cftal::vec<float, 16>
+cftal::native::rsqrt_11b(const vec<float, 16>& x)
+{
+    return _mm512_rsqrt14_ps(x());
+}
+#endif
+
+#endif // (__CFTAL_CFG_SSE_NATIVE_RSQRT > 0)
 
 template <cftal::size_t _N>
 inline
 cftal::vec<float, _N>
 cftal::native::rsqrt_11b(const vec<float, _N>& x)
 {
-#if defined (__SSE__)
+#if (__CFTAL_CFG_SSE_NATIVE_RSQRT > 0)
     return vec<float, _N>(rsqrt_11b(low_half(x)),
                           rsqrt_11b(high_half(x)));
 #else
