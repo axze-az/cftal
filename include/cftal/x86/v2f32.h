@@ -37,10 +37,17 @@ namespace cftal {
 
         // class representing a pair of floats.
         struct rep_v2_f32 {
+#if 1
+	    using __v2f32 = float __attribute__((vector_size(8)));
+	    __v2f32 _f;
+            rep_v2_f32() = default;
+            rep_v2_f32(float l, float h) : _f{l, h} {}
+#else	    
             float _l;
             float _h;
             rep_v2_f32() = default;
             rep_v2_f32(float l, float h) : _l{l}, _h{h} {}
+#endif
             // construct from __m128, use the fact that floating point
             // vectors are stored in xmm/ymm registers
             rep_v2_f32(__m128 v) {
