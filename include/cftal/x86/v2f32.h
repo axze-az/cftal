@@ -35,6 +35,60 @@ namespace cftal {
 
     namespace x86 {
 
+	// class representing a 64 bit vector of _T
+	template <typename _T>
+	struct v64b {
+	    using data_t [[gnu::vector_size(8)]] = _T;
+	    data_t _d;
+	    v64b() = default;
+	    v64b(const _T& e0, const _T& e1)
+		: _d{e0, e1} {}
+	    v64b(const _T& e0, const _T& e1,
+		 const _T& e2, const _T& e3)
+		: _d{e0, e1, e2, e3} {}
+	    v64b(const _T& e0, const _T& e1,
+		 const _T& e2, const _T& e3,
+		 const _T& e4, const _T& e5,
+		 const _T& e6, const _T& e7)
+		: _d{e0, e1, e2, e3, e4, e5, e6, e7} {}
+	    v64b(__m128 v) {
+                // use the assembler to remove redundant moves
+                __asm__ ("\n"
+                         ".ifnc %0,%1\n\t"
+                         "vmovaps %1, %0\n"
+                         ".endif\n\t"
+                         : "=x" (*this) : "x" (v));
+	    }
+	    v64b(__m128i v) {
+                // use the assembler to remove redundant moves
+                __asm__ ("\n"
+                         ".ifnc %0,%1\n\t"
+                         "vmovdqa %1, %0\n"
+                         ".endif\n\t"
+                         : "=x" (*this) : "x" (v));
+	    }
+	    __m128 to_m128() const {
+                __m128 r;
+                // use the assembler to remove redundant moves
+                __asm__ ("\n"
+                         ".ifnc %0,%1\n\t"
+                         "vmovaps %1, %0\n"
+                         ".endif\n\t"
+                         : "=x" (r) : "x" (*this));
+		return r;
+	    }
+	    __m128i to_m128i() const {
+                __m128i r;
+                // use the assembler to remove redundant moves
+                __asm__ ("\n"
+                         ".ifnc %0,%1\n\t"
+                         "vmovdqa %1, %0\n"
+                         ".endif\n\t"
+                         : "=x" (r) : "x" (*this));
+		return r;
+	    }
+	};
+	
         // class representing a pair of floats.
         struct rep_v2_f32 {
 #if 1
@@ -65,7 +119,7 @@ namespace cftal {
             }
             // convert to __m128, use the fact that floating point
             // vectors are stored in xmm/ymm registers
-            __m128 operator()() const {
+            __m128 to_m128() const {
 #if 0
                 __m128 r=_mm_castpd_ps(
                     _mm_set1_pd(std::bit_cast<double>(*this)));
@@ -86,12 +140,12 @@ namespace cftal {
 
     template <>
     class vec<float, 2> {
-        using rep=x86::rep_v2_f32;
+        using rep=x86::v64b<float>;
         rep _v;
     public:
         // using base_type = x86::vreg<__m128>;
         __m128 operator()() const {
-            return _v();
+            return _v.to_m128();
         }
 
         using value_type = float;
