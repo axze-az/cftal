@@ -15,16 +15,17 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
-#if !defined (__CFTAL_X86_V16S32__)
-#define __CFTAL_X86_V16S32__ 1
+#if !defined (__CFTAL_X86_V16S32_H__)
+#define __CFTAL_X86_V16S32_H__ 1
 
 #include <cftal/config.h>
+
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
 #include <cftal/types.h>
 #include <cftal/x86/vreg.h>
 #include <cftal/x86/vec_bit.h>
 #include <cftal/vec_op.h>
-
-#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+#include <cftal/x86/v8s32.h>
 
 namespace cftal {
 
@@ -141,4 +142,4 @@ namespace cftal {
 // Local variables:
 // mode: c++
 // end:
-#endif // __CFTAL_X86_V16S32__
+#endif // __CFTAL_X86_V16S32_H__
