@@ -15,17 +15,16 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
-#if !defined (__CFTAL_X86_V2F32__)
-#define __CFTAL_X86_V2F32__ 1
+#if !defined (__CFTAL_X86_V2F32_H__)
+#define __CFTAL_X86_V2F32_H__ 1
 
 #include <cftal/config.h>
 
 #if __CFTAL_CFG_USE_8_BYTE_VECS_ON_X86__ > 0
 
-#include <cftal/types.h>
 #include <cftal/vec_t_n.h>
 #include <cftal/vec_lookup.h>
-#include <cftal/x86/intrin.h>
+#include <cftal/x86/v64bit.h>
 #include <cftal/x86/vec_bit.h>
 #include <cftal/x86/v2f64.h>
 
@@ -33,114 +32,9 @@ namespace cftal {
 
 #define V2F32_SPECIALIZED 1
 
-    namespace x86 {
-
-	// class representing a 64 bit vector of _T
-	template <typename _T>
-	struct v64b {
-	    using data_t [[gnu::vector_size(8)]] = _T;
-	    data_t _d;
-	    v64b() = default;
-	    v64b(const _T& e0, const _T& e1)
-		: _d{e0, e1} {}
-	    v64b(const _T& e0, const _T& e1,
-		 const _T& e2, const _T& e3)
-		: _d{e0, e1, e2, e3} {}
-	    v64b(const _T& e0, const _T& e1,
-		 const _T& e2, const _T& e3,
-		 const _T& e4, const _T& e5,
-		 const _T& e6, const _T& e7)
-		: _d{e0, e1, e2, e3, e4, e5, e6, e7} {}
-	    v64b(__m128 v) {
-                // use the assembler to remove redundant moves
-                __asm__ ("\n"
-                         ".ifnc %0,%1\n\t"
-                         "vmovaps %1, %0\n"
-                         ".endif\n\t"
-                         : "=x" (*this) : "x" (v));
-	    }
-	    v64b(__m128i v) {
-                // use the assembler to remove redundant moves
-                __asm__ ("\n"
-                         ".ifnc %0,%1\n\t"
-                         "vmovdqa %1, %0\n"
-                         ".endif\n\t"
-                         : "=x" (*this) : "x" (v));
-	    }
-	    __m128 to_m128() const {
-                __m128 r;
-                // use the assembler to remove redundant moves
-                __asm__ ("\n"
-                         ".ifnc %0,%1\n\t"
-                         "vmovaps %1, %0\n"
-                         ".endif\n\t"
-                         : "=x" (r) : "x" (*this));
-		return r;
-	    }
-	    __m128i to_m128i() const {
-                __m128i r;
-                // use the assembler to remove redundant moves
-                __asm__ ("\n"
-                         ".ifnc %0,%1\n\t"
-                         "vmovdqa %1, %0\n"
-                         ".endif\n\t"
-                         : "=x" (r) : "x" (*this));
-		return r;
-	    }
-	};
-	
-        // class representing a pair of floats.
-        struct rep_v2_f32 {
-#if 1
-	    using __v2f32 = float __attribute__((vector_size(8)));
-	    __v2f32 _f;
-            rep_v2_f32() = default;
-            rep_v2_f32(float l, float h) : _f{l, h} {}
-#else	    
-            float _l;
-            float _h;
-            rep_v2_f32() = default;
-            rep_v2_f32(float l, float h) : _l{l}, _h{h} {}
-#endif
-            // construct from __m128, use the fact that floating point
-            // vectors are stored in xmm/ymm registers
-            rep_v2_f32(__m128 v) {
-#if 0
-                *this=std::bit_cast<rep_v2_f32>(
-                    _mm_cvtsd_f64(_mm_castps_pd(v)));
-#else
-                // use the assembler to remove redundant moves
-                __asm__ ("\n"
-                         ".ifnc %0,%1\n\t"
-                         "vmovaps %1, %0\n"
-                         ".endif\n\t"
-                         : "=x" (*this) : "x" (v));
-#endif
-            }
-            // convert to __m128, use the fact that floating point
-            // vectors are stored in xmm/ymm registers
-            __m128 to_m128() const {
-#if 0
-                __m128 r=_mm_castpd_ps(
-                    _mm_set1_pd(std::bit_cast<double>(*this)));
-#else
-                __m128 r;
-                // use the assembler to remove redundant moves
-                __asm__ ("\n"
-                         ".ifnc %0,%1\n\t"
-                         "vmovaps %1, %0\n"
-                         ".endif\n\t"
-                         : "=x" (r) : "x" (*this));
-#endif
-                return r;
-            }
-        };
-
-    }
-
     template <>
     class vec<float, 2> {
-        using rep=x86::v64b<float>;
+        using rep=x86::v64bit<float>;
         rep _v;
     public:
         // using base_type = x86::vreg<__m128>;
@@ -366,4 +260,4 @@ namespace cftal {
 // Local variables:
 // mode: c++
 // end:
-#endif // __CFTAL_X86_V2F32__
+#endif // __CFTAL_X86_V2F32_H__
