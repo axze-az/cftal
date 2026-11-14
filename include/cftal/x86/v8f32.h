@@ -258,4 +258,4 @@ namespace cftal {
 // Local variables:
 // mode: c++
 // end:
-#endif // __CFTAL_X86_V8F32__
+#endif // __CFTAL_X86_V8F32_H__

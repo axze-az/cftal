@@ -15,8 +15,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
-#if !defined (__CFTAL_X86_V4U32_INL__)
-#define __CFTAL_X86_V4U32_INL__ 1
+#if !defined (__CFTAL_X86_V4U32_INL_H__)
+#define __CFTAL_X86_V4U32_INL_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/types.h>
@@ -742,4 +742,4 @@ fromp(const uint32_t* tbl) const
 // Local variables:
 // mode: c++
 // end:
-#endif // __CFTAL_X86_V4U32_INL__
+#endif // __CFTAL_X86_V4U32_INL_H__
