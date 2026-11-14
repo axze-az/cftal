@@ -646,4 +646,4 @@ cftal::average(const vec<uint8_t, 16>& a, const vec<uint8_t, 16>& b)
 // Local variables:
 // mode: c++
 // end:
-#endif // __CFTAL_X86_V8U16_INL__
+#endif // __CFTAL_X86_V8U16_INL_H__

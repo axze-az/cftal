@@ -529,4 +529,4 @@ cftal::mul_lo_hi(const v16u32& x, const v16u32& y)
 // Local variables:
 // mode: c++
 // end:
-#endif // __CFTAL_X86_V16U32_INL__
+#endif // __CFTAL_X86_V16U32_INL_H__
