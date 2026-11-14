@@ -24,7 +24,6 @@
 #include <cftal/x86/vec_bit.h>
 #include <cftal/vec_op.h>
 #include <cftal/x86/v16s8.h>
-#include <cftal/x86/v32s4.h>
 
 namespace cftal {
 
