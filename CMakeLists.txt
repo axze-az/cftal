@@ -227,6 +227,7 @@ if ((CFTAL_CONFIG_USE_8_BYTE_VECS_ON_X86) AND
     (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
      CMAKE_CXX_COMPILER_ID STREQUAL "Clang")) 
     message("CFTAL_CONFIG_USE_8_BYTE_VECS_ON_X86 use specialized 8 byte vectors on x86: yes")
+    message("CFTAL_CONFIG_USE_8_BYTE_VECS_ON_X86 is highly experimental")
 set(CFTAL_CFG_USE_8_BYTE_VECS_ON_X86 1)
 else()
     message("CFTAL_CONFIG_USE_8_BYTE_VECS_ON_X86 use specialized 8 byte vectors on x86: no")
