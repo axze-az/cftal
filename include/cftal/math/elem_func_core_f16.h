@@ -1325,7 +1325,11 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type c2r2, e0;
     d_ops::mul12(c2r2, e0, c2r, xrh);
     vf_type e1;
-    d_ops::add12(y, e1, c2r2, x2*(xrh*p));
+    if (d_real_traits<vf_type>::fma==true) {
+	d_ops::muladd12(y, e1, c2r2, x2, (xrh*p));
+    } else {
+	d_ops::add12(y, e1, c2r2, x2*(xrh*p));
+    }
     vf_type e2;
     d_ops::add12(y, e2, xrh, y);
     vf_type e3=xrl + xrl*y;
