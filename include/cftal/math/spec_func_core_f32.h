@@ -711,9 +711,15 @@ erfc_tbl_k(arg_t<vf_type> xc)
     i = horner(xr, i, c1);
     vf_type c0h=lck.from(pt, erfc_table::POLY_ORDER);
     vf_type c0l=lck.from(pt, erfc_table::POLY_ORDER+1);
+#if 1
+    vf_type ih, il;
+    horner_comp_quick_s0(ih, il, xr, i, c0h);
+    il += c0l;
+#else
     i *= xr;
     vf_type ih, il;
     d_ops::add212cond(ih, il, c0h, c0l, i);
+#endif
     d_ops::mul22(ih, il, ih, il, exh, exl);
     auto sc=base_type::__two_pow(k);
     ih *= sc.f0();
