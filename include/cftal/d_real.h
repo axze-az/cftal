@@ -389,6 +389,7 @@ namespace cftal {
         using base_type::add212;
         using base_type::rcp21;
         using base_type::sqr12;
+        using base_type::muladd12;
 
         // c+ a*b
         static
@@ -1468,8 +1469,9 @@ rcp12(_T& rh, _T& rl, const _T& a)
     if (_FMA == true) {
         _T nr0h=-r0h;
         _T z= fma(nr0h, a, _T(1.0));
-        _T d= r0h * z;
-        add12(rh, rl, r0h, d);
+        // _T d= r0h * z;
+        //  add12(rh, rl, r0, d);
+        muladd12(rh, rl, r0h, r0h, z);
     } else {
         // -rcp * a
         _T th, tl;
