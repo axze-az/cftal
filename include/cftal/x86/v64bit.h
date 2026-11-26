@@ -38,7 +38,7 @@ namespace cftal {
 	    v64bit(const _T& e0, const _T& e1)
 		: _d{e0, e1} {}
 	    v64bit(const _T& e0, const _T& e1,
-		 const _T& e2, const _T& e3)
+		   const _T& e2, const _T& e3)
 		: _d{e0, e1, e2, e3} {}
 	    v64bit(const _T& e0, const _T& e1,
 		 const _T& e2, const _T& e3,
