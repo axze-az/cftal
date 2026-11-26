@@ -570,7 +570,8 @@ template <int _I0, int _I1>
 inline
 cftal::v2u32 cftal::permute(const v2u32& a, const v2u32& b)
 {
-    return x86::perm_v4u32<_I0, _I1, 0, 0>(a(), b());
+    v4s32 t(a, b);
+    return x86::perm_v4u32<_I0, _I1, 0, 0>(t());
 }
 
 inline
