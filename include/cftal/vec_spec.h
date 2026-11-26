@@ -37,6 +37,10 @@
 #endif
 #if defined (__SSE2__)
 // include 128 bit integer vector specializations
+#if __CFTAL_CFG_USE_8_BYTE_VECS_ON_X86__ > 0
+#include <cftal/x86/v2s32.h>
+#include <cftal/x86/v2u32.h>
+#endif
 #include <cftal/x86/v2s64.h>
 #include <cftal/x86/v2u64.h>
 #include <cftal/x86/v4s32.h>
@@ -46,6 +50,10 @@
 #include <cftal/x86/v16s8.h>
 #include <cftal/x86/v16u8.h>
 // include 128 bit integer vector specializations implementations
+#if __CFTAL_CFG_USE_8_BYTE_VECS_ON_X86__ > 0
+#include <cftal/x86/v2s32_inl.h>
+#include <cftal/x86/v2u32_inl.h>
+#endif
 #include <cftal/x86/v2s64_inl.h>
 #include <cftal/x86/v2u64_inl.h>
 #include <cftal/x86/v4s32_inl.h>
