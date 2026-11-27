@@ -611,7 +611,7 @@ cftal::mul_lo_hi(const v2s32& x, const v2s32& y)
 #else
     // muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
     // mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
-    std::pair<v4u32, v4u32> ur(mul_lo_hi(v2u32(x), v2u32(y)));
+    std::pair<v2u32, v2u32> ur(mul_lo_hi(v2u32(x), v2u32(y)));
     v2s32 xsgn_y= y >> 31; // x86::const_shift::_31;
     v2s32 xsgn_x= x >> 31; // x86::const_shift::_31;
     v2s32 x_and_xsgn_y = x & xsgn_y;
