@@ -439,7 +439,7 @@ template <bool _P0, bool _P1>
 inline
 cftal::v2f32 cftal::select(const v2f32& a, const v2f32& b)
 {
-    return x86::select_f32<_P0, _P1, true, true> (a(), b());
+    return x86::select_f32<_P0, _P1, false, false> (a(), b());
 }
 
 template <int _P0, int _P1>
@@ -453,7 +453,8 @@ template <int _P0, int _P1>
 inline
 cftal::v2f32 cftal::permute(const v2f32& a, const v2f32& b)
 {
-    return x86::perm_v4f32<_P0, _P1, 2, 3>(a(), b());
+    v4f32 t(a, b);
+    return x86::perm_v4f32<_P0, _P1, 2, 3>(t());
 }
 
 inline
